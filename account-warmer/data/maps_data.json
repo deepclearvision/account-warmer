@@ -1,0 +1,128 @@
+{
+  "search_categories": {
+    "food_drink": [
+      "coffee shops near me",
+      "cafes near me",
+      "restaurants near me",
+      "breakfast near me",
+      "lunch spots near me",
+      "pizza near me",
+      "chinese food near me",
+      "indian restaurant near me",
+      "italian restaurant near me",
+      "pub near me",
+      "burger near me",
+      "sushi near me",
+      "bakery near me",
+      "sandwich shop near me"
+    ],
+    "services": [
+      "barbers near me",
+      "hair salon near me",
+      "nail salon near me",
+      "gym near me",
+      "dentist near me",
+      "pharmacy near me",
+      "post office near me",
+      "dry cleaners near me",
+      "car wash near me",
+      "petrol station near me"
+    ],
+    "retail": [
+      "supermarket near me",
+      "off licence near me",
+      "newsagent near me",
+      "clothes shop near me",
+      "bookshop near me",
+      "hardware store near me",
+      "phone repair near me"
+    ],
+    "leisure": [
+      "park near me",
+      "cinema near me",
+      "library near me",
+      "swimming pool near me",
+      "bowling near me",
+      "museum near me"
+    ]
+  },
+
+  "directions_destinations": [
+    "nearest train station",
+    "nearest supermarket",
+    "nearest hospital",
+    "nearest pharmacy",
+    "nearest petrol station",
+    "nearest post office",
+    "nearest cash machine"
+  ],
+
+  "review_templates": {
+    "cafe": [
+      "Really nice little cafe. The {item} was great and the staff were friendly. Will definitely come back.",
+      "Popped in for a quick {item} and was pleasantly surprised. Good atmosphere and reasonably priced.",
+      "Lovely cafe, nice and cosy. The {item} was exactly what I needed. Service was quick too.",
+      "Good {item} and decent prices. A bit busy on weekends but worth the wait.",
+      "Been coming here for a while now. Consistent quality and the staff always remember your order. Recommended.",
+      "Nice spot. The {item} was good and they had plenty of seating. Will be back.",
+      "Friendly staff and a good selection. Had the {item} which was lovely. Clean and well presented."
+    ],
+    "restaurant": [
+      "Had a really enjoyable meal here. The {item} was delicious and the portions were generous.",
+      "Great food and good service. The {item} was cooked perfectly. Reasonably priced for the quality.",
+      "Really nice restaurant. Booked ahead which I'd recommend as it gets busy. The {item} was excellent.",
+      "Good local restaurant. Food came out quickly and tasted great. The {item} was a highlight.",
+      "Solid place for a meal out. Nothing too fancy but the food is good and the staff are attentive.",
+      "Lovely evening here. The {item} was brilliant and the service was friendly and professional.",
+      "Would recommend. Good food, fair prices, and a nice atmosphere. The {item} was very good."
+    ],
+    "barber": [
+      "Really happy with my haircut. Clean shop, friendly barber and a good price. Will be back.",
+      "Good barbers. No appointment needed which is handy. Quick and did exactly what I asked for.",
+      "Been here a few times now. Always consistent and the staff are friendly. Reasonably priced.",
+      "Decent cut at a fair price. Was seen quickly without a long wait. Would recommend.",
+      "Good local barbers. Clean, professional and the result was exactly what I wanted."
+    ],
+    "gym": [
+      "Good gym with decent equipment. Never too busy when I go and the staff are helpful.",
+      "Clean facilities and a good range of equipment. Value for money for the area.",
+      "Happy with this gym. Good hours and the equipment is well maintained. No complaints.",
+      "Solid gym. Has everything you need and doesn't get overcrowded. Good value."
+    ],
+    "pub": [
+      "Nice local pub. Good selection of drinks and the atmosphere was great. Staff were friendly.",
+      "Had a good evening here. Reasonably priced drinks and a nice atmosphere. Would go back.",
+      "Good pub. Decent beer, friendly staff and a comfortable environment. Recommended.",
+      "Solid local. Nothing too fancy but exactly what you want from a pub. Will be back."
+    ],
+    "generic": [
+      "Really happy with the service here. Would recommend to anyone in the area.",
+      "Good experience overall. Staff were helpful and professional. Will use again.",
+      "Decent place. Does exactly what it says and the staff are friendly. No complaints.",
+      "Happy with my visit. Good service and fair prices. Would come back.",
+      "Solid local business. Friendly staff and a good service. Recommended.",
+      "Good experience. Everything was as expected and the staff were helpful and pleasant."
+    ]
+  },
+
+  "review_items": {
+    "cafe": ["flat white", "latte", "cappuccino", "coffee", "americano", "tea", "croissant", "sandwich", "cake", "breakfast"],
+    "restaurant": ["food", "pasta", "curry", "steak", "fish and chips", "burger", "pizza", "Sunday roast", "set menu", "dessert"],
+    "pub": ["pint", "food", "Sunday lunch", "burger", "atmosphere", "beer garden"],
+    "generic": ["service", "experience", "visit"]
+  },
+
+  "rating_weights": {
+    "5": 0.55,
+    "4": 0.30,
+    "3": 0.15
+  },
+
+  "listing_interactions": {
+    "view_photos_probability": 0.70,
+    "read_reviews_probability": 0.65,
+    "get_directions_probability": 0.25,
+    "click_website_probability": 0.15,
+    "save_place_probability": 0.10
+  }
+}

@@ -1,0 +1,57 @@
+# Human Behaviour Parameters
+# Controls timing, typing speed, mouse movement — the anti-detection layer.
+
+timing:
+  # Delay between individual actions within a session (milliseconds)
+  action_delay_ms:
+    mean: 2200
+    std_dev: 800
+    min: 600
+    max: 8000
+
+  # Delay between keystrokes when typing (milliseconds)
+  typing_delay_ms:
+    mean: 110
+    std_dev: 45
+    min: 40
+    max: 350
+
+  # Probability of a longer "reading pause" during browsing
+  reading_pause_probability: 0.45
+  reading_pause_seconds: [10, 60]
+
+  # Probability of a small "distraction pause" (put down the phone, made a coffee)
+  distraction_pause_probability: 0.04
+  distraction_pause_seconds: [60, 240]
+
+  # How often the user makes a typo and corrects it while typing
+  typo_probability: 0.06
+
+  # Probability of scrolling back up after scrolling down
+  scroll_backtrack_probability: 0.18
+
+search:
+  # How often the user clicks the result (vs just reading the snippet and going back)
+  click_result_probability: 0.65
+  # Which result position to click (weighted — first result clicked most)
+  result_position_weights: [0.45, 0.28, 0.15, 0.08, 0.04]
+  # Time spent reading a result page before going back
+  result_read_seconds: [20, 120]
+  # Probability of clicking an internal link on the result page
+  follow_internal_link_probability: 0.25
+  # Searches per session
+  searches_per_session: [2, 6]
+  page_two_probability: 0.20
+
+email:
+  # Maximum emails to send per day across all sessions (hard limit)
+  max_sends_per_day: 12
+  # Probability of opening an email and reading it vs marking it read immediately
+  open_and_read_probability: 0.80
+  # Time spent reading an email (seconds)
+  email_read_seconds: [8, 45]
+  # Probability of replying to a received email
+  reply_probability: 0.35
+  # Probability of marking an email as important/starring it
+  star_probability: 0.10
+  emails_per_session: [3, 8]

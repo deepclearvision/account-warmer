@@ -1,0 +1,63 @@
+{
+  "subjects": [
+    "Catching up",
+    "Quick question",
+    "Hey, how are things?",
+    "Following up",
+    "Thought of you",
+    "How's everything going?",
+    "Weekend plans?",
+    "Checking in",
+    "Hope you're well",
+    "Random thought",
+    "Re: the other day",
+    "Quick one",
+    "Been meaning to message",
+    "Anything new?",
+    "Touching base"
+  ],
+  "openers": [
+    "Hope you're doing well.",
+    "How have you been?",
+    "Hope things are good your end.",
+    "How are things going?",
+    "Just wanted to reach out.",
+    "Been a while!",
+    "Hope the week's been treating you well.",
+    "How's everything?",
+    "Just thought I'd drop you a message.",
+    "Hope life's treating you well."
+  ],
+  "bodies": [
+    "Just wanted to check in and see how things are going. Haven't spoken in a while and thought I'd reach out. Let me know when you're free for a catch up.",
+    "Been meaning to message for a while now. How's everything going? Would be good to hear from you. Nothing urgent, just been thinking about you.",
+    "Quick one — was thinking about you the other day and wanted to say hello. Hope things are going well. Let me know if you fancy a catch up sometime.",
+    "Just dropping a quick message. Nothing urgent! How's life treating you? Would be great to hear how things are going.",
+    "How are you getting on? Everything good at your end? I know we've both been busy lately but wanted to reach out and say hi.",
+    "Hope the week's been okay. Been pretty busy at my end but wanted to check in. Drop me a message when you get a chance.",
+    "Was going through my emails and realised I hadn't been in touch for a while! How's everything? Would be great to catch up.",
+    "Hey — just wanted to send a quick message. Hope you're doing well. Everything good with you? Let me know if you're around for a chat.",
+    "Just thought I'd check in! How's life? Nothing much to report from my end, just wanted to see how you're getting on.",
+    "Dropping a quick note to say hello. Hope things are going well. Let me know if you want to catch up soon."
+  ],
+  "sign_offs": [
+    "Speak soon,",
+    "Let me know,",
+    "Take care,",
+    "Hope to hear from you soon,",
+    "All the best,",
+    "Cheers,",
+    "Best,",
+    "Talk soon,"
+  ],
+  "replies": [
+    "Thanks for getting in touch! Things have been pretty good here, staying busy as usual. Would be great to catch up properly soon.",
+    "Great to hear from you! Everything's going well at my end, can't complain. Let's definitely organise something soon.",
+    "Hey! Good to hear from you. Been a hectic couple of weeks but getting there. How about you?",
+    "Thanks for reaching out! Yeah I've been meaning to message too. Let's find a time to catch up properly.",
+    "Good to hear from you! Things are ticking along fine here. We should definitely catch up soon.",
+    "Thanks for the message! Doing well here, hope things are good with you too. Always good to hear from you.",
+    "Hey, great to hear from you! Been a while hasn't it. Would love to catch up when you're free.",
+    "Thanks for dropping me a line! All good here. Hope things are going well for you too. Let's plan something."
+  ]
+}

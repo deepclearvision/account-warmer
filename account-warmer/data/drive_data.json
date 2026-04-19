@@ -1,0 +1,123 @@
+{
+  "documents": {
+    "shopping_list": {
+      "title": "Shopping list",
+      "content": [
+        "Milk\nBread\nEggs\nButter\nCheese\nChicken breast\nPasta\nTomatoes\nOnions\nGarlic\nOlive oil\nOrange juice\nYoghurt\nApples\nBananas\nCoffee\nTeabags\nWashing up liquid\nToilet roll",
+        "Milk (semi skimmed)\nBread (wholemeal)\nEggs (free range 6)\nCheddar\nMinced beef\nRice\nTin tomatoes x2\nSpinach\nBroccoli\nLemons\nGreek yoghurt\nOats\nProtein bars\nShampoo\nToothpaste\nFoil",
+        "Full fat milk\nSourdough loaf\nSmoked salmon\nCream cheese\nAvocados x2\nCoffee beans\nOat milk\nBlueberries\nStrawberries\nHummus\nPitta bread\nFeta cheese\nCucumber\nPeppers\nRed onion\nBasil\nParmesan\nPasta (penne)\nTin chickpeas"
+      ]
+    },
+    "to_do": {
+      "title": "To do",
+      "content": [
+        "[ ] Call the dentist and book appointment\n[ ] Reply to email from landlord\n[ ] Pay council tax\n[ ] Pick up dry cleaning\n[ ] Book car in for service\n[ ] Sort out contents insurance renewal\n[ ] Send birthday card to mum\n[ ] Return Amazon parcel\n[ ] Ring the GP about prescription\n[ ] Organise spare room",
+        "[ ] Book train tickets for next month\n[ ] Chase up invoice from client\n[ ] Renew gym membership\n[ ] Sort out broadband — contract ending soon\n[ ] Get passport renewed\n[ ] Book eye test\n[ ] Cancel free trial before it charges\n[ ] Call the council about bins\n[ ] Find a plumber for the shower\n[ ] Write a review for the restaurant",
+        "[ ] Finish report for Monday\n[ ] Call mum back\n[ ] Order new phone case\n[ ] Book restaurant for Sarah's birthday\n[ ] Collect parcel from post office\n[ ] Top up Oyster card\n[ ] Buy birthday present for James\n[ ] Check broadband speed — been slow lately\n[ ] Look into ISA options\n[ ] Sort out filing"
+      ]
+    },
+    "notes": {
+      "title": "Notes",
+      "content": [
+        "Things to remember:\n\nGym — try to go Mon/Wed/Fri at least\nDiet — cut back on sugar this month\nBudget — keep spending under £800 for the month\n\nIdeas:\n- Look into switching energy supplier\n- Compare car insurance when it comes up for renewal in March\n- Look at switching banks, current account interest is terrible\n\nBooks to read:\n- The Midnight Library\n- Atomic Habits (finally)\n- Something by Cormac McCarthy\n\nFilms to watch:\n- Past Lives\n- All Quiet on the Western Front\n- The Holdovers",
+        "Password hint reminders (not actual passwords):\n\nEmail — first pet + birth year\nBank — mum's maiden name + number\nWork login — remember to update monthly\n\nImportant numbers:\n- GP surgery: look up\n- Landlord: in phone\n- Boiler warranty: check paperwork\n\nMisc:\n- MOT due in April\n- TV licence renewal in June\n- Dentist said to floss more (I know)",
+        "Recipes I want to try:\n\nSlow cooker chicken tikka — need to get the spices in\nHomemade sourdough — need a starter\nGnocchi from scratch — mum makes this brilliantly\nLemon tart — find a good recipe online\n\nRestaurants to try:\n- The one near the station that opened last month\n- That Italian place James keeps recommending\n- Sunday roast at the pub on the high street\n\nWeekend ideas:\n- Visit the market on Saturday\n- Walk along the river\n- Check if the museum has anything on"
+      ]
+    },
+    "personal": {
+      "title": "Journal",
+      "content": [
+        "Had a pretty good week all things considered. Work has been busy but manageable. Finally got round to sorting out the spare room which has been on my list for weeks.\n\nWeather has been miserable but that seems to be the theme lately. Looking forward to spring.\n\nGym is going well — been consistent this month which makes a change. Trying to get there at least three times a week and mostly managing it.\n\nNeed to plan a weekend away at some point. Been ages since I went anywhere properly.",
+        "Quiet day today. Made a proper Sunday roast for the first time in months — turned out well actually. Chicken was a bit dry but the roast potatoes were spot on.\n\nStarted reading that book James lent me. Good so far. Haven't read properly in ages, keeps getting overtaken by screens.\n\nMeeting with the bank next week about savings. Need to actually do something sensible with money instead of just leaving it in a current account earning nothing.",
+        "Back from the weekend trip — was a really good couple of days. Needed to get out of the city for a bit. Nice to see everyone, feels like ages since we've all been in the same place.\n\nLong week ahead. Presentation on Thursday which I need to prepare for properly this time rather than winging it the night before.\n\nOrdered some new trainers online. Probably didn't need them but the old ones were falling apart so I'm calling it a necessity."
+      ]
+    }
+  },
+
+  "edits": {
+    "additions": [
+      "\n\nUpdate: sorted this",
+      "\n\nDone ✓",
+      "\n\nBooked for next week",
+      "\n\nNeed to chase this again",
+      "\n\nAdded to calendar",
+      "\n\nSpoke to them, all sorted",
+      "\n\nStill need to do this"
+    ],
+    "new_list_items": [
+      "\nWashing powder",
+      "\nBin bags",
+      "\nCoffee pods",
+      "\nSparkling water",
+      "\nLemon",
+      "\nBaby spinach",
+      "\nGrated mozzarella",
+      "\nNaan bread",
+      "\nMangoes",
+      "\nAlmond milk",
+      "\nFrozen peas",
+      "\nSour cream"
+    ],
+    "new_todo_items": [
+      "\n[ ] Ring the dentist",
+      "\n[ ] Check bank statement",
+      "\n[ ] Reply to that email",
+      "\n[ ] Book a table",
+      "\n[ ] Order birthday present",
+      "\n[ ] Call them back",
+      "\n[ ] Sort out subscription",
+      "\n[ ] Pay that back"
+    ]
+  },
+
+  "spreadsheets": {
+    "budget": {
+      "title": "Monthly budget",
+      "headers": ["Category", "Budgeted", "Actual", "Difference"],
+      "rows": [
+        ["Rent", "950", "950", "0"],
+        ["Groceries", "200", "185", "15"],
+        ["Transport", "120", "108", "12"],
+        ["Eating out", "100", "142", "-42"],
+        ["Entertainment", "60", "45", "15"],
+        ["Gym", "35", "35", "0"],
+        ["Clothing", "50", "0", "50"],
+        ["Subscriptions", "40", "40", "0"],
+        ["Personal care", "30", "28", "2"],
+        ["Miscellaneous", "80", "95", "-15"]
+      ]
+    },
+    "shopping_tracker": {
+      "title": "Shopping tracker",
+      "headers": ["Item", "Shop", "Price", "Date"],
+      "rows": [
+        ["Milk (4 pints)", "Tesco", "1.35", ""],
+        ["Bread", "Sainsbury's", "1.20", ""],
+        ["Chicken breast (500g)", "Tesco", "4.50", ""],
+        ["Pasta", "Sainsbury's", "0.85", ""],
+        ["Eggs (12)", "Tesco", "2.75", ""],
+        ["Coffee", "Waitrose", "4.50", ""],
+        ["Olive oil", "Sainsbury's", "3.20", ""]
+      ]
+    },
+    "workout_log": {
+      "title": "Workout log",
+      "headers": ["Date", "Exercise", "Sets", "Reps", "Weight (kg)", "Notes"],
+      "rows": [
+        ["", "Bench press", "3", "8", "70", "Good"],
+        ["", "Squat", "4", "6", "90", "Struggled on last set"],
+        ["", "Deadlift", "3", "5", "110", ""],
+        ["", "Pull ups", "3", "8", "", "Bodyweight"],
+        ["", "Shoulder press", "3", "10", "40", ""],
+        ["", "Row", "3", "10", "60", ""]
+      ]
+    }
+  },
+
+  "setup": {
+    "docs_to_create": ["shopping_list", "to_do", "notes"],
+    "sheets_to_create": ["budget"],
+    "max_docs": 3,
+    "max_sheets": 1
+  }
+}

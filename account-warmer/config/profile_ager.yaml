@@ -1,0 +1,35 @@
+# Profile Ager — Configuration
+#
+# Profiles listed here are Multilogin profiles that have NOT yet had a
+# Google account created in them. The ager runs daily browsing sessions
+# to build cookie history before account creation.
+#
+# Workflow:
+#   1. Create a new profile in Multilogin with a residential proxy attached
+#   2. Add it here with its profile ID
+#   3. Run daily: python profile_ager.py --all
+#   4. When --check shows READY, create the Google account inside that profile
+#   5. Run: python profile_ager.py --mark-done profile_001
+#   6. Move the profile details to config/accounts.yaml for the main warmer
+#
+# settings:
+#   target_age_days:  How many days to age before marking ready (default 7)
+#   min_sessions:     Minimum sessions needed (default 5)
+
+settings:
+  target_age_days: 7
+  min_sessions: 5
+
+profiles:
+  - id: profile_001
+    multilogin_profile_id: "paste-multilogin-profile-id-here"
+    location: "london"    # Used to localise searches and Maps browsing
+
+  - id: profile_002
+    multilogin_profile_id: "paste-multilogin-profile-id-here"
+    location: "manchester"
+
+  # Add more as needed:
+  # - id: profile_003
+  #   multilogin_profile_id: "..."
+  #   location: "birmingham"

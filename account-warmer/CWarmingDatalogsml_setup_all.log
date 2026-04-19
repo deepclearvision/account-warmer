@@ -1,0 +1,2940 @@
+13:22:02  INFO     Running ML setup for 38 account(s) with concurrency=2: ['acc_004', 'acc_005', 'acc_006', 'acc_007', 'acc_008', 'acc_010', 'acc_012', 'acc_013', 'acc_014', 'acc_015', 'acc_018', 'acc_020', 'acc_022', 'acc_023', 'acc_024', 'acc_026', 'acc_028', 'acc_029', 'acc_030', 'acc_031', 'acc_032', 'acc_033', 'acc_034', 'acc_035', 'acc_036', 'acc_037', 'acc_038', 'acc_039', 'acc_042', 'acc_043', 'acc_044', 'acc_045', 'acc_046', 'acc_047', 'acc_048', 'acc_049', 'acc_050', 'acc_051']
+13:22:03  INFO     [acc_004] Starting ML profile for setup ...
+2026-04-10 13:22:03 [acc_004] INFO  Proxy guard: verifying proxy before session start …
+13:22:03  INFO     Proxy guard: verifying proxy before session start …
+13:22:04  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:22:04 [acc_004] INFO  Proxy guard: OK — exit IP = 82.108.118.219
+13:22:04  INFO     Proxy guard: OK — exit IP = 82.108.118.219
+2026-04-10 13:22:35 [acc_004] INFO  Proxy synced to ML: isp.decodo.com:10004
+13:22:35  INFO     Proxy synced to ML: isp.decodo.com:10004
+2026-04-10 13:22:35 [acc_004] INFO  Starting Multilogin profile 7968a711-eaaf-4ae0-b7f8-6db5fccb65cb …
+13:22:35  INFO     Starting Multilogin profile 7968a711-eaaf-4ae0-b7f8-6db5fccb65cb …
+13:22:40  DEBUG    CDP endpoint: http://127.0.0.1:60338
+13:22:40  INFO     [acc_005] Starting ML profile for setup ...
+2026-04-10 13:22:40 [acc_005] INFO  Proxy guard: verifying proxy before session start …
+13:22:40  INFO     Proxy guard: verifying proxy before session start …
+13:22:40  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:22:41 [acc_005] INFO  Proxy guard: OK — exit IP = 82.108.116.28
+13:22:41  INFO     Proxy guard: OK — exit IP = 82.108.116.28
+2026-04-10 13:22:41 [acc_005] INFO  Proxy synced to ML: isp.decodo.com:10005
+13:22:41  INFO     Proxy synced to ML: isp.decodo.com:10005
+2026-04-10 13:22:41 [acc_005] INFO  Starting Multilogin profile fba31c86-6446-4205-866d-5a00d0161621 …
+13:22:41  INFO     Starting Multilogin profile fba31c86-6446-4205-866d-5a00d0161621 …
+13:22:45  DEBUG    CDP endpoint: http://127.0.0.1:60354
+(node:16796) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:9892) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:22:50  DEBUG    Media streaming blocked to conserve proxy bandwidth
+13:22:54  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:22:54 [acc_004] INFO  Profile started — connected via CDP | profile_id=7968a711-eaaf-4ae0-b7f8-6db5fccb65cb
+13:22:54  INFO     Profile started — connected via CDP | profile_id=7968a711-eaaf-4ae0-b7f8-6db5fccb65cb
+2026-04-10 13:22:58 [acc_004] INFO  Login check: logged_in
+13:22:58  INFO     Login check: logged_in
+2026-04-10 13:22:58 [acc_004] INFO  [ml-setup] Running step: security_alerts
+13:22:58  INFO     [ml-setup] Running step: security_alerts
+2026-04-10 13:23:01 [acc_005] INFO  Profile started — connected via CDP | profile_id=fba31c86-6446-4205-866d-5a00d0161621
+13:23:01  INFO     Profile started — connected via CDP | profile_id=fba31c86-6446-4205-866d-5a00d0161621
+2026-04-10 13:23:07 [acc_005] INFO  Login check: logged_in
+13:23:07  INFO     Login check: logged_in
+2026-04-10 13:23:08 [acc_005] INFO  [ml-setup] Running step: security_alerts
+13:23:08  INFO     [ml-setup] Running step: security_alerts
+13:23:45  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    44 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:23:45 [acc_004] INFO  [ml-setup] security_alerts: OK
+13:23:45  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:23:45 [acc_004] INFO  [ml-setup] Running step: profile_photo
+13:23:45  INFO     [ml-setup] Running step: profile_photo
+13:23:50  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    21 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:23:50 [acc_005] INFO  [ml-setup] security_alerts: OK
+13:23:50  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:23:50 [acc_005] INFO  [ml-setup] Running step: profile_photo
+13:23:50  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:23:52 [acc_004] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:23:52  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:23:52 [acc_004] WARNING  [ml-setup] profile_photo: step returned False
+13:23:52  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:23:52 [acc_004] INFO  [ml-setup] Running step: web_app_activity
+13:23:52  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:24:00 [acc_005] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:24:00  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:24:00 [acc_005] WARNING  [ml-setup] profile_photo: step returned False
+13:24:00  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:24:00 [acc_005] INFO  [ml-setup] Running step: web_app_activity
+13:24:00  INFO     [ml-setup] Running step: web_app_activity
+13:24:00  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:24:00 [acc_004] INFO  [ml-setup] web_app_activity: OK
+13:24:00  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:24:00 [acc_004] INFO  [ml-setup] Running step: youtube_history
+13:24:00  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:24:05 [acc_004] INFO  [ml-setup] youtube_history: OK
+13:24:05  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:24:05 [acc_004] INFO  [ml-setup] Running step: location_history
+13:24:05  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:24:09 [acc_004] INFO  [ml-setup] location_history: OK
+13:24:09  INFO     [ml-setup] location_history: OK
+2026-04-10 13:24:09 [acc_004] INFO  [ml-setup] Running step: birthday
+13:24:09  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:24:11 [acc_004] INFO  [ml-setup] Birthday set: 14/7/1994
+13:24:11  INFO     [ml-setup] Birthday set: 14/7/1994
+2026-04-10 13:24:11 [acc_004] INFO  [ml-setup] birthday: OK
+13:24:11  INFO     [ml-setup] birthday: OK
+2026-04-10 13:24:11 [acc_004] INFO  [ml-setup] Completed 5/6 steps
+13:24:11  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:24:15 [acc_004] INFO  Profile 7968a711-eaaf-4ae0-b7f8-6db5fccb65cb stopped via API.
+13:24:15  INFO     Profile 7968a711-eaaf-4ae0-b7f8-6db5fccb65cb stopped via API.
+2026-04-10 13:24:15 [acc_004] INFO  Profile stopped cleanly.
+13:24:15  INFO     Profile stopped cleanly.
+13:24:15  INFO     [acc_004] ML setup succeeded — marking ml_setup_done=true
+13:24:15  INFO     [acc_006] Starting ML profile for setup ...
+2026-04-10 13:24:15 [acc_006] INFO  Proxy guard: verifying proxy before session start …
+13:24:15  INFO     Proxy guard: verifying proxy before session start …
+13:24:15  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:24:16 [acc_006] INFO  Proxy guard: OK — exit IP = 82.108.153.169
+13:24:16  INFO     Proxy guard: OK — exit IP = 82.108.153.169
+2026-04-10 13:24:16 [acc_006] INFO  Proxy synced to ML: isp.decodo.com:10006
+13:24:16  INFO     Proxy synced to ML: isp.decodo.com:10006
+2026-04-10 13:24:16 [acc_006] INFO  Starting Multilogin profile 2a5a3c6b-c7e1-4c54-801d-898fb667a961 …
+13:24:16  INFO     Starting Multilogin profile 2a5a3c6b-c7e1-4c54-801d-898fb667a961 …
+13:24:20  DEBUG    CDP endpoint: http://127.0.0.1:60608
+13:24:23  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:24:23 [acc_005] INFO  [ml-setup] web_app_activity: OK
+13:24:23  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:24:23 [acc_005] INFO  [ml-setup] Running step: youtube_history
+13:24:23  INFO     [ml-setup] Running step: youtube_history
+(node:17136) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:24:24  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:24:27 [acc_005] INFO  [ml-setup] youtube_history: OK
+13:24:27  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:24:27 [acc_005] INFO  [ml-setup] Running step: location_history
+13:24:27  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:24:29 [acc_006] INFO  Profile started — connected via CDP | profile_id=2a5a3c6b-c7e1-4c54-801d-898fb667a961
+13:24:29  INFO     Profile started — connected via CDP | profile_id=2a5a3c6b-c7e1-4c54-801d-898fb667a961
+2026-04-10 13:24:37 [acc_005] INFO  [ml-setup] location_history: OK
+13:24:37  INFO     [ml-setup] location_history: OK
+2026-04-10 13:24:37 [acc_005] INFO  [ml-setup] Running step: birthday
+13:24:37  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:24:40 [acc_006] INFO  Login check: logged_in
+13:24:40  INFO     Login check: logged_in
+2026-04-10 13:24:40 [acc_006] INFO  [ml-setup] Running step: security_alerts
+13:24:40  INFO     [ml-setup] Running step: security_alerts
+2026-04-10 13:24:43 [acc_005] INFO  [ml-setup] Birthday set: 4/4/2000
+13:24:43  INFO     [ml-setup] Birthday set: 4/4/2000
+2026-04-10 13:24:43 [acc_005] INFO  [ml-setup] birthday: OK
+13:24:43  INFO     [ml-setup] birthday: OK
+2026-04-10 13:24:43 [acc_005] INFO  [ml-setup] Completed 5/6 steps
+13:24:43  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:24:46 [acc_005] INFO  Profile fba31c86-6446-4205-866d-5a00d0161621 stopped via API.
+13:24:46  INFO     Profile fba31c86-6446-4205-866d-5a00d0161621 stopped via API.
+2026-04-10 13:24:46 [acc_005] INFO  Profile stopped cleanly.
+13:24:46  INFO     Profile stopped cleanly.
+13:24:46  INFO     [acc_005] ML setup succeeded — marking ml_setup_done=true
+13:24:47  INFO     [acc_007] Starting ML profile for setup ...
+2026-04-10 13:24:47 [acc_007] INFO  Proxy guard: verifying proxy before session start …
+13:24:47  INFO     Proxy guard: verifying proxy before session start …
+13:24:47  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:24:47 [acc_007] INFO  Proxy guard: OK — exit IP = 104.238.47.57
+13:24:47  INFO     Proxy guard: OK — exit IP = 104.238.47.57
+2026-04-10 13:24:48 [acc_007] INFO  Proxy synced to ML: isp.decodo.com:10007
+13:24:48  INFO     Proxy synced to ML: isp.decodo.com:10007
+2026-04-10 13:24:48 [acc_007] INFO  Starting Multilogin profile ac09b285-6c64-4b0f-a27e-bda7d18591ea …
+13:24:48  INFO     Starting Multilogin profile ac09b285-6c64-4b0f-a27e-bda7d18591ea …
+13:24:51  DEBUG    CDP endpoint: http://127.0.0.1:60708
+(node:13180) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:24:56  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:25:07 [acc_007] INFO  Profile started — connected via CDP | profile_id=ac09b285-6c64-4b0f-a27e-bda7d18591ea
+13:25:07  INFO     Profile started — connected via CDP | profile_id=ac09b285-6c64-4b0f-a27e-bda7d18591ea
+2026-04-10 13:25:11 [acc_007] INFO  Login check: logged_in
+13:25:11  INFO     Login check: logged_in
+2026-04-10 13:25:11 [acc_007] INFO  [ml-setup] Running step: security_alerts
+13:25:11  INFO     [ml-setup] Running step: security_alerts
+13:25:36  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    49 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:25:36 [acc_006] INFO  [ml-setup] security_alerts: OK
+13:25:36  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:25:36 [acc_006] INFO  [ml-setup] Running step: profile_photo
+13:25:36  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:25:43 [acc_006] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:25:43  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:25:43 [acc_006] WARNING  [ml-setup] profile_photo: step returned False
+13:25:43  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:25:43 [acc_006] INFO  [ml-setup] Running step: web_app_activity
+13:25:43  INFO     [ml-setup] Running step: web_app_activity
+13:25:49  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:25:49 [acc_006] INFO  [ml-setup] web_app_activity: OK
+13:25:49  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:25:49 [acc_006] INFO  [ml-setup] Running step: youtube_history
+13:25:49  INFO     [ml-setup] Running step: youtube_history
+13:25:49  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    55 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:25:49 [acc_007] INFO  [ml-setup] security_alerts: OK
+13:25:49  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:25:49 [acc_007] INFO  [ml-setup] Running step: profile_photo
+13:25:49  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:25:52 [acc_006] INFO  [ml-setup] youtube_history: OK
+13:25:52  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:25:52 [acc_006] INFO  [ml-setup] Running step: location_history
+13:25:52  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:25:55 [acc_006] INFO  [ml-setup] location_history: OK
+13:25:55  INFO     [ml-setup] location_history: OK
+2026-04-10 13:25:55 [acc_006] INFO  [ml-setup] Running step: birthday
+13:25:55  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:25:56 [acc_007] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:25:56  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:25:56 [acc_007] WARNING  [ml-setup] profile_photo: step returned False
+13:25:56  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:25:56 [acc_007] INFO  [ml-setup] Running step: web_app_activity
+13:25:56  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:25:58 [acc_006] INFO  [ml-setup] Birthday set: 9/10/1986
+13:25:58  INFO     [ml-setup] Birthday set: 9/10/1986
+2026-04-10 13:25:58 [acc_006] INFO  [ml-setup] birthday: OK
+13:25:58  INFO     [ml-setup] birthday: OK
+2026-04-10 13:25:58 [acc_006] INFO  [ml-setup] Completed 5/6 steps
+13:25:58  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:26:01 [acc_006] INFO  Profile 2a5a3c6b-c7e1-4c54-801d-898fb667a961 stopped via API.
+13:26:01  INFO     Profile 2a5a3c6b-c7e1-4c54-801d-898fb667a961 stopped via API.
+2026-04-10 13:26:01 [acc_006] INFO  Profile stopped cleanly.
+13:26:01  INFO     Profile stopped cleanly.
+13:26:01  INFO     [acc_006] ML setup succeeded — marking ml_setup_done=true
+13:26:01  INFO     [acc_008] Starting ML profile for setup ...
+2026-04-10 13:26:01 [acc_008] INFO  Proxy guard: verifying proxy before session start …
+13:26:01  INFO     Proxy guard: verifying proxy before session start …
+13:26:01  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:26:02 [acc_008] INFO  Proxy guard: OK — exit IP = 82.108.45.214
+13:26:02  INFO     Proxy guard: OK — exit IP = 82.108.45.214
+2026-04-10 13:26:02 [acc_008] INFO  Proxy synced to ML: isp.decodo.com:10008
+13:26:02  INFO     Proxy synced to ML: isp.decodo.com:10008
+2026-04-10 13:26:02 [acc_008] INFO  Starting Multilogin profile 3ebc6f4a-a2db-4036-b06e-6dcc14aafec6 …
+13:26:02  INFO     Starting Multilogin profile 3ebc6f4a-a2db-4036-b06e-6dcc14aafec6 …
+13:26:05  DEBUG    CDP endpoint: http://127.0.0.1:60908
+(node:16304) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:26:06  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:26:06 [acc_008] INFO  Profile started — connected via CDP | profile_id=3ebc6f4a-a2db-4036-b06e-6dcc14aafec6
+13:26:06  INFO     Profile started — connected via CDP | profile_id=3ebc6f4a-a2db-4036-b06e-6dcc14aafec6
+13:26:08  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:26:08 [acc_007] INFO  [ml-setup] web_app_activity: OK
+13:26:08  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:26:08 [acc_007] INFO  [ml-setup] Running step: youtube_history
+13:26:08  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:26:10 [acc_008] INFO  Login check: logged_in
+13:26:10  INFO     Login check: logged_in
+2026-04-10 13:26:10 [acc_008] INFO  [ml-setup] Running step: security_alerts
+13:26:10  INFO     [ml-setup] Running step: security_alerts
+2026-04-10 13:26:11 [acc_007] INFO  [ml-setup] youtube_history: OK
+13:26:11  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:26:11 [acc_007] INFO  [ml-setup] Running step: location_history
+13:26:11  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:26:14 [acc_007] INFO  [ml-setup] location_history: OK
+13:26:14  INFO     [ml-setup] location_history: OK
+2026-04-10 13:26:14 [acc_007] INFO  [ml-setup] Running step: birthday
+13:26:14  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:26:21 [acc_007] INFO  [ml-setup] Birthday set: 17/6/1997
+13:26:21  INFO     [ml-setup] Birthday set: 17/6/1997
+2026-04-10 13:26:21 [acc_007] INFO  [ml-setup] birthday: OK
+13:26:21  INFO     [ml-setup] birthday: OK
+2026-04-10 13:26:21 [acc_007] INFO  [ml-setup] Completed 5/6 steps
+13:26:21  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:26:23 [acc_007] INFO  Profile ac09b285-6c64-4b0f-a27e-bda7d18591ea stopped via API.
+13:26:23  INFO     Profile ac09b285-6c64-4b0f-a27e-bda7d18591ea stopped via API.
+2026-04-10 13:26:23 [acc_007] INFO  Profile stopped cleanly.
+13:26:23  INFO     Profile stopped cleanly.
+13:26:23  INFO     [acc_007] ML setup succeeded — marking ml_setup_done=true
+13:26:23  INFO     [acc_010] Starting ML profile for setup ...
+2026-04-10 13:26:23 [acc_010] INFO  Proxy guard: verifying proxy before session start …
+13:26:23  INFO     Proxy guard: verifying proxy before session start …
+13:26:23  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:26:24 [acc_010] INFO  Proxy guard: OK — exit IP = 82.108.119.189
+13:26:24  INFO     Proxy guard: OK — exit IP = 82.108.119.189
+2026-04-10 13:26:24 [acc_010] INFO  Proxy synced to ML: isp.decodo.com:10010
+13:26:24  INFO     Proxy synced to ML: isp.decodo.com:10010
+2026-04-10 13:26:24 [acc_010] INFO  Starting Multilogin profile e6f54f5f-6465-420c-b93b-cdbaf26491b8 …
+13:26:24  INFO     Starting Multilogin profile e6f54f5f-6465-420c-b93b-cdbaf26491b8 …
+13:26:27  DEBUG    CDP endpoint: http://127.0.0.1:61024
+(node:16016) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:26:29  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:26:29 [acc_010] INFO  Profile started — connected via CDP | profile_id=e6f54f5f-6465-420c-b93b-cdbaf26491b8
+13:26:29  INFO     Profile started — connected via CDP | profile_id=e6f54f5f-6465-420c-b93b-cdbaf26491b8
+2026-04-10 13:26:32 [acc_010] INFO  Login check: logged_in
+13:26:32  INFO     Login check: logged_in
+2026-04-10 13:26:32 [acc_010] INFO  [ml-setup] Running step: security_alerts
+13:26:32  INFO     [ml-setup] Running step: security_alerts
+13:26:49  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    44 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:26:49 [acc_008] INFO  [ml-setup] security_alerts: OK
+13:26:49  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:26:49 [acc_008] INFO  [ml-setup] Running step: profile_photo
+13:26:49  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:26:56 [acc_008] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:26:56  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:26:56 [acc_008] WARNING  [ml-setup] profile_photo: step returned False
+13:26:56  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:26:56 [acc_008] INFO  [ml-setup] Running step: web_app_activity
+13:26:56  INFO     [ml-setup] Running step: web_app_activity
+13:27:02  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:27:02 [acc_008] INFO  [ml-setup] web_app_activity: OK
+13:27:02  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:27:02 [acc_008] INFO  [ml-setup] Running step: youtube_history
+13:27:02  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:27:05 [acc_008] INFO  [ml-setup] youtube_history: OK
+13:27:05  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:27:05 [acc_008] INFO  [ml-setup] Running step: location_history
+13:27:05  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:27:09 [acc_008] INFO  [ml-setup] location_history: OK
+13:27:09  INFO     [ml-setup] location_history: OK
+2026-04-10 13:27:09 [acc_008] INFO  [ml-setup] Running step: birthday
+13:27:09  INFO     [ml-setup] Running step: birthday
+13:27:11  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    54 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:27:11 [acc_010] INFO  [ml-setup] security_alerts: OK
+13:27:11  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:27:11 [acc_010] INFO  [ml-setup] Running step: profile_photo
+13:27:11  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:27:12 [acc_008] INFO  [ml-setup] Birthday set: 20/7/1992
+13:27:12  INFO     [ml-setup] Birthday set: 20/7/1992
+2026-04-10 13:27:12 [acc_008] INFO  [ml-setup] birthday: OK
+13:27:12  INFO     [ml-setup] birthday: OK
+2026-04-10 13:27:12 [acc_008] INFO  [ml-setup] Completed 5/6 steps
+13:27:12  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:27:13 [acc_008] INFO  Profile 3ebc6f4a-a2db-4036-b06e-6dcc14aafec6 stopped via API.
+13:27:13  INFO     Profile 3ebc6f4a-a2db-4036-b06e-6dcc14aafec6 stopped via API.
+2026-04-10 13:27:13 [acc_008] INFO  Profile stopped cleanly.
+13:27:13  INFO     Profile stopped cleanly.
+13:27:13  INFO     [acc_008] ML setup succeeded — marking ml_setup_done=true
+13:27:13  INFO     [acc_012] Starting ML profile for setup ...
+2026-04-10 13:27:13 [acc_012] INFO  Proxy guard: verifying proxy before session start …
+13:27:13  INFO     Proxy guard: verifying proxy before session start …
+13:27:13  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:27:14 [acc_012] INFO  Proxy guard: OK — exit IP = 82.108.119.245
+13:27:14  INFO     Proxy guard: OK — exit IP = 82.108.119.245
+2026-04-10 13:27:14 [acc_012] INFO  Proxy synced to ML: isp.decodo.com:10012
+13:27:14  INFO     Proxy synced to ML: isp.decodo.com:10012
+2026-04-10 13:27:14 [acc_012] INFO  Starting Multilogin profile 4d6e5cb7-bd80-4acc-80d2-50c18acf30e2 …
+13:27:14  INFO     Starting Multilogin profile 4d6e5cb7-bd80-4acc-80d2-50c18acf30e2 …
+13:27:18  DEBUG    CDP endpoint: http://127.0.0.1:61173
+(node:4996) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:27:20  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:27:20 [acc_012] INFO  Profile started — connected via CDP | profile_id=4d6e5cb7-bd80-4acc-80d2-50c18acf30e2
+13:27:20  INFO     Profile started — connected via CDP | profile_id=4d6e5cb7-bd80-4acc-80d2-50c18acf30e2
+2026-04-10 13:27:22 [acc_010] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:27:22  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:27:22 [acc_010] WARNING  [ml-setup] profile_photo: step returned False
+13:27:22  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:27:22 [acc_010] INFO  [ml-setup] Running step: web_app_activity
+13:27:22  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:27:23 [acc_012] INFO  Login check: logged_in
+13:27:23  INFO     Login check: logged_in
+2026-04-10 13:27:23 [acc_012] INFO  [ml-setup] Running step: security_alerts
+13:27:23  INFO     [ml-setup] Running step: security_alerts
+13:27:40  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:27:40 [acc_010] INFO  [ml-setup] web_app_activity: OK
+13:27:40  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:27:40 [acc_010] INFO  [ml-setup] Running step: youtube_history
+13:27:40  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:27:44 [acc_010] INFO  [ml-setup] youtube_history: OK
+13:27:44  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:27:44 [acc_010] INFO  [ml-setup] Running step: location_history
+13:27:44  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:27:47 [acc_010] INFO  [ml-setup] location_history: OK
+13:27:47  INFO     [ml-setup] location_history: OK
+2026-04-10 13:27:47 [acc_010] INFO  [ml-setup] Running step: birthday
+13:27:47  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:27:53 [acc_010] INFO  [ml-setup] Birthday set: 25/2/2001
+13:27:53  INFO     [ml-setup] Birthday set: 25/2/2001
+2026-04-10 13:27:53 [acc_010] INFO  [ml-setup] birthday: OK
+13:27:53  INFO     [ml-setup] birthday: OK
+2026-04-10 13:27:53 [acc_010] INFO  [ml-setup] Completed 5/6 steps
+13:27:53  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:28:04 [acc_010] INFO  Profile e6f54f5f-6465-420c-b93b-cdbaf26491b8 stopped via API.
+13:28:04  INFO     Profile e6f54f5f-6465-420c-b93b-cdbaf26491b8 stopped via API.
+2026-04-10 13:28:04 [acc_010] INFO  Profile stopped cleanly.
+13:28:04  INFO     Profile stopped cleanly.
+13:28:04  INFO     [acc_010] ML setup succeeded — marking ml_setup_done=true
+13:28:04  INFO     [acc_013] Starting ML profile for setup ...
+2026-04-10 13:28:04 [acc_013] INFO  Proxy guard: verifying proxy before session start …
+13:28:04  INFO     Proxy guard: verifying proxy before session start …
+13:28:05  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:28:05 [acc_013] INFO  Proxy guard: OK — exit IP = 82.108.45.153
+13:28:05  INFO     Proxy guard: OK — exit IP = 82.108.45.153
+2026-04-10 13:28:05 [acc_013] INFO  Proxy synced to ML: isp.decodo.com:10013
+13:28:05  INFO     Proxy synced to ML: isp.decodo.com:10013
+2026-04-10 13:28:05 [acc_013] INFO  Starting Multilogin profile 5d295f6c-7214-416a-b201-f26410a7da0b …
+13:28:05  INFO     Starting Multilogin profile 5d295f6c-7214-416a-b201-f26410a7da0b …
+13:28:09  DEBUG    CDP endpoint: http://127.0.0.1:61324
+13:28:09  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    50 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:28:09 [acc_012] INFO  [ml-setup] security_alerts: OK
+13:28:09  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:28:09 [acc_012] INFO  [ml-setup] Running step: profile_photo
+13:28:09  INFO     [ml-setup] Running step: profile_photo
+(node:11296) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+2026-04-10 13:28:17 [acc_012] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:28:17  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:28:17 [acc_012] WARNING  [ml-setup] profile_photo: step returned False
+13:28:17  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:28:17 [acc_012] INFO  [ml-setup] Running step: web_app_activity
+13:28:17  INFO     [ml-setup] Running step: web_app_activity
+13:28:24  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:28:24 [acc_012] INFO  [ml-setup] web_app_activity: OK
+13:28:24  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:28:24 [acc_012] INFO  [ml-setup] Running step: youtube_history
+13:28:24  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:28:29 [acc_012] INFO  [ml-setup] youtube_history: OK
+13:28:29  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:28:29 [acc_012] INFO  [ml-setup] Running step: location_history
+13:28:29  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:28:32 [acc_012] INFO  [ml-setup] location_history: OK
+13:28:32  INFO     [ml-setup] location_history: OK
+2026-04-10 13:28:32 [acc_012] INFO  [ml-setup] Running step: birthday
+13:28:32  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:28:37 [acc_012] INFO  [ml-setup] Birthday set: 9/4/1997
+13:28:37  INFO     [ml-setup] Birthday set: 9/4/1997
+2026-04-10 13:28:37 [acc_012] INFO  [ml-setup] birthday: OK
+13:28:37  INFO     [ml-setup] birthday: OK
+2026-04-10 13:28:37 [acc_012] INFO  [ml-setup] Completed 5/6 steps
+13:28:37  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:28:50 [acc_012] INFO  Profile 4d6e5cb7-bd80-4acc-80d2-50c18acf30e2 stopped via API.
+13:28:50  INFO     Profile 4d6e5cb7-bd80-4acc-80d2-50c18acf30e2 stopped via API.
+2026-04-10 13:28:50 [acc_012] INFO  Profile stopped cleanly.
+13:28:50  INFO     Profile stopped cleanly.
+13:28:50  INFO     [acc_012] ML setup succeeded — marking ml_setup_done=true
+13:28:50  INFO     [acc_014] Starting ML profile for setup ...
+2026-04-10 13:28:50 [acc_014] INFO  Proxy guard: verifying proxy before session start …
+13:28:50  INFO     Proxy guard: verifying proxy before session start …
+13:28:51  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:28:52 [acc_014] INFO  Proxy guard: OK — exit IP = 82.108.47.29
+13:28:52  INFO     Proxy guard: OK — exit IP = 82.108.47.29
+2026-04-10 13:28:52 [acc_014] INFO  Proxy synced to ML: isp.decodo.com:10014
+13:28:52  INFO     Proxy synced to ML: isp.decodo.com:10014
+2026-04-10 13:28:52 [acc_014] INFO  Starting Multilogin profile 376b1940-ba05-4194-b0e1-29521086ca53 …
+13:28:52  INFO     Starting Multilogin profile 376b1940-ba05-4194-b0e1-29521086ca53 …
+13:28:56  DEBUG    CDP endpoint: http://127.0.0.1:61443
+13:28:57  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:29:00 [acc_013] INFO  Profile started — connected via CDP | profile_id=5d295f6c-7214-416a-b201-f26410a7da0b
+13:29:00  INFO     Profile started — connected via CDP | profile_id=5d295f6c-7214-416a-b201-f26410a7da0b
+(node:17180) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:29:06  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:29:06 [acc_014] INFO  Profile started — connected via CDP | profile_id=376b1940-ba05-4194-b0e1-29521086ca53
+13:29:06  INFO     Profile started — connected via CDP | profile_id=376b1940-ba05-4194-b0e1-29521086ca53
+2026-04-10 13:29:09 [acc_013] INFO  Login check: logged_in
+13:29:09  INFO     Login check: logged_in
+2026-04-10 13:29:10 [acc_013] INFO  [ml-setup] Running step: security_alerts
+13:29:10  INFO     [ml-setup] Running step: security_alerts
+2026-04-10 13:29:12 [acc_014] INFO  Login check: logged_in
+13:29:12  INFO     Login check: logged_in
+2026-04-10 13:29:12 [acc_014] INFO  [ml-setup] Running step: security_alerts
+13:29:12  INFO     [ml-setup] Running step: security_alerts
+13:29:56  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    27 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:29:56 [acc_014] INFO  [ml-setup] security_alerts: OK
+13:29:56  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:29:56 [acc_014] INFO  [ml-setup] Running step: profile_photo
+13:29:56  INFO     [ml-setup] Running step: profile_photo
+13:29:59  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    30 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:29:59 [acc_013] INFO  [ml-setup] security_alerts: OK
+13:29:59  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:29:59 [acc_013] INFO  [ml-setup] Running step: profile_photo
+13:29:59  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:30:03 [acc_014] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:30:03  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:30:03 [acc_014] WARNING  [ml-setup] profile_photo: step returned False
+13:30:03  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:30:03 [acc_014] INFO  [ml-setup] Running step: web_app_activity
+13:30:03  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:30:05 [acc_013] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:30:05  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:30:05 [acc_013] WARNING  [ml-setup] profile_photo: step returned False
+13:30:05  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:30:05 [acc_013] INFO  [ml-setup] Running step: web_app_activity
+13:30:05  INFO     [ml-setup] Running step: web_app_activity
+13:30:09  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:30:09 [acc_014] INFO  [ml-setup] web_app_activity: OK
+13:30:09  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:30:09 [acc_014] INFO  [ml-setup] Running step: youtube_history
+13:30:09  INFO     [ml-setup] Running step: youtube_history
+13:30:12  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:30:12 [acc_013] INFO  [ml-setup] web_app_activity: OK
+13:30:12  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:30:12 [acc_013] INFO  [ml-setup] Running step: youtube_history
+13:30:12  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:30:12 [acc_014] INFO  [ml-setup] youtube_history: OK
+13:30:12  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:30:12 [acc_014] INFO  [ml-setup] Running step: location_history
+13:30:12  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:30:15 [acc_014] INFO  [ml-setup] location_history: OK
+13:30:15  INFO     [ml-setup] location_history: OK
+2026-04-10 13:30:15 [acc_014] INFO  [ml-setup] Running step: birthday
+13:30:15  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:30:15 [acc_013] INFO  [ml-setup] youtube_history: OK
+13:30:15  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:30:15 [acc_013] INFO  [ml-setup] Running step: location_history
+13:30:15  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:30:18 [acc_014] INFO  [ml-setup] Birthday set: 7/2/1990
+13:30:18  INFO     [ml-setup] Birthday set: 7/2/1990
+2026-04-10 13:30:18 [acc_014] INFO  [ml-setup] birthday: OK
+13:30:18  INFO     [ml-setup] birthday: OK
+2026-04-10 13:30:18 [acc_014] INFO  [ml-setup] Completed 5/6 steps
+13:30:18  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:30:19 [acc_014] INFO  Profile 376b1940-ba05-4194-b0e1-29521086ca53 stopped via API.
+13:30:19  INFO     Profile 376b1940-ba05-4194-b0e1-29521086ca53 stopped via API.
+2026-04-10 13:30:19 [acc_014] INFO  Profile stopped cleanly.
+13:30:19  INFO     Profile stopped cleanly.
+13:30:19  INFO     [acc_014] ML setup succeeded — marking ml_setup_done=true
+13:30:20  INFO     [acc_015] Starting ML profile for setup ...
+2026-04-10 13:30:20 [acc_015] INFO  Proxy guard: verifying proxy before session start …
+13:30:20  INFO     Proxy guard: verifying proxy before session start …
+13:30:20  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:30:21 [acc_015] INFO  Proxy guard: OK — exit IP = 82.108.119.118
+13:30:21  INFO     Proxy guard: OK — exit IP = 82.108.119.118
+2026-04-10 13:30:21 [acc_015] INFO  Proxy synced to ML: isp.decodo.com:10015
+13:30:21  INFO     Proxy synced to ML: isp.decodo.com:10015
+2026-04-10 13:30:21 [acc_015] INFO  Starting Multilogin profile 425aec27-1700-4447-b95c-4dca91b3172d …
+13:30:21  INFO     Starting Multilogin profile 425aec27-1700-4447-b95c-4dca91b3172d …
+13:30:24  DEBUG    CDP endpoint: http://127.0.0.1:61666
+2026-04-10 13:30:24 [acc_013] INFO  [ml-setup] location_history: OK
+13:30:24  INFO     [ml-setup] location_history: OK
+2026-04-10 13:30:24 [acc_013] INFO  [ml-setup] Running step: birthday
+13:30:24  INFO     [ml-setup] Running step: birthday
+(node:7784) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:30:25  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:30:26 [acc_015] INFO  Profile started — connected via CDP | profile_id=425aec27-1700-4447-b95c-4dca91b3172d
+13:30:26  INFO     Profile started — connected via CDP | profile_id=425aec27-1700-4447-b95c-4dca91b3172d
+2026-04-10 13:30:27 [acc_013] INFO  [ml-setup] Birthday set: 10/7/1994
+13:30:27  INFO     [ml-setup] Birthday set: 10/7/1994
+2026-04-10 13:30:27 [acc_013] INFO  [ml-setup] birthday: OK
+13:30:27  INFO     [ml-setup] birthday: OK
+2026-04-10 13:30:27 [acc_013] INFO  [ml-setup] Completed 5/6 steps
+13:30:27  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:30:29 [acc_013] INFO  Profile 5d295f6c-7214-416a-b201-f26410a7da0b stopped via API.
+13:30:29  INFO     Profile 5d295f6c-7214-416a-b201-f26410a7da0b stopped via API.
+2026-04-10 13:30:29 [acc_013] INFO  Profile stopped cleanly.
+13:30:29  INFO     Profile stopped cleanly.
+13:30:29  INFO     [acc_013] ML setup succeeded — marking ml_setup_done=true
+13:30:29  INFO     [acc_018] Starting ML profile for setup ...
+2026-04-10 13:30:29 [acc_018] INFO  Proxy guard: verifying proxy before session start …
+13:30:29  INFO     Proxy guard: verifying proxy before session start …
+13:30:29  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:30:30 [acc_018] INFO  Proxy guard: OK — exit IP = 82.108.117.192
+13:30:30  INFO     Proxy guard: OK — exit IP = 82.108.117.192
+2026-04-10 13:30:30 [acc_018] INFO  Proxy synced to ML: isp.decodo.com:10018
+13:30:30  INFO     Proxy synced to ML: isp.decodo.com:10018
+2026-04-10 13:30:30 [acc_018] INFO  Starting Multilogin profile ed5de7a7-b83e-4541-93be-f18336d5ccca …
+13:30:30  INFO     Starting Multilogin profile ed5de7a7-b83e-4541-93be-f18336d5ccca …
+13:30:33  DEBUG    CDP endpoint: http://127.0.0.1:61742
+2026-04-10 13:30:34 [acc_015] INFO  Login check: logged_in
+13:30:34  INFO     Login check: logged_in
+2026-04-10 13:30:34 [acc_015] INFO  [ml-setup] Running step: security_alerts
+13:30:34  INFO     [ml-setup] Running step: security_alerts
+(node:16264) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:30:35  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:30:35 [acc_018] INFO  Profile started — connected via CDP | profile_id=ed5de7a7-b83e-4541-93be-f18336d5ccca
+13:30:35  INFO     Profile started — connected via CDP | profile_id=ed5de7a7-b83e-4541-93be-f18336d5ccca
+2026-04-10 13:30:38 [acc_018] INFO  Login check: logged_in
+13:30:38  INFO     Login check: logged_in
+2026-04-10 13:30:38 [acc_018] INFO  [ml-setup] Running step: security_alerts
+13:30:38  INFO     [ml-setup] Running step: security_alerts
+13:31:13  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    50 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:31:13 [acc_015] INFO  [ml-setup] security_alerts: OK
+13:31:13  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:31:13 [acc_015] INFO  [ml-setup] Running step: profile_photo
+13:31:13  INFO     [ml-setup] Running step: profile_photo
+13:31:16  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    49 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:31:16 [acc_018] INFO  [ml-setup] security_alerts: OK
+13:31:16  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:31:16 [acc_018] INFO  [ml-setup] Running step: profile_photo
+13:31:16  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:31:21 [acc_015] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:31:21  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:31:21 [acc_015] WARNING  [ml-setup] profile_photo: step returned False
+13:31:21  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:31:21 [acc_015] INFO  [ml-setup] Running step: web_app_activity
+13:31:21  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:31:23 [acc_018] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:31:23  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:31:23 [acc_018] WARNING  [ml-setup] profile_photo: step returned False
+13:31:23  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:31:23 [acc_018] INFO  [ml-setup] Running step: web_app_activity
+13:31:23  INFO     [ml-setup] Running step: web_app_activity
+13:31:28  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:31:28 [acc_015] INFO  [ml-setup] web_app_activity: OK
+13:31:28  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:31:28 [acc_015] INFO  [ml-setup] Running step: youtube_history
+13:31:28  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:31:31 [acc_015] INFO  [ml-setup] youtube_history: OK
+13:31:31  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:31:31 [acc_015] INFO  [ml-setup] Running step: location_history
+13:31:31  INFO     [ml-setup] Running step: location_history
+13:31:32  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:31:32 [acc_018] INFO  [ml-setup] web_app_activity: OK
+13:31:32  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:31:32 [acc_018] INFO  [ml-setup] Running step: youtube_history
+13:31:32  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:31:35 [acc_015] INFO  [ml-setup] location_history: OK
+13:31:35  INFO     [ml-setup] location_history: OK
+2026-04-10 13:31:35 [acc_015] INFO  [ml-setup] Running step: birthday
+13:31:35  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:31:36 [acc_018] INFO  [ml-setup] youtube_history: OK
+13:31:36  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:31:36 [acc_018] INFO  [ml-setup] Running step: location_history
+13:31:36  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:31:39 [acc_018] INFO  [ml-setup] location_history: OK
+13:31:39  INFO     [ml-setup] location_history: OK
+2026-04-10 13:31:39 [acc_018] INFO  [ml-setup] Running step: birthday
+13:31:39  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:31:39 [acc_015] INFO  [ml-setup] Birthday set: 15/9/1995
+13:31:39  INFO     [ml-setup] Birthday set: 15/9/1995
+2026-04-10 13:31:39 [acc_015] INFO  [ml-setup] birthday: OK
+13:31:39  INFO     [ml-setup] birthday: OK
+2026-04-10 13:31:39 [acc_015] INFO  [ml-setup] Completed 5/6 steps
+13:31:39  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:31:41 [acc_015] INFO  Profile 425aec27-1700-4447-b95c-4dca91b3172d stopped via API.
+13:31:41  INFO     Profile 425aec27-1700-4447-b95c-4dca91b3172d stopped via API.
+2026-04-10 13:31:41 [acc_015] INFO  Profile stopped cleanly.
+13:31:41  INFO     Profile stopped cleanly.
+13:31:41  INFO     [acc_015] ML setup succeeded — marking ml_setup_done=true
+13:31:41  INFO     [acc_020] Starting ML profile for setup ...
+2026-04-10 13:31:41 [acc_020] INFO  Proxy guard: verifying proxy before session start …
+13:31:41  INFO     Proxy guard: verifying proxy before session start …
+13:31:41  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:31:42 [acc_020] INFO  Proxy guard: OK — exit IP = 82.108.152.140
+13:31:42  INFO     Proxy guard: OK — exit IP = 82.108.152.140
+2026-04-10 13:31:42 [acc_020] INFO  Proxy synced to ML: isp.decodo.com:10020
+13:31:42  INFO     Proxy synced to ML: isp.decodo.com:10020
+2026-04-10 13:31:42 [acc_020] INFO  Starting Multilogin profile 921f6668-c908-48be-acb2-958ed21275b1 …
+13:31:42  INFO     Starting Multilogin profile 921f6668-c908-48be-acb2-958ed21275b1 …
+13:31:46  DEBUG    CDP endpoint: http://127.0.0.1:61932
+2026-04-10 13:31:46 [acc_018] INFO  [ml-setup] Birthday set: 25/3/1985
+13:31:46  INFO     [ml-setup] Birthday set: 25/3/1985
+2026-04-10 13:31:46 [acc_018] INFO  [ml-setup] birthday: OK
+13:31:46  INFO     [ml-setup] birthday: OK
+2026-04-10 13:31:46 [acc_018] INFO  [ml-setup] Completed 5/6 steps
+13:31:46  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:31:48 [acc_018] INFO  Profile ed5de7a7-b83e-4541-93be-f18336d5ccca stopped via API.
+13:31:48  INFO     Profile ed5de7a7-b83e-4541-93be-f18336d5ccca stopped via API.
+2026-04-10 13:31:48 [acc_018] INFO  Profile stopped cleanly.
+13:31:48  INFO     Profile stopped cleanly.
+13:31:48  INFO     [acc_018] ML setup succeeded — marking ml_setup_done=true
+13:31:48  INFO     [acc_022] Starting ML profile for setup ...
+2026-04-10 13:31:48 [acc_022] INFO  Proxy guard: verifying proxy before session start …
+13:31:48  INFO     Proxy guard: verifying proxy before session start …
+13:31:48  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:31:49 [acc_022] INFO  Proxy guard: OK — exit IP = 82.108.46.64
+13:31:49  INFO     Proxy guard: OK — exit IP = 82.108.46.64
+2026-04-10 13:31:49 [acc_022] INFO  Proxy synced to ML: isp.decodo.com:10022
+13:31:49  INFO     Proxy synced to ML: isp.decodo.com:10022
+2026-04-10 13:31:49 [acc_022] INFO  Starting Multilogin profile cb8406d1-6369-4612-b1fb-e5e0bae95ad1 …
+13:31:49  INFO     Starting Multilogin profile cb8406d1-6369-4612-b1fb-e5e0bae95ad1 …
+13:31:52  DEBUG    CDP endpoint: http://127.0.0.1:62000
+(node:16584) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:31:53  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:31:53 [acc_020] INFO  Profile started — connected via CDP | profile_id=921f6668-c908-48be-acb2-958ed21275b1
+13:31:53  INFO     Profile started — connected via CDP | profile_id=921f6668-c908-48be-acb2-958ed21275b1
+(node:15456) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:31:53  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:31:54 [acc_022] INFO  Profile started — connected via CDP | profile_id=cb8406d1-6369-4612-b1fb-e5e0bae95ad1
+13:31:54  INFO     Profile started — connected via CDP | profile_id=cb8406d1-6369-4612-b1fb-e5e0bae95ad1
+2026-04-10 13:31:56 [acc_020] INFO  Login check: logged_in
+13:31:56  INFO     Login check: logged_in
+2026-04-10 13:31:56 [acc_020] INFO  [ml-setup] Running step: security_alerts
+13:31:56  INFO     [ml-setup] Running step: security_alerts
+2026-04-10 13:31:57 [acc_022] INFO  Login check: logged_in
+13:31:57  INFO     Login check: logged_in
+2026-04-10 13:31:57 [acc_022] INFO  [ml-setup] Running step: security_alerts
+13:31:57  INFO     [ml-setup] Running step: security_alerts
+13:32:36  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    56 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:32:36 [acc_020] INFO  [ml-setup] security_alerts: OK
+13:32:36  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:32:36 [acc_020] INFO  [ml-setup] Running step: profile_photo
+13:32:36  INFO     [ml-setup] Running step: profile_photo
+13:32:37  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    55 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:32:37 [acc_022] INFO  [ml-setup] security_alerts: OK
+13:32:37  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:32:37 [acc_022] INFO  [ml-setup] Running step: profile_photo
+13:32:37  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:32:43 [acc_022] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:32:43  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:32:43 [acc_022] WARNING  [ml-setup] profile_photo: step returned False
+13:32:43  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:32:43 [acc_022] INFO  [ml-setup] Running step: web_app_activity
+13:32:43  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:32:43 [acc_020] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:32:43  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:32:43 [acc_020] WARNING  [ml-setup] profile_photo: step returned False
+13:32:43  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:32:43 [acc_020] INFO  [ml-setup] Running step: web_app_activity
+13:32:43  INFO     [ml-setup] Running step: web_app_activity
+13:32:48  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:32:48 [acc_022] INFO  [ml-setup] web_app_activity: OK
+13:32:48  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:32:48 [acc_022] INFO  [ml-setup] Running step: youtube_history
+13:32:48  INFO     [ml-setup] Running step: youtube_history
+13:32:49  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:32:49 [acc_020] INFO  [ml-setup] web_app_activity: OK
+13:32:49  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:32:49 [acc_020] INFO  [ml-setup] Running step: youtube_history
+13:32:49  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:32:52 [acc_020] INFO  [ml-setup] youtube_history: OK
+13:32:52  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:32:52 [acc_020] INFO  [ml-setup] Running step: location_history
+13:32:52  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:32:53 [acc_022] INFO  [ml-setup] youtube_history: OK
+13:32:53  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:32:53 [acc_022] INFO  [ml-setup] Running step: location_history
+13:32:53  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:32:57 [acc_022] INFO  [ml-setup] location_history: OK
+13:32:57  INFO     [ml-setup] location_history: OK
+2026-04-10 13:32:57 [acc_022] INFO  [ml-setup] Running step: birthday
+13:32:57  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:32:58 [acc_020] INFO  [ml-setup] location_history: OK
+13:32:58  INFO     [ml-setup] location_history: OK
+2026-04-10 13:32:58 [acc_020] INFO  [ml-setup] Running step: birthday
+13:32:58  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:33:00 [acc_022] INFO  [ml-setup] Birthday set: 4/6/1991
+13:33:00  INFO     [ml-setup] Birthday set: 4/6/1991
+2026-04-10 13:33:00 [acc_022] INFO  [ml-setup] birthday: OK
+13:33:00  INFO     [ml-setup] birthday: OK
+2026-04-10 13:33:00 [acc_022] INFO  [ml-setup] Completed 5/6 steps
+13:33:00  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:33:01 [acc_022] INFO  Profile cb8406d1-6369-4612-b1fb-e5e0bae95ad1 stopped via API.
+13:33:01  INFO     Profile cb8406d1-6369-4612-b1fb-e5e0bae95ad1 stopped via API.
+2026-04-10 13:33:01 [acc_022] INFO  Profile stopped cleanly.
+13:33:01  INFO     Profile stopped cleanly.
+13:33:01  INFO     [acc_022] ML setup succeeded — marking ml_setup_done=true
+13:33:01  INFO     [acc_023] Starting ML profile for setup ...
+2026-04-10 13:33:01 [acc_023] INFO  Proxy guard: verifying proxy before session start …
+13:33:01  INFO     Proxy guard: verifying proxy before session start …
+13:33:02  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:33:02 [acc_023] INFO  Proxy guard: OK — exit IP = 82.108.47.115
+13:33:02  INFO     Proxy guard: OK — exit IP = 82.108.47.115
+2026-04-10 13:33:03 [acc_023] INFO  Proxy synced to ML: isp.decodo.com:10023
+13:33:03  INFO     Proxy synced to ML: isp.decodo.com:10023
+2026-04-10 13:33:03 [acc_023] INFO  Starting Multilogin profile 5d4f6113-3135-48f5-96ed-abfc665ad790 …
+13:33:03  INFO     Starting Multilogin profile 5d4f6113-3135-48f5-96ed-abfc665ad790 …
+13:33:06  DEBUG    CDP endpoint: http://127.0.0.1:62186
+2026-04-10 13:33:06 [acc_020] INFO  [ml-setup] Birthday set: 8/4/1987
+13:33:06  INFO     [ml-setup] Birthday set: 8/4/1987
+2026-04-10 13:33:06 [acc_020] INFO  [ml-setup] birthday: OK
+13:33:06  INFO     [ml-setup] birthday: OK
+2026-04-10 13:33:06 [acc_020] INFO  [ml-setup] Completed 5/6 steps
+13:33:06  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:33:09 [acc_020] INFO  Profile 921f6668-c908-48be-acb2-958ed21275b1 stopped via API.
+13:33:09  INFO     Profile 921f6668-c908-48be-acb2-958ed21275b1 stopped via API.
+2026-04-10 13:33:09 [acc_020] INFO  Profile stopped cleanly.
+13:33:09  INFO     Profile stopped cleanly.
+13:33:09  INFO     [acc_020] ML setup succeeded — marking ml_setup_done=true
+13:33:09  INFO     [acc_024] Starting ML profile for setup ...
+2026-04-10 13:33:09 [acc_024] INFO  Proxy guard: verifying proxy before session start …
+13:33:09  INFO     Proxy guard: verifying proxy before session start …
+13:33:09  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:33:09 [acc_024] INFO  Proxy guard: OK — exit IP = 82.108.119.145
+13:33:09  INFO     Proxy guard: OK — exit IP = 82.108.119.145
+2026-04-10 13:33:10 [acc_024] INFO  Proxy synced to ML: isp.decodo.com:10024
+13:33:10  INFO     Proxy synced to ML: isp.decodo.com:10024
+2026-04-10 13:33:10 [acc_024] INFO  Starting Multilogin profile 9aa5c3df-745e-420b-bee8-1a4b4e249da7 …
+13:33:10  INFO     Starting Multilogin profile 9aa5c3df-745e-420b-bee8-1a4b4e249da7 …
+13:33:13  DEBUG    CDP endpoint: http://127.0.0.1:62266
+(node:16004) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:33:13  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:33:14 [acc_023] INFO  Profile started — connected via CDP | profile_id=5d4f6113-3135-48f5-96ed-abfc665ad790
+13:33:14  INFO     Profile started — connected via CDP | profile_id=5d4f6113-3135-48f5-96ed-abfc665ad790
+(node:14608) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:33:15  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:33:15 [acc_024] INFO  Profile started — connected via CDP | profile_id=9aa5c3df-745e-420b-bee8-1a4b4e249da7
+13:33:15  INFO     Profile started — connected via CDP | profile_id=9aa5c3df-745e-420b-bee8-1a4b4e249da7
+2026-04-10 13:33:17 [acc_023] INFO  Login check: logged_in
+13:33:17  INFO     Login check: logged_in
+2026-04-10 13:33:17 [acc_023] INFO  [ml-setup] Running step: security_alerts
+13:33:17  INFO     [ml-setup] Running step: security_alerts
+2026-04-10 13:33:18 [acc_024] INFO  Login check: logged_in
+13:33:18  INFO     Login check: logged_in
+2026-04-10 13:33:18 [acc_024] INFO  [ml-setup] Running step: security_alerts
+13:33:18  INFO     [ml-setup] Running step: security_alerts
+13:33:56  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    51 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:33:56 [acc_024] INFO  [ml-setup] security_alerts: OK
+13:33:56  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:33:56 [acc_024] INFO  [ml-setup] Running step: profile_photo
+13:33:56  INFO     [ml-setup] Running step: profile_photo
+13:33:57  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    52 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:33:57 [acc_023] INFO  [ml-setup] security_alerts: OK
+13:33:57  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:33:57 [acc_023] INFO  [ml-setup] Running step: profile_photo
+13:33:57  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:34:03 [acc_024] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:34:03  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:34:03 [acc_024] WARNING  [ml-setup] profile_photo: step returned False
+13:34:03  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:34:03 [acc_024] INFO  [ml-setup] Running step: web_app_activity
+13:34:03  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:34:04 [acc_023] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:34:04  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:34:04 [acc_023] WARNING  [ml-setup] profile_photo: step returned False
+13:34:04  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:34:04 [acc_023] INFO  [ml-setup] Running step: web_app_activity
+13:34:04  INFO     [ml-setup] Running step: web_app_activity
+13:34:08  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:34:08 [acc_024] INFO  [ml-setup] web_app_activity: OK
+13:34:08  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:34:08 [acc_024] INFO  [ml-setup] Running step: youtube_history
+13:34:08  INFO     [ml-setup] Running step: youtube_history
+13:34:09  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:34:09 [acc_023] INFO  [ml-setup] web_app_activity: OK
+13:34:09  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:34:09 [acc_023] INFO  [ml-setup] Running step: youtube_history
+13:34:09  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:34:11 [acc_024] INFO  [ml-setup] youtube_history: OK
+13:34:11  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:34:11 [acc_024] INFO  [ml-setup] Running step: location_history
+13:34:11  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:34:12 [acc_023] INFO  [ml-setup] youtube_history: OK
+13:34:12  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:34:12 [acc_023] INFO  [ml-setup] Running step: location_history
+13:34:12  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:34:14 [acc_024] INFO  [ml-setup] location_history: OK
+13:34:14  INFO     [ml-setup] location_history: OK
+2026-04-10 13:34:14 [acc_024] INFO  [ml-setup] Running step: birthday
+13:34:14  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:34:15 [acc_023] INFO  [ml-setup] location_history: OK
+13:34:15  INFO     [ml-setup] location_history: OK
+2026-04-10 13:34:15 [acc_023] INFO  [ml-setup] Running step: birthday
+13:34:15  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:34:17 [acc_024] INFO  [ml-setup] Birthday set: 1/6/1999
+13:34:17  INFO     [ml-setup] Birthday set: 1/6/1999
+2026-04-10 13:34:17 [acc_024] INFO  [ml-setup] birthday: OK
+13:34:17  INFO     [ml-setup] birthday: OK
+2026-04-10 13:34:17 [acc_024] INFO  [ml-setup] Completed 5/6 steps
+13:34:17  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:34:19 [acc_024] INFO  Profile 9aa5c3df-745e-420b-bee8-1a4b4e249da7 stopped via API.
+13:34:19  INFO     Profile 9aa5c3df-745e-420b-bee8-1a4b4e249da7 stopped via API.
+2026-04-10 13:34:19 [acc_024] INFO  Profile stopped cleanly.
+13:34:19  INFO     Profile stopped cleanly.
+13:34:19  INFO     [acc_024] ML setup succeeded — marking ml_setup_done=true
+13:34:19  INFO     [acc_026] Starting ML profile for setup ...
+2026-04-10 13:34:19 [acc_026] INFO  Proxy guard: verifying proxy before session start …
+13:34:19  INFO     Proxy guard: verifying proxy before session start …
+13:34:19  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:34:19 [acc_026] INFO  Proxy guard: OK — exit IP = 82.108.119.154
+13:34:19  INFO     Proxy guard: OK — exit IP = 82.108.119.154
+2026-04-10 13:34:20 [acc_026] INFO  Proxy synced to ML: isp.decodo.com:10026
+13:34:20  INFO     Proxy synced to ML: isp.decodo.com:10026
+2026-04-10 13:34:20 [acc_026] INFO  Starting Multilogin profile cf23fc14-7497-4747-8e2a-ea0e909dd4df …
+13:34:20  INFO     Starting Multilogin profile cf23fc14-7497-4747-8e2a-ea0e909dd4df …
+13:34:24  DEBUG    CDP endpoint: http://127.0.0.1:62455
+2026-04-10 13:34:24 [acc_023] INFO  [ml-setup] Birthday set: 1/6/1980
+13:34:24  INFO     [ml-setup] Birthday set: 1/6/1980
+2026-04-10 13:34:24 [acc_023] INFO  [ml-setup] birthday: OK
+13:34:24  INFO     [ml-setup] birthday: OK
+2026-04-10 13:34:24 [acc_023] INFO  [ml-setup] Completed 5/6 steps
+13:34:24  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:34:26 [acc_023] INFO  Profile 5d4f6113-3135-48f5-96ed-abfc665ad790 stopped via API.
+13:34:26  INFO     Profile 5d4f6113-3135-48f5-96ed-abfc665ad790 stopped via API.
+2026-04-10 13:34:26 [acc_023] INFO  Profile stopped cleanly.
+13:34:26  INFO     Profile stopped cleanly.
+13:34:26  INFO     [acc_023] ML setup succeeded — marking ml_setup_done=true
+13:34:26  INFO     [acc_028] Starting ML profile for setup ...
+2026-04-10 13:34:26 [acc_028] INFO  Proxy guard: verifying proxy before session start …
+13:34:26  INFO     Proxy guard: verifying proxy before session start …
+13:34:26  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:34:27 [acc_028] INFO  Proxy guard: OK — exit IP = 82.108.47.64
+13:34:27  INFO     Proxy guard: OK — exit IP = 82.108.47.64
+2026-04-10 13:34:27 [acc_028] INFO  Proxy synced to ML: isp.decodo.com:10028
+13:34:27  INFO     Proxy synced to ML: isp.decodo.com:10028
+2026-04-10 13:34:27 [acc_028] INFO  Starting Multilogin profile f63943c6-b716-4192-b08c-e48ee67102ac …
+13:34:27  INFO     Starting Multilogin profile f63943c6-b716-4192-b08c-e48ee67102ac …
+13:34:31  DEBUG    CDP endpoint: http://127.0.0.1:62522
+(node:9212) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:34:31  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:34:31 [acc_026] INFO  Profile started — connected via CDP | profile_id=cf23fc14-7497-4747-8e2a-ea0e909dd4df
+13:34:31  INFO     Profile started — connected via CDP | profile_id=cf23fc14-7497-4747-8e2a-ea0e909dd4df
+(node:10352) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:34:32  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:34:32 [acc_028] INFO  Profile started — connected via CDP | profile_id=f63943c6-b716-4192-b08c-e48ee67102ac
+13:34:32  INFO     Profile started — connected via CDP | profile_id=f63943c6-b716-4192-b08c-e48ee67102ac
+2026-04-10 13:34:34 [acc_026] INFO  Login check: logged_in
+13:34:34  INFO     Login check: logged_in
+2026-04-10 13:34:34 [acc_026] INFO  [ml-setup] Running step: security_alerts
+13:34:34  INFO     [ml-setup] Running step: security_alerts
+2026-04-10 13:34:35 [acc_028] INFO  Login check: logged_in
+13:34:35  INFO     Login check: logged_in
+2026-04-10 13:34:35 [acc_028] INFO  [ml-setup] Running step: security_alerts
+13:34:35  INFO     [ml-setup] Running step: security_alerts
+13:35:11  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    54 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:35:11 [acc_026] INFO  [ml-setup] security_alerts: OK
+13:35:11  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:35:11 [acc_026] INFO  [ml-setup] Running step: profile_photo
+13:35:11  INFO     [ml-setup] Running step: profile_photo
+13:35:15  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    53 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:35:15 [acc_028] INFO  [ml-setup] security_alerts: OK
+13:35:15  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:35:15 [acc_028] INFO  [ml-setup] Running step: profile_photo
+13:35:15  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:35:18 [acc_026] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:35:18  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:35:18 [acc_026] WARNING  [ml-setup] profile_photo: step returned False
+13:35:18  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:35:18 [acc_026] INFO  [ml-setup] Running step: web_app_activity
+13:35:18  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:35:23 [acc_028] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:35:23  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:35:23 [acc_028] WARNING  [ml-setup] profile_photo: step returned False
+13:35:23  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:35:23 [acc_028] INFO  [ml-setup] Running step: web_app_activity
+13:35:23  INFO     [ml-setup] Running step: web_app_activity
+13:35:26  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:35:26 [acc_026] INFO  [ml-setup] web_app_activity: OK
+13:35:26  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:35:26 [acc_026] INFO  [ml-setup] Running step: youtube_history
+13:35:26  INFO     [ml-setup] Running step: youtube_history
+13:35:28  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:35:28 [acc_028] INFO  [ml-setup] web_app_activity: OK
+13:35:28  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:35:28 [acc_028] INFO  [ml-setup] Running step: youtube_history
+13:35:28  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:35:29 [acc_026] INFO  [ml-setup] youtube_history: OK
+13:35:29  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:35:29 [acc_026] INFO  [ml-setup] Running step: location_history
+13:35:29  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:35:31 [acc_028] INFO  [ml-setup] youtube_history: OK
+13:35:31  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:35:31 [acc_028] INFO  [ml-setup] Running step: location_history
+13:35:31  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:35:32 [acc_026] INFO  [ml-setup] location_history: OK
+13:35:32  INFO     [ml-setup] location_history: OK
+2026-04-10 13:35:32 [acc_026] INFO  [ml-setup] Running step: birthday
+13:35:32  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:35:35 [acc_028] INFO  [ml-setup] location_history: OK
+13:35:35  INFO     [ml-setup] location_history: OK
+2026-04-10 13:35:35 [acc_028] INFO  [ml-setup] Running step: birthday
+13:35:35  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:35:36 [acc_026] INFO  [ml-setup] Birthday set: 10/5/1996
+13:35:36  INFO     [ml-setup] Birthday set: 10/5/1996
+2026-04-10 13:35:36 [acc_026] INFO  [ml-setup] birthday: OK
+13:35:36  INFO     [ml-setup] birthday: OK
+2026-04-10 13:35:36 [acc_026] INFO  [ml-setup] Completed 5/6 steps
+13:35:36  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:35:39 [acc_026] INFO  Profile cf23fc14-7497-4747-8e2a-ea0e909dd4df stopped via API.
+13:35:39  INFO     Profile cf23fc14-7497-4747-8e2a-ea0e909dd4df stopped via API.
+2026-04-10 13:35:39 [acc_026] INFO  Profile stopped cleanly.
+13:35:39  INFO     Profile stopped cleanly.
+13:35:39  INFO     [acc_026] ML setup succeeded — marking ml_setup_done=true
+13:35:39  INFO     [acc_029] Starting ML profile for setup ...
+2026-04-10 13:35:39 [acc_029] INFO  Proxy guard: verifying proxy before session start …
+13:35:39  INFO     Proxy guard: verifying proxy before session start …
+13:35:39  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:36:39 [acc_029] ERROR  PROXY GUARD BLOCKED SESSION: Proxy did not connect — could not reach any IP echo service. Last error: HTTPSConnectionPool(host='icanhazip.com', port=443): Read timed out. (read timeout=20)
+13:36:39  ERROR    PROXY GUARD BLOCKED SESSION: Proxy did not connect — could not reach any IP echo service. Last error: HTTPSConnectionPool(host='icanhazip.com', port=443): Read timed out. (read timeout=20)
+13:36:39  ERROR    [acc_029] Session error: Proxy did not connect — could not reach any IP echo service. Last error: HTTPSConnectionPool(host='icanhazip.com', port=443): Read timed out. (read timeout=20)
+13:36:39  INFO     [acc_030] Starting ML profile for setup ...
+2026-04-10 13:36:39 [acc_030] INFO  Proxy guard: verifying proxy before session start …
+13:36:39  INFO     Proxy guard: verifying proxy before session start …
+13:36:40  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:36:40 [acc_030] INFO  Proxy guard: OK — exit IP = 82.108.152.73
+13:36:40  INFO     Proxy guard: OK — exit IP = 82.108.152.73
+2026-04-10 13:36:40 [acc_030] INFO  Proxy synced to ML: isp.decodo.com:10030
+13:36:40  INFO     Proxy synced to ML: isp.decodo.com:10030
+2026-04-10 13:36:40 [acc_030] INFO  Starting Multilogin profile 8cc53d6b-873b-44d4-8417-516ac96bf04f …
+13:36:40  INFO     Starting Multilogin profile 8cc53d6b-873b-44d4-8417-516ac96bf04f …
+13:36:44  DEBUG    CDP endpoint: http://127.0.0.1:62804
+2026-04-10 13:36:44 [acc_028] INFO  [ml-setup] Birthday set: 2/5/1983
+13:36:44  INFO     [ml-setup] Birthday set: 2/5/1983
+2026-04-10 13:36:44 [acc_028] INFO  [ml-setup] birthday: OK
+13:36:44  INFO     [ml-setup] birthday: OK
+2026-04-10 13:36:44 [acc_028] INFO  [ml-setup] Completed 5/6 steps
+13:36:44  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:36:49 [acc_028] INFO  Profile f63943c6-b716-4192-b08c-e48ee67102ac stopped via API.
+13:36:49  INFO     Profile f63943c6-b716-4192-b08c-e48ee67102ac stopped via API.
+2026-04-10 13:36:49 [acc_028] INFO  Profile stopped cleanly.
+13:36:49  INFO     Profile stopped cleanly.
+13:36:49  INFO     [acc_028] ML setup succeeded — marking ml_setup_done=true
+13:36:49  INFO     [acc_031] Starting ML profile for setup ...
+2026-04-10 13:36:49 [acc_031] INFO  Proxy guard: verifying proxy before session start …
+13:36:49  INFO     Proxy guard: verifying proxy before session start …
+13:36:49  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:36:50 [acc_031] INFO  Proxy guard: OK — exit IP = 104.238.59.152
+13:36:50  INFO     Proxy guard: OK — exit IP = 104.238.59.152
+2026-04-10 13:36:50 [acc_031] INFO  Proxy synced to ML: isp.decodo.com:10031
+13:36:50  INFO     Proxy synced to ML: isp.decodo.com:10031
+2026-04-10 13:36:50 [acc_031] INFO  Starting Multilogin profile 83f0303b-35b4-4e0b-aa31-9da6cc1ff4ae …
+13:36:50  INFO     Starting Multilogin profile 83f0303b-35b4-4e0b-aa31-9da6cc1ff4ae …
+13:36:54  DEBUG    CDP endpoint: http://127.0.0.1:62877
+(node:15016) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:36:55  DEBUG    Media streaming blocked to conserve proxy bandwidth
+(node:17028) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+2026-04-10 13:36:56 [acc_030] INFO  Profile started — connected via CDP | profile_id=8cc53d6b-873b-44d4-8417-516ac96bf04f
+13:36:56  INFO     Profile started — connected via CDP | profile_id=8cc53d6b-873b-44d4-8417-516ac96bf04f
+13:36:56  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:36:57 [acc_031] INFO  Profile started — connected via CDP | profile_id=83f0303b-35b4-4e0b-aa31-9da6cc1ff4ae
+13:36:57  INFO     Profile started — connected via CDP | profile_id=83f0303b-35b4-4e0b-aa31-9da6cc1ff4ae
+2026-04-10 13:36:58 [acc_030] INFO  Login check: logged_in
+13:36:58  INFO     Login check: logged_in
+2026-04-10 13:36:59 [acc_030] INFO  [ml-setup] Running step: security_alerts
+13:36:59  INFO     [ml-setup] Running step: security_alerts
+2026-04-10 13:37:00 [acc_031] INFO  Login check: logged_in
+13:37:00  INFO     Login check: logged_in
+2026-04-10 13:37:00 [acc_031] INFO  [ml-setup] Running step: security_alerts
+13:37:00  INFO     [ml-setup] Running step: security_alerts
+13:37:37  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    56 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:37:37 [acc_030] INFO  [ml-setup] security_alerts: OK
+13:37:37  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:37:37 [acc_030] INFO  [ml-setup] Running step: profile_photo
+13:37:37  INFO     [ml-setup] Running step: profile_photo
+13:37:37  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    55 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:37:37 [acc_031] INFO  [ml-setup] security_alerts: OK
+13:37:37  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:37:37 [acc_031] INFO  [ml-setup] Running step: profile_photo
+13:37:37  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:37:41 [acc_030] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:37:41  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:37:41 [acc_030] WARNING  [ml-setup] profile_photo: step returned False
+13:37:41  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:37:41 [acc_030] INFO  [ml-setup] Running step: web_app_activity
+13:37:41  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:37:44 [acc_031] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:37:44  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:37:44 [acc_031] WARNING  [ml-setup] profile_photo: step returned False
+13:37:44  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:37:44 [acc_031] INFO  [ml-setup] Running step: web_app_activity
+13:37:44  INFO     [ml-setup] Running step: web_app_activity
+13:37:49  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:37:49 [acc_030] INFO  [ml-setup] web_app_activity: OK
+13:37:49  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:37:49 [acc_030] INFO  [ml-setup] Running step: youtube_history
+13:37:49  INFO     [ml-setup] Running step: youtube_history
+13:37:51  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:37:51 [acc_031] INFO  [ml-setup] web_app_activity: OK
+13:37:51  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:37:51 [acc_031] INFO  [ml-setup] Running step: youtube_history
+13:37:51  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:37:53 [acc_030] INFO  [ml-setup] youtube_history: OK
+13:37:53  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:37:53 [acc_030] INFO  [ml-setup] Running step: location_history
+13:37:53  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:37:54 [acc_031] INFO  [ml-setup] youtube_history: OK
+13:37:54  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:37:54 [acc_031] INFO  [ml-setup] Running step: location_history
+13:37:54  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:37:57 [acc_030] INFO  [ml-setup] location_history: OK
+13:37:57  INFO     [ml-setup] location_history: OK
+2026-04-10 13:37:57 [acc_030] INFO  [ml-setup] Running step: birthday
+13:37:57  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:37:57 [acc_031] INFO  [ml-setup] location_history: OK
+13:37:57  INFO     [ml-setup] location_history: OK
+2026-04-10 13:37:57 [acc_031] INFO  [ml-setup] Running step: birthday
+13:37:57  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:37:59 [acc_030] INFO  [ml-setup] Birthday set: 12/6/1996
+13:37:59  INFO     [ml-setup] Birthday set: 12/6/1996
+2026-04-10 13:37:59 [acc_030] INFO  [ml-setup] birthday: OK
+13:37:59  INFO     [ml-setup] birthday: OK
+2026-04-10 13:37:59 [acc_030] INFO  [ml-setup] Completed 5/6 steps
+13:37:59  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:38:01 [acc_030] INFO  Profile 8cc53d6b-873b-44d4-8417-516ac96bf04f stopped via API.
+13:38:01  INFO     Profile 8cc53d6b-873b-44d4-8417-516ac96bf04f stopped via API.
+2026-04-10 13:38:01 [acc_030] INFO  Profile stopped cleanly.
+13:38:01  INFO     Profile stopped cleanly.
+13:38:01  INFO     [acc_030] ML setup succeeded — marking ml_setup_done=true
+13:38:01  INFO     [acc_032] Starting ML profile for setup ...
+2026-04-10 13:38:01 [acc_032] INFO  Proxy guard: verifying proxy before session start …
+13:38:01  INFO     Proxy guard: verifying proxy before session start …
+13:38:01  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:38:02 [acc_032] INFO  Proxy guard: OK — exit IP = 82.108.47.59
+13:38:02  INFO     Proxy guard: OK — exit IP = 82.108.47.59
+2026-04-10 13:38:02 [acc_032] INFO  Proxy synced to ML: isp.decodo.com:10001
+13:38:02  INFO     Proxy synced to ML: isp.decodo.com:10001
+2026-04-10 13:38:02 [acc_032] INFO  Starting Multilogin profile 31ce9f18-7218-4bd5-93c9-6b06dc5a2299 …
+13:38:02  INFO     Starting Multilogin profile 31ce9f18-7218-4bd5-93c9-6b06dc5a2299 …
+13:38:06  DEBUG    CDP endpoint: http://127.0.0.1:63094
+2026-04-10 13:38:06 [acc_031] INFO  [ml-setup] Birthday set: 24/12/1991
+13:38:06  INFO     [ml-setup] Birthday set: 24/12/1991
+2026-04-10 13:38:06 [acc_031] INFO  [ml-setup] birthday: OK
+13:38:06  INFO     [ml-setup] birthday: OK
+2026-04-10 13:38:06 [acc_031] INFO  [ml-setup] Completed 5/6 steps
+13:38:06  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:38:08 [acc_031] INFO  Profile 83f0303b-35b4-4e0b-aa31-9da6cc1ff4ae stopped via API.
+13:38:08  INFO     Profile 83f0303b-35b4-4e0b-aa31-9da6cc1ff4ae stopped via API.
+2026-04-10 13:38:08 [acc_031] INFO  Profile stopped cleanly.
+13:38:08  INFO     Profile stopped cleanly.
+13:38:08  INFO     [acc_031] ML setup succeeded — marking ml_setup_done=true
+13:38:08  INFO     [acc_033] Starting ML profile for setup ...
+2026-04-10 13:38:08 [acc_033] INFO  Proxy guard: verifying proxy before session start …
+13:38:08  INFO     Proxy guard: verifying proxy before session start …
+13:38:08  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:39:04 [acc_033] ERROR  PROXY GUARD BLOCKED SESSION: Proxy did not connect — could not reach any IP echo service. Last error: HTTPSConnectionPool(host='icanhazip.com', port=443): Read timed out. (read timeout=20)
+13:39:04  ERROR    PROXY GUARD BLOCKED SESSION: Proxy did not connect — could not reach any IP echo service. Last error: HTTPSConnectionPool(host='icanhazip.com', port=443): Read timed out. (read timeout=20)
+13:39:04  ERROR    [acc_033] Session error: Proxy did not connect — could not reach any IP echo service. Last error: HTTPSConnectionPool(host='icanhazip.com', port=443): Read timed out. (read timeout=20)
+13:39:04  INFO     [acc_034] Starting ML profile for setup ...
+2026-04-10 13:39:04 [acc_034] INFO  Proxy guard: verifying proxy before session start …
+13:39:04  INFO     Proxy guard: verifying proxy before session start …
+13:39:05  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:39:05 [acc_034] INFO  Proxy guard: OK — exit IP = 82.108.44.231
+13:39:05  INFO     Proxy guard: OK — exit IP = 82.108.44.231
+2026-04-10 13:39:05 [acc_034] INFO  Proxy synced to ML: isp.decodo.com:10003
+13:39:05  INFO     Proxy synced to ML: isp.decodo.com:10003
+2026-04-10 13:39:05 [acc_034] INFO  Starting Multilogin profile 0f110c6e-26b6-4f94-972a-803a9a7706eb …
+13:39:05  INFO     Starting Multilogin profile 0f110c6e-26b6-4f94-972a-803a9a7706eb …
+13:39:09  DEBUG    CDP endpoint: http://127.0.0.1:63286
+(node:15228) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:39:09  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:39:10 [acc_032] INFO  Profile started — connected via CDP | profile_id=31ce9f18-7218-4bd5-93c9-6b06dc5a2299
+13:39:10  INFO     Profile started — connected via CDP | profile_id=31ce9f18-7218-4bd5-93c9-6b06dc5a2299
+(node:14744) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:39:10  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:39:10 [acc_034] INFO  Profile started — connected via CDP | profile_id=0f110c6e-26b6-4f94-972a-803a9a7706eb
+13:39:10  INFO     Profile started — connected via CDP | profile_id=0f110c6e-26b6-4f94-972a-803a9a7706eb
+2026-04-10 13:39:12 [acc_032] INFO  Login check: logged_in
+13:39:12  INFO     Login check: logged_in
+2026-04-10 13:39:13 [acc_032] INFO  [ml-setup] Running step: security_alerts
+13:39:13  INFO     [ml-setup] Running step: security_alerts
+2026-04-10 13:39:13 [acc_034] INFO  Login check: logged_in
+13:39:13  INFO     Login check: logged_in
+2026-04-10 13:39:13 [acc_034] INFO  [ml-setup] Running step: security_alerts
+13:39:13  INFO     [ml-setup] Running step: security_alerts
+13:39:49  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    56 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:39:49 [acc_032] INFO  [ml-setup] security_alerts: OK
+13:39:49  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:39:49 [acc_032] INFO  [ml-setup] Running step: profile_photo
+13:39:49  INFO     [ml-setup] Running step: profile_photo
+13:39:53  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    56 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:39:53 [acc_034] INFO  [ml-setup] security_alerts: OK
+13:39:53  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:39:53 [acc_034] INFO  [ml-setup] Running step: profile_photo
+13:39:53  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:39:55 [acc_032] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:39:55  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:39:55 [acc_032] WARNING  [ml-setup] profile_photo: step returned False
+13:39:55  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:39:55 [acc_032] INFO  [ml-setup] Running step: web_app_activity
+13:39:55  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:40:00 [acc_034] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:40:00  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:40:00 [acc_034] WARNING  [ml-setup] profile_photo: step returned False
+13:40:00  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:40:00 [acc_034] INFO  [ml-setup] Running step: web_app_activity
+13:40:00  INFO     [ml-setup] Running step: web_app_activity
+13:40:03  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:40:03 [acc_032] INFO  [ml-setup] web_app_activity: OK
+13:40:03  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:40:03 [acc_032] INFO  [ml-setup] Running step: youtube_history
+13:40:03  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:40:06 [acc_032] INFO  [ml-setup] youtube_history: OK
+13:40:06  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:40:06 [acc_032] INFO  [ml-setup] Running step: location_history
+13:40:06  INFO     [ml-setup] Running step: location_history
+13:40:07  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:40:07 [acc_034] INFO  [ml-setup] web_app_activity: OK
+13:40:07  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:40:07 [acc_034] INFO  [ml-setup] Running step: youtube_history
+13:40:07  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:40:08 [acc_032] INFO  [ml-setup] location_history: OK
+13:40:08  INFO     [ml-setup] location_history: OK
+2026-04-10 13:40:08 [acc_032] INFO  [ml-setup] Running step: birthday
+13:40:08  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:40:10 [acc_034] INFO  [ml-setup] youtube_history: OK
+13:40:10  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:40:10 [acc_034] INFO  [ml-setup] Running step: location_history
+13:40:10  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:40:12 [acc_032] INFO  [ml-setup] Birthday set: 15/2/1996
+13:40:12  INFO     [ml-setup] Birthday set: 15/2/1996
+2026-04-10 13:40:12 [acc_032] INFO  [ml-setup] birthday: OK
+13:40:12  INFO     [ml-setup] birthday: OK
+2026-04-10 13:40:12 [acc_032] INFO  [ml-setup] Completed 5/6 steps
+13:40:12  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:40:13 [acc_032] INFO  Profile 31ce9f18-7218-4bd5-93c9-6b06dc5a2299 stopped via API.
+13:40:13  INFO     Profile 31ce9f18-7218-4bd5-93c9-6b06dc5a2299 stopped via API.
+2026-04-10 13:40:13 [acc_032] INFO  Profile stopped cleanly.
+13:40:13  INFO     Profile stopped cleanly.
+13:40:13  INFO     [acc_032] ML setup succeeded — marking ml_setup_done=true
+13:40:13  INFO     [acc_035] Starting ML profile for setup ...
+2026-04-10 13:40:13 [acc_035] INFO  Proxy guard: verifying proxy before session start …
+13:40:13  INFO     Proxy guard: verifying proxy before session start …
+13:40:13  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:40:14 [acc_035] INFO  Proxy guard: OK — exit IP = 82.108.118.228
+13:40:14  INFO     Proxy guard: OK — exit IP = 82.108.118.228
+2026-04-10 13:40:14 [acc_035] INFO  Proxy synced to ML: isp.decodo.com:10009
+13:40:14  INFO     Proxy synced to ML: isp.decodo.com:10009
+2026-04-10 13:40:14 [acc_035] INFO  Starting Multilogin profile d71137ec-3f1f-40ff-95f8-f41d36a0e3c8 …
+13:40:14  INFO     Starting Multilogin profile d71137ec-3f1f-40ff-95f8-f41d36a0e3c8 …
+13:40:18  DEBUG    CDP endpoint: http://127.0.0.1:63499
+2026-04-10 13:40:18 [acc_034] INFO  [ml-setup] location_history: OK
+13:40:18  INFO     [ml-setup] location_history: OK
+2026-04-10 13:40:18 [acc_034] INFO  [ml-setup] Running step: birthday
+13:40:18  INFO     [ml-setup] Running step: birthday
+(node:14792) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:40:19  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:40:20 [acc_035] INFO  Profile started — connected via CDP | profile_id=d71137ec-3f1f-40ff-95f8-f41d36a0e3c8
+13:40:20  INFO     Profile started — connected via CDP | profile_id=d71137ec-3f1f-40ff-95f8-f41d36a0e3c8
+2026-04-10 13:40:22 [acc_034] INFO  [ml-setup] Birthday set: 9/4/1999
+13:40:22  INFO     [ml-setup] Birthday set: 9/4/1999
+2026-04-10 13:40:22 [acc_034] INFO  [ml-setup] birthday: OK
+13:40:22  INFO     [ml-setup] birthday: OK
+2026-04-10 13:40:22 [acc_034] INFO  [ml-setup] Completed 5/6 steps
+13:40:22  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:40:23 [acc_034] INFO  Profile 0f110c6e-26b6-4f94-972a-803a9a7706eb stopped via API.
+13:40:23  INFO     Profile 0f110c6e-26b6-4f94-972a-803a9a7706eb stopped via API.
+2026-04-10 13:40:23 [acc_034] INFO  Profile stopped cleanly.
+13:40:23  INFO     Profile stopped cleanly.
+13:40:23  INFO     [acc_034] ML setup succeeded — marking ml_setup_done=true
+13:40:23  INFO     [acc_036] Starting ML profile for setup ...
+2026-04-10 13:40:23 [acc_036] INFO  Proxy guard: verifying proxy before session start …
+13:40:23  INFO     Proxy guard: verifying proxy before session start …
+13:40:24  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:40:24 [acc_036] INFO  Proxy guard: OK — exit IP = 82.108.47.181
+13:40:24  INFO     Proxy guard: OK — exit IP = 82.108.47.181
+2026-04-10 13:40:24 [acc_036] INFO  Proxy synced to ML: isp.decodo.com:10011
+13:40:24  INFO     Proxy synced to ML: isp.decodo.com:10011
+2026-04-10 13:40:24 [acc_036] INFO  Starting Multilogin profile ce6ec8fa-966a-4b13-b9ff-945aa004b73a …
+13:40:24  INFO     Starting Multilogin profile ce6ec8fa-966a-4b13-b9ff-945aa004b73a …
+13:40:28  DEBUG    CDP endpoint: http://127.0.0.1:63619
+2026-04-10 13:40:29 [acc_035] INFO  Login check: logged_in
+13:40:29  INFO     Login check: logged_in
+2026-04-10 13:40:29 [acc_035] INFO  [ml-setup] Running step: security_alerts
+13:40:29  INFO     [ml-setup] Running step: security_alerts
+(node:10056) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:40:30  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:40:30 [acc_036] INFO  Profile started — connected via CDP | profile_id=ce6ec8fa-966a-4b13-b9ff-945aa004b73a
+13:40:30  INFO     Profile started — connected via CDP | profile_id=ce6ec8fa-966a-4b13-b9ff-945aa004b73a
+2026-04-10 13:40:33 [acc_036] INFO  Login check: logged_in
+13:40:33  INFO     Login check: logged_in
+2026-04-10 13:40:33 [acc_036] INFO  [ml-setup] Running step: security_alerts
+13:40:33  INFO     [ml-setup] Running step: security_alerts
+13:41:07  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    55 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:41:07 [acc_035] INFO  [ml-setup] security_alerts: OK
+13:41:07  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:41:07 [acc_035] INFO  [ml-setup] Running step: profile_photo
+13:41:07  INFO     [ml-setup] Running step: profile_photo
+13:41:12  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    55 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:41:12 [acc_036] INFO  [ml-setup] security_alerts: OK
+13:41:12  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:41:12 [acc_036] INFO  [ml-setup] Running step: profile_photo
+13:41:12  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:41:14 [acc_035] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:41:14  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:41:14 [acc_035] WARNING  [ml-setup] profile_photo: step returned False
+13:41:14  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:41:14 [acc_035] INFO  [ml-setup] Running step: web_app_activity
+13:41:14  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:41:18 [acc_036] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:41:18  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:41:18 [acc_036] WARNING  [ml-setup] profile_photo: step returned False
+13:41:18  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:41:18 [acc_036] INFO  [ml-setup] Running step: web_app_activity
+13:41:18  INFO     [ml-setup] Running step: web_app_activity
+13:41:20  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:41:20 [acc_035] INFO  [ml-setup] web_app_activity: OK
+13:41:20  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:41:20 [acc_035] INFO  [ml-setup] Running step: youtube_history
+13:41:20  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:41:23 [acc_035] INFO  [ml-setup] youtube_history: OK
+13:41:23  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:41:23 [acc_035] INFO  [ml-setup] Running step: location_history
+13:41:23  INFO     [ml-setup] Running step: location_history
+13:41:24  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:41:24 [acc_036] INFO  [ml-setup] web_app_activity: OK
+13:41:24  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:41:24 [acc_036] INFO  [ml-setup] Running step: youtube_history
+13:41:24  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:41:26 [acc_035] INFO  [ml-setup] location_history: OK
+13:41:26  INFO     [ml-setup] location_history: OK
+2026-04-10 13:41:26 [acc_035] INFO  [ml-setup] Running step: birthday
+13:41:26  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:41:27 [acc_036] INFO  [ml-setup] youtube_history: OK
+13:41:27  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:41:27 [acc_036] INFO  [ml-setup] Running step: location_history
+13:41:27  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:41:28 [acc_035] INFO  [ml-setup] Birthday set: 4/12/1980
+13:41:28  INFO     [ml-setup] Birthday set: 4/12/1980
+2026-04-10 13:41:28 [acc_035] INFO  [ml-setup] birthday: OK
+13:41:28  INFO     [ml-setup] birthday: OK
+2026-04-10 13:41:28 [acc_035] INFO  [ml-setup] Completed 5/6 steps
+13:41:28  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:41:30 [acc_035] INFO  Profile d71137ec-3f1f-40ff-95f8-f41d36a0e3c8 stopped via API.
+13:41:30  INFO     Profile d71137ec-3f1f-40ff-95f8-f41d36a0e3c8 stopped via API.
+2026-04-10 13:41:30 [acc_035] INFO  Profile stopped cleanly.
+13:41:30  INFO     Profile stopped cleanly.
+13:41:30  INFO     [acc_035] ML setup succeeded — marking ml_setup_done=true
+13:41:30  INFO     [acc_037] Starting ML profile for setup ...
+2026-04-10 13:41:30 [acc_037] INFO  Proxy guard: verifying proxy before session start …
+13:41:30  INFO     Proxy guard: verifying proxy before session start …
+13:41:30  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:41:30 [acc_037] INFO  Proxy guard: OK — exit IP = 45.132.167.185
+13:41:30  INFO     Proxy guard: OK — exit IP = 45.132.167.185
+2026-04-10 13:41:31 [acc_037] INFO  Proxy synced to ML: isp.decodo.com:10016
+13:41:31  INFO     Proxy synced to ML: isp.decodo.com:10016
+2026-04-10 13:41:31 [acc_037] INFO  Starting Multilogin profile f30a27c4-96d3-46b2-bbd1-adaa918a0cf0 …
+13:41:31  INFO     Starting Multilogin profile f30a27c4-96d3-46b2-bbd1-adaa918a0cf0 …
+13:41:34  DEBUG    CDP endpoint: http://127.0.0.1:63829
+2026-04-10 13:41:34 [acc_036] INFO  [ml-setup] location_history: OK
+13:41:34  INFO     [ml-setup] location_history: OK
+2026-04-10 13:41:34 [acc_036] INFO  [ml-setup] Running step: birthday
+13:41:34  INFO     [ml-setup] Running step: birthday
+(node:12088) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:41:35  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:41:35 [acc_037] INFO  Profile started — connected via CDP | profile_id=f30a27c4-96d3-46b2-bbd1-adaa918a0cf0
+13:41:35  INFO     Profile started — connected via CDP | profile_id=f30a27c4-96d3-46b2-bbd1-adaa918a0cf0
+2026-04-10 13:41:37 [acc_036] INFO  [ml-setup] Birthday set: 12/4/1991
+13:41:37  INFO     [ml-setup] Birthday set: 12/4/1991
+2026-04-10 13:41:37 [acc_036] INFO  [ml-setup] birthday: OK
+13:41:37  INFO     [ml-setup] birthday: OK
+2026-04-10 13:41:37 [acc_036] INFO  [ml-setup] Completed 5/6 steps
+13:41:37  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:41:38 [acc_036] INFO  Profile ce6ec8fa-966a-4b13-b9ff-945aa004b73a stopped via API.
+13:41:38  INFO     Profile ce6ec8fa-966a-4b13-b9ff-945aa004b73a stopped via API.
+2026-04-10 13:41:38 [acc_036] INFO  Profile stopped cleanly.
+13:41:38  INFO     Profile stopped cleanly.
+13:41:38  INFO     [acc_036] ML setup succeeded — marking ml_setup_done=true
+13:41:39  INFO     [acc_038] Starting ML profile for setup ...
+2026-04-10 13:41:39 [acc_038] INFO  Proxy guard: verifying proxy before session start …
+13:41:39  INFO     Proxy guard: verifying proxy before session start …
+13:41:39  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:41:39 [acc_038] INFO  Proxy guard: OK — exit IP = 82.108.45.108
+13:41:39  INFO     Proxy guard: OK — exit IP = 82.108.45.108
+2026-04-10 13:41:40 [acc_038] INFO  Proxy synced to ML: isp.decodo.com:10017
+13:41:40  INFO     Proxy synced to ML: isp.decodo.com:10017
+2026-04-10 13:41:40 [acc_038] INFO  Starting Multilogin profile 29c7c55e-b5bc-4919-af96-eed5da2edd06 …
+13:41:40  INFO     Starting Multilogin profile 29c7c55e-b5bc-4919-af96-eed5da2edd06 …
+13:41:43  DEBUG    CDP endpoint: http://127.0.0.1:63939
+2026-04-10 13:41:43 [acc_037] INFO  Login check: logged_in
+13:41:43  INFO     Login check: logged_in
+2026-04-10 13:41:43 [acc_037] INFO  [ml-setup] Running step: security_alerts
+13:41:43  INFO     [ml-setup] Running step: security_alerts
+(node:17012) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:41:45  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:41:45 [acc_038] INFO  Profile started — connected via CDP | profile_id=29c7c55e-b5bc-4919-af96-eed5da2edd06
+13:41:45  INFO     Profile started — connected via CDP | profile_id=29c7c55e-b5bc-4919-af96-eed5da2edd06
+2026-04-10 13:41:48 [acc_038] INFO  Login check: logged_in
+13:41:48  INFO     Login check: logged_in
+2026-04-10 13:41:48 [acc_038] INFO  [ml-setup] Running step: security_alerts
+13:41:48  INFO     [ml-setup] Running step: security_alerts
+13:42:23  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    55 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:42:23 [acc_037] INFO  [ml-setup] security_alerts: OK
+13:42:23  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:42:23 [acc_037] INFO  [ml-setup] Running step: profile_photo
+13:42:23  INFO     [ml-setup] Running step: profile_photo
+13:42:27  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    55 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+    - waiting for element to be visible, enabled and stable
+
+2026-04-10 13:42:27 [acc_038] INFO  [ml-setup] security_alerts: OK
+13:42:27  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:42:27 [acc_038] INFO  [ml-setup] Running step: profile_photo
+13:42:27  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:42:29 [acc_037] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:42:29  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:42:29 [acc_037] WARNING  [ml-setup] profile_photo: step returned False
+13:42:29  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:42:29 [acc_037] INFO  [ml-setup] Running step: web_app_activity
+13:42:29  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:42:32 [acc_038] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:42:32  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:42:32 [acc_038] WARNING  [ml-setup] profile_photo: step returned False
+13:42:32  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:42:32 [acc_038] INFO  [ml-setup] Running step: web_app_activity
+13:42:32  INFO     [ml-setup] Running step: web_app_activity
+13:42:35  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:42:35 [acc_037] INFO  [ml-setup] web_app_activity: OK
+13:42:35  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:42:35 [acc_037] INFO  [ml-setup] Running step: youtube_history
+13:42:35  INFO     [ml-setup] Running step: youtube_history
+13:42:38  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:42:38 [acc_038] INFO  [ml-setup] web_app_activity: OK
+13:42:38  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:42:38 [acc_038] INFO  [ml-setup] Running step: youtube_history
+13:42:38  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:42:40 [acc_037] INFO  [ml-setup] youtube_history: OK
+13:42:40  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:42:40 [acc_037] INFO  [ml-setup] Running step: location_history
+13:42:40  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:42:41 [acc_038] INFO  [ml-setup] youtube_history: OK
+13:42:41  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:42:41 [acc_038] INFO  [ml-setup] Running step: location_history
+13:42:41  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:42:42 [acc_037] INFO  [ml-setup] location_history: OK
+13:42:42  INFO     [ml-setup] location_history: OK
+2026-04-10 13:42:42 [acc_037] INFO  [ml-setup] Running step: birthday
+13:42:42  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:42:45 [acc_037] INFO  [ml-setup] Birthday set: 13/3/1995
+13:42:45  INFO     [ml-setup] Birthday set: 13/3/1995
+2026-04-10 13:42:45 [acc_037] INFO  [ml-setup] birthday: OK
+13:42:45  INFO     [ml-setup] birthday: OK
+2026-04-10 13:42:45 [acc_037] INFO  [ml-setup] Completed 5/6 steps
+13:42:45  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:42:46 [acc_037] INFO  Profile f30a27c4-96d3-46b2-bbd1-adaa918a0cf0 stopped via API.
+13:42:46  INFO     Profile f30a27c4-96d3-46b2-bbd1-adaa918a0cf0 stopped via API.
+2026-04-10 13:42:46 [acc_037] INFO  Profile stopped cleanly.
+13:42:46  INFO     Profile stopped cleanly.
+13:42:46  INFO     [acc_037] ML setup succeeded — marking ml_setup_done=true
+13:42:46  INFO     [acc_039] Starting ML profile for setup ...
+2026-04-10 13:42:46 [acc_039] INFO  Proxy guard: verifying proxy before session start …
+13:42:46  INFO     Proxy guard: verifying proxy before session start …
+13:42:47  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:42:47 [acc_039] INFO  Proxy guard: OK — exit IP = 82.108.118.81
+13:42:47  INFO     Proxy guard: OK — exit IP = 82.108.118.81
+2026-04-10 13:42:47 [acc_039] INFO  Proxy synced to ML: isp.decodo.com:10019
+13:42:47  INFO     Proxy synced to ML: isp.decodo.com:10019
+2026-04-10 13:42:47 [acc_039] INFO  Starting Multilogin profile 2911942f-6fbc-4987-bcdf-5dd6de177a79 …
+13:42:47  INFO     Starting Multilogin profile 2911942f-6fbc-4987-bcdf-5dd6de177a79 …
+13:42:51  DEBUG    CDP endpoint: http://127.0.0.1:64143
+2026-04-10 13:42:51 [acc_038] INFO  [ml-setup] location_history: OK
+13:42:51  INFO     [ml-setup] location_history: OK
+2026-04-10 13:42:51 [acc_038] INFO  [ml-setup] Running step: birthday
+13:42:51  INFO     [ml-setup] Running step: birthday
+(node:16276) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:42:52  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:42:53 [acc_039] INFO  Profile started — connected via CDP | profile_id=2911942f-6fbc-4987-bcdf-5dd6de177a79
+13:42:53  INFO     Profile started — connected via CDP | profile_id=2911942f-6fbc-4987-bcdf-5dd6de177a79
+2026-04-10 13:42:55 [acc_038] INFO  [ml-setup] Birthday set: 11/1/1988
+13:42:55  INFO     [ml-setup] Birthday set: 11/1/1988
+2026-04-10 13:42:55 [acc_038] INFO  [ml-setup] birthday: OK
+13:42:55  INFO     [ml-setup] birthday: OK
+2026-04-10 13:42:55 [acc_038] INFO  [ml-setup] Completed 5/6 steps
+13:42:55  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:42:56 [acc_038] INFO  Profile 29c7c55e-b5bc-4919-af96-eed5da2edd06 stopped via API.
+13:42:56  INFO     Profile 29c7c55e-b5bc-4919-af96-eed5da2edd06 stopped via API.
+2026-04-10 13:42:56 [acc_038] INFO  Profile stopped cleanly.
+13:42:56  INFO     Profile stopped cleanly.
+13:42:56  INFO     [acc_038] ML setup succeeded — marking ml_setup_done=true
+13:42:56  INFO     [acc_042] Starting ML profile for setup ...
+2026-04-10 13:42:56 [acc_042] INFO  Proxy guard: verifying proxy before session start …
+13:42:56  INFO     Proxy guard: verifying proxy before session start …
+13:42:56  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:42:57 [acc_042] INFO  Proxy guard: OK — exit IP = 82.108.47.112
+13:42:57  INFO     Proxy guard: OK — exit IP = 82.108.47.112
+2026-04-10 13:42:57 [acc_042] INFO  Proxy synced to ML: isp.decodo.com:10021
+13:42:57  INFO     Proxy synced to ML: isp.decodo.com:10021
+2026-04-10 13:42:57 [acc_042] INFO  Starting Multilogin profile 09352d27-b0c9-499d-8363-33230a2fe35b …
+13:42:57  INFO     Starting Multilogin profile 09352d27-b0c9-499d-8363-33230a2fe35b …
+13:43:02  DEBUG    CDP endpoint: http://127.0.0.1:64248
+2026-04-10 13:43:02 [acc_039] INFO  Login check: logged_in
+13:43:02  INFO     Login check: logged_in
+2026-04-10 13:43:02 [acc_039] INFO  [ml-setup] Running step: security_alerts
+13:43:02  INFO     [ml-setup] Running step: security_alerts
+(node:14536) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:43:04  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:43:04 [acc_042] INFO  Profile started — connected via CDP | profile_id=09352d27-b0c9-499d-8363-33230a2fe35b
+13:43:04  INFO     Profile started — connected via CDP | profile_id=09352d27-b0c9-499d-8363-33230a2fe35b
+2026-04-10 13:43:06 [acc_042] INFO  Login check: logged_in
+13:43:06  INFO     Login check: logged_in
+2026-04-10 13:43:07 [acc_042] INFO  [ml-setup] Running step: security_alerts
+13:43:07  INFO     [ml-setup] Running step: security_alerts
+13:43:42  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    56 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:43:42 [acc_039] INFO  [ml-setup] security_alerts: OK
+13:43:42  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:43:42 [acc_039] INFO  [ml-setup] Running step: profile_photo
+13:43:42  INFO     [ml-setup] Running step: profile_photo
+13:43:45  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    55 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:43:45 [acc_042] INFO  [ml-setup] security_alerts: OK
+13:43:45  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:43:45 [acc_042] INFO  [ml-setup] Running step: profile_photo
+13:43:45  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:43:49 [acc_039] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:43:49  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:43:49 [acc_039] WARNING  [ml-setup] profile_photo: step returned False
+13:43:49  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:43:49 [acc_039] INFO  [ml-setup] Running step: web_app_activity
+13:43:49  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:43:51 [acc_042] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:43:51  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:43:51 [acc_042] WARNING  [ml-setup] profile_photo: step returned False
+13:43:51  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:43:51 [acc_042] INFO  [ml-setup] Running step: web_app_activity
+13:43:51  INFO     [ml-setup] Running step: web_app_activity
+13:43:56  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:43:56 [acc_039] INFO  [ml-setup] web_app_activity: OK
+13:43:56  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:43:56 [acc_039] INFO  [ml-setup] Running step: youtube_history
+13:43:56  INFO     [ml-setup] Running step: youtube_history
+13:43:58  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:43:58 [acc_042] INFO  [ml-setup] web_app_activity: OK
+13:43:58  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:43:58 [acc_042] INFO  [ml-setup] Running step: youtube_history
+13:43:58  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:43:59 [acc_039] INFO  [ml-setup] youtube_history: OK
+13:43:59  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:43:59 [acc_039] INFO  [ml-setup] Running step: location_history
+13:43:59  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:44:01 [acc_042] INFO  [ml-setup] youtube_history: OK
+13:44:01  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:44:01 [acc_042] INFO  [ml-setup] Running step: location_history
+13:44:01  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:44:02 [acc_039] INFO  [ml-setup] location_history: OK
+13:44:02  INFO     [ml-setup] location_history: OK
+2026-04-10 13:44:02 [acc_039] INFO  [ml-setup] Running step: birthday
+13:44:02  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:44:04 [acc_042] INFO  [ml-setup] location_history: OK
+13:44:04  INFO     [ml-setup] location_history: OK
+2026-04-10 13:44:04 [acc_042] INFO  [ml-setup] Running step: birthday
+13:44:04  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:44:06 [acc_039] INFO  [ml-setup] Birthday set: 22/8/1980
+13:44:06  INFO     [ml-setup] Birthday set: 22/8/1980
+2026-04-10 13:44:06 [acc_039] INFO  [ml-setup] birthday: OK
+13:44:06  INFO     [ml-setup] birthday: OK
+2026-04-10 13:44:06 [acc_039] INFO  [ml-setup] Completed 5/6 steps
+13:44:06  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:44:07 [acc_039] INFO  Profile 2911942f-6fbc-4987-bcdf-5dd6de177a79 stopped via API.
+13:44:07  INFO     Profile 2911942f-6fbc-4987-bcdf-5dd6de177a79 stopped via API.
+2026-04-10 13:44:07 [acc_039] INFO  Profile stopped cleanly.
+13:44:07  INFO     Profile stopped cleanly.
+13:44:07  INFO     [acc_039] ML setup succeeded — marking ml_setup_done=true
+13:44:07  INFO     [acc_043] Starting ML profile for setup ...
+2026-04-10 13:44:07 [acc_043] INFO  Proxy guard: verifying proxy before session start …
+13:44:07  INFO     Proxy guard: verifying proxy before session start …
+13:44:08  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:44:08 [acc_043] INFO  Proxy guard: OK — exit IP = 82.108.118.145
+13:44:08  INFO     Proxy guard: OK — exit IP = 82.108.118.145
+2026-04-10 13:44:08 [acc_043] INFO  Proxy synced to ML: isp.decodo.com:10025
+13:44:08  INFO     Proxy synced to ML: isp.decodo.com:10025
+2026-04-10 13:44:08 [acc_043] INFO  Starting Multilogin profile d93b2dd6-e454-4e58-a392-3195faadbe49 …
+13:44:08  INFO     Starting Multilogin profile d93b2dd6-e454-4e58-a392-3195faadbe49 …
+13:44:12  DEBUG    CDP endpoint: http://127.0.0.1:64457
+2026-04-10 13:44:12 [acc_042] INFO  [ml-setup] Birthday set: 8/5/1984
+13:44:12  INFO     [ml-setup] Birthday set: 8/5/1984
+2026-04-10 13:44:12 [acc_042] INFO  [ml-setup] birthday: OK
+13:44:12  INFO     [ml-setup] birthday: OK
+2026-04-10 13:44:12 [acc_042] INFO  [ml-setup] Completed 5/6 steps
+13:44:12  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:44:14 [acc_042] INFO  Profile 09352d27-b0c9-499d-8363-33230a2fe35b stopped via API.
+13:44:14  INFO     Profile 09352d27-b0c9-499d-8363-33230a2fe35b stopped via API.
+2026-04-10 13:44:14 [acc_042] INFO  Profile stopped cleanly.
+13:44:14  INFO     Profile stopped cleanly.
+13:44:14  INFO     [acc_042] ML setup succeeded — marking ml_setup_done=true
+13:44:14  INFO     [acc_044] Starting ML profile for setup ...
+2026-04-10 13:44:14 [acc_044] INFO  Proxy guard: verifying proxy before session start …
+13:44:14  INFO     Proxy guard: verifying proxy before session start …
+13:44:15  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:44:15 [acc_044] INFO  Proxy guard: OK — exit IP = 82.108.45.207
+13:44:15  INFO     Proxy guard: OK — exit IP = 82.108.45.207
+2026-04-10 13:44:15 [acc_044] INFO  Proxy synced to ML: isp.decodo.com:10027
+13:44:15  INFO     Proxy synced to ML: isp.decodo.com:10027
+2026-04-10 13:44:15 [acc_044] INFO  Starting Multilogin profile 7d48261c-4da0-455a-8089-33de99e5768d …
+13:44:15  INFO     Starting Multilogin profile 7d48261c-4da0-455a-8089-33de99e5768d …
+13:44:19  DEBUG    CDP endpoint: http://127.0.0.1:64579
+(node:7320) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:44:19  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:44:19 [acc_043] INFO  Profile started — connected via CDP | profile_id=d93b2dd6-e454-4e58-a392-3195faadbe49
+13:44:19  INFO     Profile started — connected via CDP | profile_id=d93b2dd6-e454-4e58-a392-3195faadbe49
+(node:16404) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:44:22  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:44:22 [acc_044] INFO  Profile started — connected via CDP | profile_id=7d48261c-4da0-455a-8089-33de99e5768d
+13:44:22  INFO     Profile started — connected via CDP | profile_id=7d48261c-4da0-455a-8089-33de99e5768d
+2026-04-10 13:44:22 [acc_043] INFO  Login check: logged_in
+13:44:22  INFO     Login check: logged_in
+2026-04-10 13:44:22 [acc_043] INFO  [ml-setup] Running step: security_alerts
+13:44:22  INFO     [ml-setup] Running step: security_alerts
+2026-04-10 13:44:25 [acc_044] INFO  Login check: logged_in
+13:44:25  INFO     Login check: logged_in
+2026-04-10 13:44:25 [acc_044] INFO  [ml-setup] Running step: security_alerts
+13:44:25  INFO     [ml-setup] Running step: security_alerts
+13:45:02  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    55 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:45:02 [acc_044] INFO  [ml-setup] security_alerts: OK
+13:45:02  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:45:02 [acc_044] INFO  [ml-setup] Running step: profile_photo
+13:45:02  INFO     [ml-setup] Running step: profile_photo
+13:45:03  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    55 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:45:03 [acc_043] INFO  [ml-setup] security_alerts: OK
+13:45:03  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:45:03 [acc_043] INFO  [ml-setup] Running step: profile_photo
+13:45:03  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:45:07 [acc_043] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:45:07  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:45:07 [acc_043] WARNING  [ml-setup] profile_photo: step returned False
+13:45:07  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:45:07 [acc_043] INFO  [ml-setup] Running step: web_app_activity
+13:45:07  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:45:08 [acc_044] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:45:08  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:45:08 [acc_044] WARNING  [ml-setup] profile_photo: step returned False
+13:45:08  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:45:08 [acc_044] INFO  [ml-setup] Running step: web_app_activity
+13:45:08  INFO     [ml-setup] Running step: web_app_activity
+13:45:14  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:45:14 [acc_044] INFO  [ml-setup] web_app_activity: OK
+13:45:14  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:45:14 [acc_044] INFO  [ml-setup] Running step: youtube_history
+13:45:14  INFO     [ml-setup] Running step: youtube_history
+13:45:14  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:45:14 [acc_043] INFO  [ml-setup] web_app_activity: OK
+13:45:14  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:45:14 [acc_043] INFO  [ml-setup] Running step: youtube_history
+13:45:14  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:45:18 [acc_044] INFO  [ml-setup] youtube_history: OK
+13:45:18  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:45:18 [acc_044] INFO  [ml-setup] Running step: location_history
+13:45:18  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:45:18 [acc_043] INFO  [ml-setup] youtube_history: OK
+13:45:18  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:45:18 [acc_043] INFO  [ml-setup] Running step: location_history
+13:45:18  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:45:21 [acc_044] INFO  [ml-setup] location_history: OK
+13:45:21  INFO     [ml-setup] location_history: OK
+2026-04-10 13:45:21 [acc_044] INFO  [ml-setup] Running step: birthday
+13:45:21  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:45:21 [acc_043] INFO  [ml-setup] location_history: OK
+13:45:21  INFO     [ml-setup] location_history: OK
+2026-04-10 13:45:21 [acc_043] INFO  [ml-setup] Running step: birthday
+13:45:21  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:45:25 [acc_043] INFO  [ml-setup] Birthday set: 2/7/1984
+13:45:25  INFO     [ml-setup] Birthday set: 2/7/1984
+2026-04-10 13:45:25 [acc_043] INFO  [ml-setup] birthday: OK
+13:45:25  INFO     [ml-setup] birthday: OK
+2026-04-10 13:45:25 [acc_043] INFO  [ml-setup] Completed 5/6 steps
+13:45:25  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:45:26 [acc_043] INFO  Profile d93b2dd6-e454-4e58-a392-3195faadbe49 stopped via API.
+13:45:26  INFO     Profile d93b2dd6-e454-4e58-a392-3195faadbe49 stopped via API.
+2026-04-10 13:45:26 [acc_043] INFO  Profile stopped cleanly.
+13:45:26  INFO     Profile stopped cleanly.
+13:45:26  INFO     [acc_043] ML setup succeeded — marking ml_setup_done=true
+13:45:26  INFO     [acc_045] Starting ML profile for setup ...
+2026-04-10 13:45:26 [acc_045] INFO  Proxy guard: verifying proxy before session start …
+13:45:26  INFO     Proxy guard: verifying proxy before session start …
+13:45:27  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:45:27 [acc_045] INFO  Proxy guard: OK — exit IP = 82.108.44.12
+13:45:27  INFO     Proxy guard: OK — exit IP = 82.108.44.12
+2026-04-10 13:45:27 [acc_045] INFO  Proxy synced to ML: isp.decodo.com:10032
+13:45:27  INFO     Proxy synced to ML: isp.decodo.com:10032
+2026-04-10 13:45:27 [acc_045] INFO  Starting Multilogin profile bea5cc9f-0dff-4282-b1ff-2c0fc64a616d …
+13:45:27  INFO     Starting Multilogin profile bea5cc9f-0dff-4282-b1ff-2c0fc64a616d …
+13:45:31  DEBUG    CDP endpoint: http://127.0.0.1:64807
+(node:15380) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+2026-04-10 13:45:34 [acc_044] INFO  [ml-setup] Birthday set: 5/8/1991
+13:45:34  INFO     [ml-setup] Birthday set: 5/8/1991
+2026-04-10 13:45:34 [acc_044] INFO  [ml-setup] birthday: OK
+13:45:34  INFO     [ml-setup] birthday: OK
+2026-04-10 13:45:34 [acc_044] INFO  [ml-setup] Completed 5/6 steps
+13:45:34  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:45:38 [acc_044] INFO  Profile 7d48261c-4da0-455a-8089-33de99e5768d stopped via API.
+13:45:38  INFO     Profile 7d48261c-4da0-455a-8089-33de99e5768d stopped via API.
+2026-04-10 13:45:38 [acc_044] INFO  Profile stopped cleanly.
+13:45:38  INFO     Profile stopped cleanly.
+13:45:38  INFO     [acc_044] ML setup succeeded — marking ml_setup_done=true
+13:45:38  INFO     [acc_046] Starting ML profile for setup ...
+2026-04-10 13:45:38 [acc_046] INFO  Proxy guard: verifying proxy before session start …
+13:45:38  INFO     Proxy guard: verifying proxy before session start …
+13:45:39  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:45:39 [acc_046] INFO  Proxy guard: OK — exit IP = 82.108.117.50
+13:45:39  INFO     Proxy guard: OK — exit IP = 82.108.117.50
+2026-04-10 13:45:39 [acc_046] INFO  Proxy synced to ML: isp.decodo.com:10033
+13:45:39  INFO     Proxy synced to ML: isp.decodo.com:10033
+2026-04-10 13:45:39 [acc_046] INFO  Starting Multilogin profile 18d9ddf5-2f6d-47c0-ac39-ab7ede13ce72 …
+13:45:39  INFO     Starting Multilogin profile 18d9ddf5-2f6d-47c0-ac39-ab7ede13ce72 …
+13:45:43  DEBUG    CDP endpoint: http://127.0.0.1:64922
+13:45:43  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:45:43 [acc_045] INFO  Profile started — connected via CDP | profile_id=bea5cc9f-0dff-4282-b1ff-2c0fc64a616d
+13:45:43  INFO     Profile started — connected via CDP | profile_id=bea5cc9f-0dff-4282-b1ff-2c0fc64a616d
+(node:17356) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+2026-04-10 13:45:46 [acc_045] INFO  Login check: logged_in
+13:45:46  INFO     Login check: logged_in
+2026-04-10 13:45:47 [acc_045] INFO  [ml-setup] Running step: security_alerts
+13:45:47  INFO     [ml-setup] Running step: security_alerts
+13:46:02  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:46:03 [acc_046] INFO  Profile started — connected via CDP | profile_id=18d9ddf5-2f6d-47c0-ac39-ab7ede13ce72
+13:46:03  INFO     Profile started — connected via CDP | profile_id=18d9ddf5-2f6d-47c0-ac39-ab7ede13ce72
+2026-04-10 13:46:06 [acc_046] INFO  Login check: logged_in
+13:46:06  INFO     Login check: logged_in
+2026-04-10 13:46:06 [acc_046] INFO  [ml-setup] Running step: security_alerts
+13:46:06  INFO     [ml-setup] Running step: security_alerts
+13:46:33  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    50 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:46:33 [acc_045] INFO  [ml-setup] security_alerts: OK
+13:46:33  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:46:33 [acc_045] INFO  [ml-setup] Running step: profile_photo
+13:46:33  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:46:37 [acc_045] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:46:37  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:46:37 [acc_045] WARNING  [ml-setup] profile_photo: step returned False
+13:46:37  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:46:37 [acc_045] INFO  [ml-setup] Running step: web_app_activity
+13:46:37  INFO     [ml-setup] Running step: web_app_activity
+13:46:45  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    53 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:46:45 [acc_046] INFO  [ml-setup] security_alerts: OK
+13:46:45  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:46:45 [acc_046] INFO  [ml-setup] Running step: profile_photo
+13:46:45  INFO     [ml-setup] Running step: profile_photo
+13:46:45  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:46:45 [acc_045] INFO  [ml-setup] web_app_activity: OK
+13:46:45  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:46:45 [acc_045] INFO  [ml-setup] Running step: youtube_history
+13:46:45  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:46:49 [acc_045] INFO  [ml-setup] youtube_history: OK
+13:46:49  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:46:49 [acc_045] INFO  [ml-setup] Running step: location_history
+13:46:49  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:46:51 [acc_046] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:46:51  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:46:51 [acc_046] WARNING  [ml-setup] profile_photo: step returned False
+13:46:51  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:46:51 [acc_046] INFO  [ml-setup] Running step: web_app_activity
+13:46:51  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:46:52 [acc_045] INFO  [ml-setup] location_history: OK
+13:46:52  INFO     [ml-setup] location_history: OK
+2026-04-10 13:46:52 [acc_045] INFO  [ml-setup] Running step: birthday
+13:46:52  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:46:55 [acc_045] INFO  [ml-setup] Birthday set: 7/12/1996
+13:46:55  INFO     [ml-setup] Birthday set: 7/12/1996
+2026-04-10 13:46:55 [acc_045] INFO  [ml-setup] birthday: OK
+13:46:55  INFO     [ml-setup] birthday: OK
+2026-04-10 13:46:55 [acc_045] INFO  [ml-setup] Completed 5/6 steps
+13:46:55  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:46:56 [acc_045] INFO  Profile bea5cc9f-0dff-4282-b1ff-2c0fc64a616d stopped via API.
+13:46:56  INFO     Profile bea5cc9f-0dff-4282-b1ff-2c0fc64a616d stopped via API.
+2026-04-10 13:46:56 [acc_045] INFO  Profile stopped cleanly.
+13:46:56  INFO     Profile stopped cleanly.
+13:46:56  INFO     [acc_045] ML setup succeeded — marking ml_setup_done=true
+13:46:56  INFO     [acc_047] Starting ML profile for setup ...
+2026-04-10 13:46:56 [acc_047] INFO  Proxy guard: verifying proxy before session start …
+13:46:56  INFO     Proxy guard: verifying proxy before session start …
+13:46:56  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:46:57 [acc_047] INFO  Proxy guard: OK — exit IP = 82.108.118.254
+13:46:57  INFO     Proxy guard: OK — exit IP = 82.108.118.254
+2026-04-10 13:46:57 [acc_047] INFO  Proxy synced to ML: isp.decodo.com:10034
+13:46:57  INFO     Proxy synced to ML: isp.decodo.com:10034
+2026-04-10 13:46:57 [acc_047] INFO  Starting Multilogin profile d1007161-3313-487c-b88f-7090770f86e6 …
+13:46:57  INFO     Starting Multilogin profile d1007161-3313-487c-b88f-7090770f86e6 …
+13:47:03  DEBUG    CDP endpoint: http://127.0.0.1:65247
+(node:17160) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:47:04  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:47:04 [acc_047] INFO  Profile started — connected via CDP | profile_id=d1007161-3313-487c-b88f-7090770f86e6
+13:47:04  INFO     Profile started — connected via CDP | profile_id=d1007161-3313-487c-b88f-7090770f86e6
+2026-04-10 13:47:07 [acc_047] INFO  Login check: logged_in
+13:47:07  INFO     Login check: logged_in
+13:47:07  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:47:07 [acc_046] INFO  [ml-setup] web_app_activity: OK
+13:47:07  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:47:07 [acc_046] INFO  [ml-setup] Running step: youtube_history
+13:47:07  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:47:08 [acc_047] INFO  [ml-setup] Running step: security_alerts
+13:47:08  INFO     [ml-setup] Running step: security_alerts
+2026-04-10 13:47:12 [acc_046] INFO  [ml-setup] youtube_history: OK
+13:47:12  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:47:12 [acc_046] INFO  [ml-setup] Running step: location_history
+13:47:12  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:47:15 [acc_046] INFO  [ml-setup] location_history: OK
+13:47:15  INFO     [ml-setup] location_history: OK
+2026-04-10 13:47:15 [acc_046] INFO  [ml-setup] Running step: birthday
+13:47:15  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:47:19 [acc_046] INFO  [ml-setup] Birthday set: 31/10/1990
+13:47:19  INFO     [ml-setup] Birthday set: 31/10/1990
+2026-04-10 13:47:19 [acc_046] INFO  [ml-setup] birthday: OK
+13:47:19  INFO     [ml-setup] birthday: OK
+2026-04-10 13:47:19 [acc_046] INFO  [ml-setup] Completed 5/6 steps
+13:47:19  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:47:20 [acc_046] INFO  Profile 18d9ddf5-2f6d-47c0-ac39-ab7ede13ce72 stopped via API.
+13:47:20  INFO     Profile 18d9ddf5-2f6d-47c0-ac39-ab7ede13ce72 stopped via API.
+2026-04-10 13:47:20 [acc_046] INFO  Profile stopped cleanly.
+13:47:20  INFO     Profile stopped cleanly.
+13:47:20  INFO     [acc_046] ML setup succeeded — marking ml_setup_done=true
+13:47:21  INFO     [acc_048] Starting ML profile for setup ...
+2026-04-10 13:47:21 [acc_048] INFO  Proxy guard: verifying proxy before session start …
+13:47:21  INFO     Proxy guard: verifying proxy before session start …
+13:47:21  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:47:22 [acc_048] INFO  Proxy guard: OK — exit IP = 82.108.44.147
+13:47:22  INFO     Proxy guard: OK — exit IP = 82.108.44.147
+2026-04-10 13:47:22 [acc_048] INFO  Proxy synced to ML: isp.decodo.com:10035
+13:47:22  INFO     Proxy synced to ML: isp.decodo.com:10035
+2026-04-10 13:47:22 [acc_048] INFO  Starting Multilogin profile 325fec66-db4b-4918-8b55-8f76cafe8ccd …
+13:47:22  INFO     Starting Multilogin profile 325fec66-db4b-4918-8b55-8f76cafe8ccd …
+13:47:26  DEBUG    CDP endpoint: http://127.0.0.1:65387
+(node:14940) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:47:28  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:47:29 [acc_048] INFO  Profile started — connected via CDP | profile_id=325fec66-db4b-4918-8b55-8f76cafe8ccd
+13:47:29  INFO     Profile started — connected via CDP | profile_id=325fec66-db4b-4918-8b55-8f76cafe8ccd
+2026-04-10 13:47:32 [acc_048] INFO  Login check: not_logged_in
+13:47:32  INFO     Login check: not_logged_in
+2026-04-10 13:47:32 [acc_048] ERROR  login_status: not_logged_in — account needs manual re-login
+13:47:32  ERROR    login_status: not_logged_in — account needs manual re-login
+2026-04-10 13:47:32 [acc_048] INFO  [ml-setup] Running step: security_alerts
+13:47:32  INFO     [ml-setup] Running step: security_alerts
+13:47:48  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    40 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:47:48 [acc_047] INFO  [ml-setup] security_alerts: OK
+13:47:48  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:47:48 [acc_047] INFO  [ml-setup] Running step: profile_photo
+13:47:48  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:47:57 [acc_047] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:47:57  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:47:57 [acc_047] WARNING  [ml-setup] profile_photo: step returned False
+13:47:57  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:47:57 [acc_047] INFO  [ml-setup] Running step: web_app_activity
+13:47:57  INFO     [ml-setup] Running step: web_app_activity
+13:48:03  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:48:03 [acc_047] INFO  [ml-setup] web_app_activity: OK
+13:48:03  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:48:03 [acc_047] INFO  [ml-setup] Running step: youtube_history
+13:48:03  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:48:07 [acc_047] INFO  [ml-setup] youtube_history: OK
+13:48:07  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:48:07 [acc_047] INFO  [ml-setup] Running step: location_history
+13:48:07  INFO     [ml-setup] Running step: location_history
+13:48:09  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    54 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:48:09 [acc_048] INFO  [ml-setup] security_alerts: OK
+13:48:09  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:48:09 [acc_048] INFO  [ml-setup] Running step: profile_photo
+13:48:09  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:48:12 [acc_047] INFO  [ml-setup] location_history: OK
+13:48:12  INFO     [ml-setup] location_history: OK
+2026-04-10 13:48:12 [acc_047] INFO  [ml-setup] Running step: birthday
+13:48:12  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:48:15 [acc_048] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:48:15  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:48:15 [acc_048] WARNING  [ml-setup] profile_photo: step returned False
+13:48:15  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:48:15 [acc_048] INFO  [ml-setup] Running step: web_app_activity
+13:48:15  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:48:16 [acc_047] INFO  [ml-setup] Birthday set: 21/7/1995
+13:48:16  INFO     [ml-setup] Birthday set: 21/7/1995
+2026-04-10 13:48:16 [acc_047] INFO  [ml-setup] birthday: OK
+13:48:16  INFO     [ml-setup] birthday: OK
+2026-04-10 13:48:16 [acc_047] INFO  [ml-setup] Completed 5/6 steps
+13:48:16  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:48:18 [acc_047] INFO  Profile d1007161-3313-487c-b88f-7090770f86e6 stopped via API.
+13:48:18  INFO     Profile d1007161-3313-487c-b88f-7090770f86e6 stopped via API.
+2026-04-10 13:48:18 [acc_047] INFO  Profile stopped cleanly.
+13:48:18  INFO     Profile stopped cleanly.
+13:48:18  INFO     [acc_047] ML setup succeeded — marking ml_setup_done=true
+13:48:18  INFO     [acc_049] Starting ML profile for setup ...
+2026-04-10 13:48:18 [acc_049] INFO  Proxy guard: verifying proxy before session start …
+13:48:18  INFO     Proxy guard: verifying proxy before session start …
+13:48:18  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:48:19 [acc_049] INFO  Proxy guard: OK — exit IP = 82.108.116.114
+13:48:19  INFO     Proxy guard: OK — exit IP = 82.108.116.114
+2026-04-10 13:48:19 [acc_049] INFO  Proxy synced to ML: isp.decodo.com:10036
+13:48:19  INFO     Proxy synced to ML: isp.decodo.com:10036
+2026-04-10 13:48:19 [acc_049] INFO  Starting Multilogin profile 5af0b77c-8f9b-4ade-830b-bafbaa09e812 …
+13:48:19  INFO     Starting Multilogin profile 5af0b77c-8f9b-4ade-830b-bafbaa09e812 …
+13:48:23  DEBUG    CDP endpoint: http://127.0.0.1:49184
+(node:15128) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:48:24  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:48:24 [acc_049] INFO  Profile started — connected via CDP | profile_id=5af0b77c-8f9b-4ade-830b-bafbaa09e812
+13:48:24  INFO     Profile started — connected via CDP | profile_id=5af0b77c-8f9b-4ade-830b-bafbaa09e812
+13:48:26  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:48:26 [acc_048] INFO  [ml-setup] web_app_activity: OK
+13:48:26  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:48:26 [acc_048] INFO  [ml-setup] Running step: youtube_history
+13:48:26  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:48:27 [acc_049] INFO  Login check: not_logged_in
+13:48:27  INFO     Login check: not_logged_in
+2026-04-10 13:48:27 [acc_049] ERROR  login_status: not_logged_in — account needs manual re-login
+13:48:27  ERROR    login_status: not_logged_in — account needs manual re-login
+2026-04-10 13:48:27 [acc_049] INFO  [ml-setup] Running step: security_alerts
+13:48:27  INFO     [ml-setup] Running step: security_alerts
+2026-04-10 13:48:36 [acc_048] INFO  [ml-setup] youtube_history: OK
+13:48:36  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:48:36 [acc_048] INFO  [ml-setup] Running step: location_history
+13:48:36  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:48:41 [acc_048] INFO  [ml-setup] location_history: OK
+13:48:41  INFO     [ml-setup] location_history: OK
+2026-04-10 13:48:41 [acc_048] INFO  [ml-setup] Running step: birthday
+13:48:41  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:48:45 [acc_048] INFO  [ml-setup] Birthday set: 4/1/1991
+13:48:45  INFO     [ml-setup] Birthday set: 4/1/1991
+2026-04-10 13:48:45 [acc_048] INFO  [ml-setup] birthday: OK
+13:48:45  INFO     [ml-setup] birthday: OK
+2026-04-10 13:48:45 [acc_048] INFO  [ml-setup] Completed 5/6 steps
+13:48:45  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:48:47 [acc_048] INFO  Profile 325fec66-db4b-4918-8b55-8f76cafe8ccd stopped via API.
+13:48:47  INFO     Profile 325fec66-db4b-4918-8b55-8f76cafe8ccd stopped via API.
+2026-04-10 13:48:47 [acc_048] INFO  Profile stopped cleanly.
+13:48:47  INFO     Profile stopped cleanly.
+13:48:47  INFO     [acc_048] ML setup succeeded — marking ml_setup_done=true
+13:48:47  INFO     [acc_050] Starting ML profile for setup ...
+2026-04-10 13:48:47 [acc_050] INFO  Proxy guard: verifying proxy before session start …
+13:48:47  INFO     Proxy guard: verifying proxy before session start …
+13:48:47  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:48:48 [acc_050] INFO  Proxy guard: OK — exit IP = 82.108.44.76
+13:48:48  INFO     Proxy guard: OK — exit IP = 82.108.44.76
+2026-04-10 13:48:48 [acc_050] INFO  Proxy synced to ML: isp.decodo.com:10037
+13:48:48  INFO     Proxy synced to ML: isp.decodo.com:10037
+2026-04-10 13:48:48 [acc_050] INFO  Starting Multilogin profile ed667368-5d81-458c-b1c6-df3ecc093ba9 …
+13:48:48  INFO     Starting Multilogin profile ed667368-5d81-458c-b1c6-df3ecc093ba9 …
+13:48:53  DEBUG    CDP endpoint: http://127.0.0.1:49312
+(node:16828) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:49:09  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    - waiting for element to be visible, enabled and stable
+    - element is visible, enabled and stable
+    - scrolling into view if needed
+    - done scrolling
+    - element is outside of the viewport
+  - retrying click action
+    - waiting for element to be visible, enabled and stable
+    - element is not stable
+  - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    25 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:49:09 [acc_049] INFO  [ml-setup] security_alerts: OK
+13:49:09  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:49:09 [acc_049] INFO  [ml-setup] Running step: profile_photo
+13:49:09  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:49:15 [acc_049] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:49:15  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:49:15 [acc_049] WARNING  [ml-setup] profile_photo: step returned False
+13:49:15  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:49:15 [acc_049] INFO  [ml-setup] Running step: web_app_activity
+13:49:15  INFO     [ml-setup] Running step: web_app_activity
+13:49:21  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:49:21 [acc_049] INFO  [ml-setup] web_app_activity: OK
+13:49:21  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:49:21 [acc_049] INFO  [ml-setup] Running step: youtube_history
+13:49:21  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:49:25 [acc_049] INFO  [ml-setup] youtube_history: OK
+13:49:25  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:49:25 [acc_049] INFO  [ml-setup] Running step: location_history
+13:49:25  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:49:28 [acc_049] INFO  [ml-setup] location_history: OK
+13:49:28  INFO     [ml-setup] location_history: OK
+2026-04-10 13:49:28 [acc_049] INFO  [ml-setup] Running step: birthday
+13:49:28  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:49:31 [acc_049] INFO  [ml-setup] Birthday set: 2/10/1984
+13:49:31  INFO     [ml-setup] Birthday set: 2/10/1984
+2026-04-10 13:49:31 [acc_049] INFO  [ml-setup] birthday: OK
+13:49:31  INFO     [ml-setup] birthday: OK
+2026-04-10 13:49:31 [acc_049] INFO  [ml-setup] Completed 5/6 steps
+13:49:31  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:49:43 [acc_049] INFO  Profile 5af0b77c-8f9b-4ade-830b-bafbaa09e812 stopped via API.
+13:49:43  INFO     Profile 5af0b77c-8f9b-4ade-830b-bafbaa09e812 stopped via API.
+2026-04-10 13:49:43 [acc_049] INFO  Profile stopped cleanly.
+13:49:43  INFO     Profile stopped cleanly.
+13:49:43  INFO     [acc_049] ML setup succeeded — marking ml_setup_done=true
+13:49:43  INFO     [acc_051] Starting ML profile for setup ...
+2026-04-10 13:49:43 [acc_051] INFO  Proxy guard: verifying proxy before session start …
+13:49:43  INFO     Proxy guard: verifying proxy before session start …
+13:49:43  DEBUG    Proxy guard: machine real IP = 45.139.227.56
+2026-04-10 13:49:44 [acc_051] INFO  Proxy guard: OK — exit IP = 82.108.47.151
+13:49:44  INFO     Proxy guard: OK — exit IP = 82.108.47.151
+2026-04-10 13:49:44 [acc_051] INFO  Proxy synced to ML: isp.decodo.com:10038
+13:49:44  INFO     Proxy synced to ML: isp.decodo.com:10038
+2026-04-10 13:49:44 [acc_051] INFO  Starting Multilogin profile 9b27a188-9827-4721-851b-7bbb2cbbd12a …
+13:49:44  INFO     Starting Multilogin profile 9b27a188-9827-4721-851b-7bbb2cbbd12a …
+13:49:48  DEBUG    CDP endpoint: http://127.0.0.1:49718
+(node:12884) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+13:49:51  DEBUG    Media streaming blocked to conserve proxy bandwidth
+13:49:53  DEBUG    Media streaming blocked to conserve proxy bandwidth
+2026-04-10 13:49:53 [acc_051] INFO  Profile started — connected via CDP | profile_id=9b27a188-9827-4721-851b-7bbb2cbbd12a
+13:49:53  INFO     Profile started — connected via CDP | profile_id=9b27a188-9827-4721-851b-7bbb2cbbd12a
+2026-04-10 13:49:56 [acc_051] INFO  Login check: logged_in
+13:49:56  INFO     Login check: logged_in
+2026-04-10 13:49:56 [acc_051] INFO  [ml-setup] Running step: security_alerts
+13:49:56  INFO     [ml-setup] Running step: security_alerts
+2026-04-10 13:49:57 [acc_050] INFO  Profile started — connected via CDP | profile_id=ed667368-5d81-458c-b1c6-df3ecc093ba9
+13:49:57  INFO     Profile started — connected via CDP | profile_id=ed667368-5d81-458c-b1c6-df3ecc093ba9
+2026-04-10 13:50:00 [acc_050] INFO  Login check: logged_in
+13:50:00  INFO     Login check: logged_in
+2026-04-10 13:50:00 [acc_050] INFO  [ml-setup] Running step: security_alerts
+13:50:00  INFO     [ml-setup] Running step: security_alerts
+13:50:37  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    55 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:50:37 [acc_051] INFO  [ml-setup] security_alerts: OK
+13:50:37  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:50:37 [acc_051] INFO  [ml-setup] Running step: profile_photo
+13:50:37  INFO     [ml-setup] Running step: profile_photo
+13:50:40  DEBUG    [ml-setup] notifications page check: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button:has-text(\"Skip\")").first
+    - locator resolved to <button jsname="Pr7Yme" jscontroller="O626Fe" data-idom-class="wMI9H" class="mUIrbf-LgbsSe mUIrbf-LgbsSe-OWXEXe-dgl2Hf wMI9H" jsaction="click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox; focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    55 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - element is outside of the viewport
+     - retrying click action
+       - waiting 500ms
+
+2026-04-10 13:50:40 [acc_050] INFO  [ml-setup] security_alerts: OK
+13:50:40  INFO     [ml-setup] security_alerts: OK
+2026-04-10 13:50:40 [acc_050] INFO  [ml-setup] Running step: profile_photo
+13:50:40  INFO     [ml-setup] Running step: profile_photo
+2026-04-10 13:50:43 [acc_051] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:50:43  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:50:43 [acc_051] WARNING  [ml-setup] profile_photo: step returned False
+13:50:43  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:50:43 [acc_051] INFO  [ml-setup] Running step: web_app_activity
+13:50:43  INFO     [ml-setup] Running step: web_app_activity
+2026-04-10 13:50:47 [acc_050] WARNING  [ml-setup] Profile photo button not found on personal-info page
+13:50:47  WARNING  [ml-setup] Profile photo button not found on personal-info page
+2026-04-10 13:50:47 [acc_050] WARNING  [ml-setup] profile_photo: step returned False
+13:50:47  WARNING  [ml-setup] profile_photo: step returned False
+2026-04-10 13:50:47 [acc_050] INFO  [ml-setup] Running step: web_app_activity
+13:50:47  INFO     [ml-setup] Running step: web_app_activity
+13:50:50  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:50:50 [acc_051] INFO  [ml-setup] web_app_activity: OK
+13:50:50  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:50:50 [acc_051] INFO  [ml-setup] Running step: youtube_history
+13:50:50  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:50:53 [acc_051] INFO  [ml-setup] youtube_history: OK
+13:50:53  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:50:53 [acc_051] INFO  [ml-setup] Running step: location_history
+13:50:53  INFO     [ml-setup] Running step: location_history
+13:50:55  DEBUG    [ml-setup] web_app_activity toggle already on or not found
+2026-04-10 13:50:55 [acc_050] INFO  [ml-setup] web_app_activity: OK
+13:50:55  INFO     [ml-setup] web_app_activity: OK
+2026-04-10 13:50:55 [acc_050] INFO  [ml-setup] Running step: youtube_history
+13:50:55  INFO     [ml-setup] Running step: youtube_history
+2026-04-10 13:50:56 [acc_051] INFO  [ml-setup] location_history: OK
+13:50:56  INFO     [ml-setup] location_history: OK
+2026-04-10 13:50:56 [acc_051] INFO  [ml-setup] Running step: birthday
+13:50:56  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:50:59 [acc_051] INFO  [ml-setup] Birthday set: 4/6/1993
+13:50:59  INFO     [ml-setup] Birthday set: 4/6/1993
+2026-04-10 13:50:59 [acc_051] INFO  [ml-setup] birthday: OK
+13:50:59  INFO     [ml-setup] birthday: OK
+2026-04-10 13:50:59 [acc_051] INFO  [ml-setup] Completed 5/6 steps
+13:50:59  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:51:00 [acc_051] INFO  Profile 9b27a188-9827-4721-851b-7bbb2cbbd12a stopped via API.
+13:51:00  INFO     Profile 9b27a188-9827-4721-851b-7bbb2cbbd12a stopped via API.
+2026-04-10 13:51:00 [acc_051] INFO  Profile stopped cleanly.
+13:51:00  INFO     Profile stopped cleanly.
+13:51:00  INFO     [acc_051] ML setup succeeded — marking ml_setup_done=true
+2026-04-10 13:51:01 [acc_050] INFO  [ml-setup] youtube_history: OK
+13:51:01  INFO     [ml-setup] youtube_history: OK
+2026-04-10 13:51:01 [acc_050] INFO  [ml-setup] Running step: location_history
+13:51:01  INFO     [ml-setup] Running step: location_history
+2026-04-10 13:51:03 [acc_050] INFO  [ml-setup] location_history: OK
+13:51:03  INFO     [ml-setup] location_history: OK
+2026-04-10 13:51:03 [acc_050] INFO  [ml-setup] Running step: birthday
+13:51:03  INFO     [ml-setup] Running step: birthday
+2026-04-10 13:51:06 [acc_050] INFO  [ml-setup] Birthday set: 24/1/1981
+13:51:06  INFO     [ml-setup] Birthday set: 24/1/1981
+2026-04-10 13:51:06 [acc_050] INFO  [ml-setup] birthday: OK
+13:51:06  INFO     [ml-setup] birthday: OK
+2026-04-10 13:51:06 [acc_050] INFO  [ml-setup] Completed 5/6 steps
+13:51:06  INFO     [ml-setup] Completed 5/6 steps
+2026-04-10 13:51:07 [acc_050] INFO  Profile ed667368-5d81-458c-b1c6-df3ecc093ba9 stopped via API.
+13:51:07  INFO     Profile ed667368-5d81-458c-b1c6-df3ecc093ba9 stopped via API.
+2026-04-10 13:51:07 [acc_050] INFO  Profile stopped cleanly.
+13:51:07  INFO     Profile stopped cleanly.
+13:51:07  INFO     [acc_050] ML setup succeeded — marking ml_setup_done=true
+13:51:07  INFO     Done. Succeeded: 36  Failed/partial: 2

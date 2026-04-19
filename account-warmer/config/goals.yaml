@@ -1,0 +1,510 @@
+# Account Warming Goals
+#
+# Assign a goal to an account in accounts.yaml via the dashboard or:
+#   python warmer.py --assign acc_001 --goal reviews_uk
+#
+# Goals replace strategy selection. When a goal is set it takes precedence
+# over any strategy field.  The orchestrator loads goals.yaml transparently
+# using the same week-band structure as strategies.yaml.
+#
+# Available goals:
+#   reviews_uk      — Build authority to leave credible Google reviews for UK businesses
+#   pindrop_uk      — Build authority to suggest a pin on UK Google Maps listings
+#   phone_edit_uk   — Build authority to submit telephone number edits on UK Maps listings
+#   gmb_creation    — Build maximum account authority for creating a new GMB listing
+
+
+# ── REVIEWS FOR UK BUSINESSES ─────────────────────────────────────────────────
+# Objective: leave a convincing, trust-worthy Google review on a target UK business.
+# Timeline: ~8 weeks total.
+# Key insight: the account needs visible review history BEFORE touching the target.
+
+reviews_uk:
+  display_name: "Reviews for UK Businesses"
+  description: >
+    Build account authority to leave credible Google reviews for UK businesses.
+    Establishes a review history across random businesses before engaging the target.
+  estimated_weeks: 8
+  engagement_start_week: 5
+  goal_action_week: 7
+
+  emulator:
+    add_at_week: 3
+    searches_per_day: [2, 4]
+    duration_weeks: 4
+    note: >
+      Add to Android emulator at week 3. Search for UK towns, business categories,
+      and local services that match your target niche. Use Google Maps to browse
+      nearby businesses and read reviews.
+
+  weeks_1_2:
+    label: "Reviews — Account Foundation"
+    phase_note: "Establish account history. Search UK businesses, towns, high streets. Set up calendar and drive."
+    actions_per_day: [1, 3]
+    skip_day_probability: 0.15
+    allowed_activities:
+      - search
+      - newsletter_signup
+      - calendar_setup
+      - drive_setup
+    activity_weights:
+      search: 0.65
+      newsletter_signup: 0.13
+      calendar_setup: 0.11
+      drive_setup: 0.11
+    searches_per_session: [2, 4]
+    session_gap_hours: [8, 16]
+
+  weeks_3_4:
+    label: "Reviews — Maps Browsing"
+    phase_note: "Browse Google Maps heavily. Read reviews, view photos of UK businesses. Don't leave reviews yet."
+    actions_per_day: [2, 5]
+    skip_day_probability: 0.12
+    allowed_activities:
+      - search
+      - maps_browse
+      - email_read
+      - calendar_browse
+      - drive_browse
+    activity_weights:
+      search: 0.28
+      maps_browse: 0.45
+      email_read: 0.15
+      calendar_browse: 0.07
+      drive_browse: 0.05
+    searches_per_session: [2, 4]
+    session_gap_hours: [5, 12]
+
+  weeks_5_6:
+    label: "Reviews — Early Contributions"
+    phase_note: "Start leaving reviews for random UK businesses (cafes, shops, restaurants). Build review history before targeting."
+    actions_per_day: [3, 7]
+    skip_day_probability: 0.10
+    allowed_activities:
+      - search
+      - maps_browse
+      - maps_review
+      - email_read
+      - email_send
+      - calendar_browse
+      - calendar_add
+    activity_weights:
+      search: 0.20
+      maps_browse: 0.30
+      maps_review: 0.28
+      email_read: 0.10
+      email_send: 0.07
+      calendar_browse: 0.03
+      calendar_add: 0.02
+    searches_per_session: [2, 5]
+    emails_sent_per_session: [1, 2]
+    session_gap_hours: [4, 10]
+
+  weeks_7_plus:
+    label: "Reviews — Target Engagement"
+    phase_note: "Ready to review the target business. View their listing, click through to the website, leave a detailed review."
+    actions_per_day: [4, 8]
+    skip_day_probability: 0.08
+    allowed_activities:
+      - search
+      - maps_browse
+      - maps_review
+      - email_read
+      - email_send
+      - browse
+      - calendar_browse
+      - calendar_add
+    activity_weights:
+      search: 0.18
+      maps_browse: 0.25
+      maps_review: 0.30
+      email_read: 0.10
+      email_send: 0.08
+      browse: 0.04
+      calendar_browse: 0.03
+      calendar_add: 0.02
+    searches_per_session: [2, 5]
+    emails_sent_per_session: [1, 3]
+    session_gap_hours: [3, 8]
+
+  multilogin:
+    api_base: "http://127.0.0.1:35000"
+    start_timeout_seconds: 90
+  session_cooldown_seconds: [30, 120]
+
+
+# ── PINDROP FOR UK BUSINESSES ─────────────────────────────────────────────────
+# Objective: suggest a business pin on Google Maps for a UK location.
+# Timeline: ~10 weeks total.
+# Key insight: needs strong Local Guide contribution history — maps activity
+# must dominate from week 1.  Emulator browsing of the target area is critical.
+
+pindrop_uk:
+  display_name: "Pindrop for UK Businesses"
+  description: >
+    Build account authority to suggest a business pin on Google Maps.
+    Requires heavy maps contribution history and emulator signal at the target location.
+  estimated_weeks: 10
+  engagement_start_week: 5
+  goal_action_week: 9
+
+  emulator:
+    add_at_week: 2
+    searches_per_day: [3, 5]
+    duration_weeks: 6
+    note: >
+      Add to Android emulator at week 2. Search for the area, nearby streets, and
+      local landmarks. Use Google Maps on the emulator to browse and navigate around
+      the exact target location regularly throughout weeks 2–8.
+
+  weeks_1_2:
+    label: "Pindrop — Maps Immersion"
+    phase_note: "Build maps history from day one. Browse UK areas, streets, neighbourhoods. Search local landmarks."
+    actions_per_day: [2, 4]
+    skip_day_probability: 0.12
+    allowed_activities:
+      - search
+      - maps_browse
+      - email_read
+      - newsletter_signup
+    activity_weights:
+      search: 0.28
+      maps_browse: 0.52
+      email_read: 0.12
+      newsletter_signup: 0.08
+    searches_per_session: [1, 3]
+    session_gap_hours: [6, 14]
+
+  weeks_3_4:
+    label: "Pindrop — Contribution Building"
+    phase_note: "Start leaving reviews for existing businesses nearby. Build Local Guide contribution points."
+    actions_per_day: [3, 6]
+    skip_day_probability: 0.10
+    allowed_activities:
+      - search
+      - maps_browse
+      - maps_review
+      - email_read
+      - calendar_browse
+    activity_weights:
+      search: 0.18
+      maps_browse: 0.40
+      maps_review: 0.30
+      email_read: 0.08
+      calendar_browse: 0.04
+    searches_per_session: [2, 4]
+    session_gap_hours: [4, 10]
+
+  weeks_5_6:
+    label: "Pindrop — Heavy Contribution"
+    phase_note: "Heavy review and maps activity. Establish a consistent Local Guide pattern before suggesting the pin."
+    actions_per_day: [3, 7]
+    skip_day_probability: 0.08
+    allowed_activities:
+      - search
+      - maps_browse
+      - maps_review
+      - email_read
+      - email_send
+      - browse
+    activity_weights:
+      search: 0.14
+      maps_browse: 0.36
+      maps_review: 0.35
+      email_read: 0.08
+      email_send: 0.05
+      browse: 0.02
+    searches_per_session: [2, 4]
+    emails_sent_per_session: [1, 2]
+    session_gap_hours: [3, 9]
+
+  weeks_7_plus:
+    label: "Pindrop — Ready to Submit"
+    phase_note: "Account is ready. Use Maps to navigate to the target location and suggest the business pin."
+    actions_per_day: [4, 8]
+    skip_day_probability: 0.08
+    allowed_activities:
+      - search
+      - maps_browse
+      - maps_review
+      - email_read
+      - email_send
+      - browse
+      - calendar_browse
+    activity_weights:
+      search: 0.12
+      maps_browse: 0.30
+      maps_review: 0.38
+      email_read: 0.08
+      email_send: 0.06
+      browse: 0.04
+      calendar_browse: 0.02
+    searches_per_session: [2, 5]
+    emails_sent_per_session: [1, 3]
+    session_gap_hours: [2, 7]
+
+  multilogin:
+    api_base: "http://127.0.0.1:35000"
+    start_timeout_seconds: 90
+  session_cooldown_seconds: [30, 120]
+
+
+# ── PHONE NUMBER EDIT FOR UK BUSINESSES ───────────────────────────────────────
+# Objective: submit a telephone number edit to a UK Google Maps business listing.
+# Timeline: ~7 weeks total.
+# Key insight: even a small contribution history (reviews + browses) is usually
+# enough for edits to be accepted quickly.  Faster timeline than pindrop.
+
+phone_edit_uk:
+  display_name: "Phone Number Edit for UK Businesses"
+  description: >
+    Build Maps contribution history to submit a telephone number edit to a UK
+    business listing.  Faster goal than pindrop — light contribution history suffices.
+  estimated_weeks: 7
+  engagement_start_week: 4
+  goal_action_week: 6
+
+  emulator:
+    add_at_week: 2
+    searches_per_day: [2, 4]
+    duration_weeks: 4
+    note: >
+      Add to Android emulator at week 2. Search for the business name, its category,
+      and nearby businesses. View the target listing on Google Maps mobile. This
+      establishes mobile-device history alongside the desktop session.
+
+  weeks_1_2:
+    label: "Phone Edit — Foundation"
+    phase_note: "Build base account activity. Search UK business categories, local directories, contact lookups."
+    actions_per_day: [1, 3]
+    skip_day_probability: 0.15
+    allowed_activities:
+      - search
+      - maps_browse
+      - newsletter_signup
+      - calendar_setup
+    activity_weights:
+      search: 0.45
+      maps_browse: 0.35
+      newsletter_signup: 0.12
+      calendar_setup: 0.08
+    searches_per_session: [2, 4]
+    session_gap_hours: [7, 15]
+
+  weeks_3_4:
+    label: "Phone Edit — Maps Contributor"
+    phase_note: "Build maps contributions: browse business listings, leave reviews for random businesses."
+    actions_per_day: [2, 5]
+    skip_day_probability: 0.10
+    allowed_activities:
+      - search
+      - maps_browse
+      - maps_review
+      - email_read
+      - calendar_browse
+    activity_weights:
+      search: 0.22
+      maps_browse: 0.40
+      maps_review: 0.25
+      email_read: 0.10
+      calendar_browse: 0.03
+    searches_per_session: [2, 4]
+    session_gap_hours: [5, 11]
+
+  weeks_5_6:
+    label: "Phone Edit — Pre-Edit Activity"
+    phase_note: "Increase maps activity. Search the target business. View their listing. Build edit credibility."
+    actions_per_day: [3, 6]
+    skip_day_probability: 0.08
+    allowed_activities:
+      - search
+      - maps_browse
+      - maps_review
+      - email_read
+      - email_send
+      - browse
+    activity_weights:
+      search: 0.18
+      maps_browse: 0.35
+      maps_review: 0.30
+      email_read: 0.09
+      email_send: 0.05
+      browse: 0.03
+    searches_per_session: [2, 4]
+    emails_sent_per_session: [1, 2]
+    session_gap_hours: [3, 9]
+
+  weeks_7_plus:
+    label: "Phone Edit — Execute & Maintain"
+    phase_note: "Submit the phone number edit. Continue regular activity for 2+ weeks to support the pending edit."
+    actions_per_day: [3, 7]
+    skip_day_probability: 0.08
+    allowed_activities:
+      - search
+      - maps_browse
+      - maps_review
+      - email_read
+      - email_send
+      - browse
+      - calendar_browse
+      - calendar_add
+    activity_weights:
+      search: 0.18
+      maps_browse: 0.28
+      maps_review: 0.30
+      email_read: 0.10
+      email_send: 0.07
+      browse: 0.04
+      calendar_browse: 0.02
+      calendar_add: 0.01
+    searches_per_session: [2, 5]
+    emails_sent_per_session: [1, 3]
+    session_gap_hours: [2, 8]
+
+  multilogin:
+    api_base: "http://127.0.0.1:35000"
+    start_timeout_seconds: 90
+  session_cooldown_seconds: [30, 120]
+
+
+# ── WARMING FOR GMB CREATION ──────────────────────────────────────────────────
+# Objective: create a new Google My Business listing for a UK business.
+# Timeline: ~12 weeks total.
+# Key insight: GMB creation requires the highest trust — broad activity across
+# ALL Google products (Search, Gmail, Maps, Calendar, Drive) over 10+ weeks.
+# Emulator needs longest run (8 weeks) and highest search frequency.
+
+gmb_creation:
+  display_name: "Warming for GMB Creation"
+  description: >
+    Build maximum account authority across all Google products to create a new
+    Google My Business listing.  Longest goal timeline — requires consistent
+    activity in Maps, Gmail, Calendar, Drive, and Search for 10+ weeks.
+  estimated_weeks: 12
+  engagement_start_week: 8
+  goal_action_week: 11
+
+  emulator:
+    add_at_week: 2
+    searches_per_day: [3, 6]
+    duration_weeks: 8
+    note: >
+      Add to Android emulator at week 2 and run for 8 weeks. Search consistently
+      for the business category, location name, and nearby competitors. Use Google
+      Maps on the emulator to browse the exact area regularly. High frequency is
+      important — this is the most emulator-intensive goal.
+
+  weeks_1_2:
+    label: "GMB — Deep Foundation"
+    phase_note: "Build all Google product history from week 1. Search business topics, set up calendar, drive, and email patterns."
+    actions_per_day: [2, 4]
+    skip_day_probability: 0.12
+    allowed_activities:
+      - search
+      - newsletter_signup
+      - calendar_setup
+      - drive_setup
+      - email_read
+    activity_weights:
+      search: 0.50
+      newsletter_signup: 0.15
+      calendar_setup: 0.12
+      drive_setup: 0.12
+      email_read: 0.11
+    searches_per_session: [2, 5]
+    session_gap_hours: [7, 15]
+
+  weeks_3_4:
+    label: "GMB — Maps & Productivity"
+    phase_note: "Begin maps browsing. Establish calendar and drive usage patterns. Read and send emails regularly."
+    actions_per_day: [3, 6]
+    skip_day_probability: 0.10
+    allowed_activities:
+      - search
+      - email_read
+      - maps_browse
+      - calendar_browse
+      - calendar_add
+      - drive_browse
+      - drive_edit
+    activity_weights:
+      search: 0.30
+      email_read: 0.20
+      maps_browse: 0.25
+      calendar_browse: 0.10
+      calendar_add: 0.05
+      drive_browse: 0.07
+      drive_edit: 0.03
+    searches_per_session: [2, 5]
+    session_gap_hours: [5, 12]
+
+  weeks_5_6:
+    label: "GMB — Contributor Growth"
+    phase_note: "Start heavy maps contributions — reviews, photo views, Q&A browsing. Build Local Guide level activity."
+    actions_per_day: [4, 8]
+    skip_day_probability: 0.08
+    allowed_activities:
+      - search
+      - email_read
+      - email_send
+      - maps_browse
+      - maps_review
+      - calendar_browse
+      - calendar_add
+      - drive_browse
+      - drive_edit
+      - drive_create
+    activity_weights:
+      search: 0.18
+      email_read: 0.12
+      email_send: 0.10
+      maps_browse: 0.25
+      maps_review: 0.18
+      calendar_browse: 0.06
+      calendar_add: 0.03
+      drive_browse: 0.04
+      drive_edit: 0.03
+      drive_create: 0.01
+    searches_per_session: [2, 6]
+    emails_sent_per_session: [1, 3]
+    session_gap_hours: [3, 8]
+
+  weeks_7_plus:
+    label: "GMB — Creation Ready"
+    phase_note: >
+      Account has strong history across all Google products. Execute GMB creation.
+      Continue activity post-creation for 3+ weeks to support the new listing.
+    actions_per_day: [5, 10]
+    skip_day_probability: 0.07
+    allowed_activities:
+      - search
+      - email_read
+      - email_send
+      - browse
+      - maps_browse
+      - maps_review
+      - calendar_browse
+      - calendar_add
+      - drive_browse
+      - drive_edit
+      - drive_create
+    activity_weights:
+      search: 0.15
+      email_read: 0.12
+      email_send: 0.12
+      browse: 0.05
+      maps_browse: 0.22
+      maps_review: 0.18
+      calendar_browse: 0.06
+      calendar_add: 0.03
+      drive_browse: 0.04
+      drive_edit: 0.02
+      drive_create: 0.01
+    searches_per_session: [3, 7]
+    emails_sent_per_session: [1, 4]
+    session_gap_hours: [2, 6]
+
+  multilogin:
+    api_base: "http://127.0.0.1:35000"
+    start_timeout_seconds: 90
+  session_cooldown_seconds: [30, 120]

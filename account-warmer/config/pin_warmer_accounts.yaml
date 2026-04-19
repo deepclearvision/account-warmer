@@ -1,0 +1,44 @@
+# Pin Warmer — Account Configuration
+#
+# One entry per account. Each account should be dedicated to a specific
+# target area where the pin will be added.
+#
+# target_area:   The geographic focus for all Maps activity.
+#                All reviews, browsing and edits happen in this area.
+#                lat/lng should be the centre of the area (e.g. the street
+#                or neighbourhood the new place will be on).
+#
+# pin_details:   The place you intend to add to Maps.
+#                Leave website/phone blank if unknown — better to omit
+#                than to put fake data.
+#                Opening hours and photos should be added manually via Maps
+#                after the listing is approved.
+#
+# warmup_start_date: Set to today when you first create the account.
+#                    The readiness check uses this to gate the pin addition.
+
+accounts:
+  - id: acc_001
+    email: youraccounthere@gmail.com
+    multilogin_profile_id: "paste-profile-id-from-multilogin"
+    proxy: ""                          # e.g. "http://user:pass@host:port"
+    location: "london"                 # Used for geolocation spoofing in non-Maps sessions
+    warmup_start_date: "2026-02-24"
+    active_hours: [8, 22]
+
+    target_area:
+      name: "Hackney, London"          # Human-readable label for logs
+      lat: 51.5450                     # Centre of the target area
+      lng: -0.0553
+      radius_m: 800                    # Rough radius — for reference only
+
+    pin_details:
+      name: "Example Business Name"
+      category: "Coffee shop"          # Must match a Maps category exactly
+      address: "123 Example Street, London E8 3RH"
+      phone: "+44 20 1234 5678"        # Leave blank if none
+      website: "https://example.co.uk" # Leave blank if none
+
+  # Add more accounts below if needed:
+  # - id: acc_002
+  #   email: ...

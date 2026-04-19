@@ -1,0 +1,141 @@
+{
+  "newsletters": [
+    {
+      "name": "The Skimm",
+      "url": "https://www.theskimm.com/",
+      "platform": "custom",
+      "email_selector": "input[type='email'][placeholder*='email' i], input[name='email']",
+      "submit_selector": "button[type='submit'], input[type='submit']",
+      "category": "news"
+    },
+    {
+      "name": "Morning Brew",
+      "url": "https://www.morningbrew.com/daily",
+      "platform": "custom",
+      "email_selector": "input[type='email']",
+      "submit_selector": "button[type='submit']",
+      "category": "business"
+    },
+    {
+      "name": "The Hustle",
+      "url": "https://thehustle.co/",
+      "platform": "custom",
+      "email_selector": "input[type='email']",
+      "submit_selector": "button[type='submit']",
+      "category": "business"
+    },
+    {
+      "name": "TLDR Newsletter",
+      "url": "https://tldr.tech/",
+      "platform": "custom",
+      "email_selector": "input[type='email']",
+      "submit_selector": "button[type='submit']",
+      "category": "tech"
+    },
+    {
+      "name": "Axios AM",
+      "url": "https://www.axios.com/newsletters/axios-am",
+      "platform": "custom",
+      "email_selector": "input[type='email']",
+      "submit_selector": "button[type='submit']",
+      "category": "news"
+    },
+    {
+      "name": "Politico Playbook",
+      "url": "https://www.politico.com/newsletters/politico-playbook",
+      "platform": "custom",
+      "email_selector": "input[type='email']",
+      "submit_selector": "button[type='submit']",
+      "category": "news"
+    },
+    {
+      "name": "Benedict Evans",
+      "url": "https://www.ben-evans.com/newsletter",
+      "platform": "mailchimp",
+      "category": "tech"
+    },
+    {
+      "name": "Stratechery",
+      "url": "https://stratechery.com/",
+      "platform": "custom",
+      "email_selector": "input[type='email']",
+      "submit_selector": "button[type='submit']",
+      "category": "tech"
+    },
+    {
+      "name": "Hacker Newsletter",
+      "url": "https://hackernewsletter.com/",
+      "platform": "mailchimp",
+      "category": "tech"
+    },
+    {
+      "name": "Dense Discovery",
+      "url": "https://www.densediscovery.com/",
+      "platform": "mailchimp",
+      "category": "design"
+    },
+    {
+      "name": "Sidebar",
+      "url": "https://sidebar.io/",
+      "platform": "custom",
+      "email_selector": "input[type='email']",
+      "submit_selector": "button[type='submit']",
+      "category": "design"
+    },
+    {
+      "name": "Cooper Review",
+      "url": "https://thecooperreview.com/",
+      "platform": "mailchimp",
+      "category": "humour"
+    },
+    {
+      "name": "Finimize",
+      "url": "https://www.finimize.com/",
+      "platform": "custom",
+      "email_selector": "input[type='email']",
+      "submit_selector": "button[type='submit']",
+      "category": "finance"
+    },
+    {
+      "name": "Money Stuff (Bloomberg)",
+      "url": "https://www.bloomberg.com/account/newsletters/money-stuff",
+      "platform": "custom",
+      "email_selector": "input[type='email']",
+      "submit_selector": "button[type='submit']",
+      "category": "finance"
+    },
+    {
+      "name": "Unsplash Newsletter",
+      "url": "https://unsplash.com/newsletter",
+      "platform": "mailchimp",
+      "category": "photography"
+    }
+  ],
+
+  "mailchimp_selectors": {
+    "email": "#mce-EMAIL, input[name='EMAIL'], input[id*='mce'][type='email']",
+    "submit": "#mc-embedded-subscribe, input[type='submit'][value*='Subscribe' i], button[type='submit']"
+  },
+
+  "klaviyo_selectors": {
+    "email": "input[type='email'][data-testid], .klaviyo-form input[type='email'], input[name='email']",
+    "submit": ".klaviyo-form button[type='submit'], button[data-testid*='submit']"
+  },
+
+  "generic_selectors": {
+    "email": "input[type='email'], input[name='email'], input[placeholder*='email' i], input[placeholder*='Email' i]",
+    "submit": "button[type='submit'], input[type='submit'], button:has-text('Subscribe'), button:has-text('Sign up'), button:has-text('Join')"
+  },
+
+  "confirmation_patterns": [
+    "confirm your subscription",
+    "please confirm",
+    "verify your email",
+    "activate your subscription",
+    "confirm your email",
+    "complete your signup",
+    "you're almost subscribed",
+    "one more step",
+    "confirm subscription"
+  ]
+}

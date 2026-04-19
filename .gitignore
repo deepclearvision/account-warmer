@@ -1,0 +1,39 @@
+# ── Credentials & secrets ─────────────────────────────────────────────────────
+warmer.env
+account-warmer/warmer.env
+
+# Live account/proxy data — contains emails, passwords, proxy credentials
+account-warmer/config/accounts.yaml
+account-warmer/config/proxies.yaml
+account-warmer/config/geelark_accounts.yaml
+
+# ── Runtime data ──────────────────────────────────────────────────────────────
+WarmingData/
+account-warmer/WarmingData/
+logs/
+account-warmer/logs/
+
+# ── Python cache ──────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# ── Virtual environments ───────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+
+# ── Tool directories ─────────────────────────────────────────────────────────
+.claude/
+.playwright-mcp/
+research/
+
+# ── Editor/OS ─────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
