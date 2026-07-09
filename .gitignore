@@ -1,0 +1,34 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# ── User data (lives outside the code tree — never track) ─────────────────────
+WarmingData/
+WarmingData2/
+logs/
+
+# ── Secrets / instance config (NEVER commit) ──────────────────────────────────
+warmer.env
+.env
+ml_token.json
+ml_token_cache.json
+config/settings.yaml
+config/multilogin.yaml
+config/proxies.yaml
+
+# ── Scratch / backups ─────────────────────────────────────────────────────────
+*.log
+*.bak
+deploy_backups/
+
+# ── Binary assets (large — distribute separately) ────────────────────────────
+*.apk
+*.apkm
+*.b64
+
+# ── Stale/mirrored user data that leaked into the code tree ───────────────────
+config/accounts.yaml

@@ -1,0 +1,445 @@
+businesses:
+
+  - id: biz_001
+    name: Southwark Plumbers
+    type: plumber
+    address: "12 Crosby Row, London SE1 3PT"
+    share_link: https://maps.app.goo.gl/GZXa2QmwNhm7hNQW9
+    goal: review
+    area: south_east_london
+    location: "Southwark, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_002
+    name: Sidcup Plumbing & Heating
+    type: plumber
+    address: "4 Station Rd, Sidcup DA15 7JU"
+    share_link: https://maps.app.goo.gl/vi7hxBJoB27xNtQh7
+    goal: review
+    area: sidcup
+    location: "Sidcup, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_003
+    name: Ruby Plumbers Rainham
+    type: plumber
+    address: "9 Ferro Rd, Rainham RM13 9TP"
+    share_link: https://maps.app.goo.gl/5XnChhimgSc2Sm3y8
+    goal: review
+    area: east_london
+    location: "Rainham, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_004
+    name: Prema Plumbing Putney
+    type: plumber
+    address: "115 Upper Richmond Rd, London SW15 2AD"
+    share_link: https://maps.app.goo.gl/rokJx2UXNm1MLo5J7
+    goal: review
+    area: south_west_london
+    location: "Putney, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_005
+    name: Streatham Plumbing & Heating Ltd
+    type: plumber
+    address: "13B Shrubbery Rd, London SW16 2AS"
+    share_link: https://maps.app.goo.gl/jFnJ1jdFAnEYFxny8
+    goal: edit
+    area: south_west_london
+    location: "Streatham, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+    phone: "07361 586930"
+
+  - id: biz_006
+    name: Camberwell Plumbing & Heating Ltd
+    type: plumber
+    address: "14 Tillings Cl, London SE5 0BX"
+    share_link: https://maps.app.goo.gl/JjSW28UXGUEkHXh8A
+    goal: edit
+    area: south_east_london
+    location: "Camberwell, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+    phone: "07723 541864"
+
+  - id: biz_007
+    name: Mitcham Plumbing and Heating
+    type: plumber
+    address: "24 Chatsworth Pl, Mitcham CR4 4NN"
+    share_link: https://maps.app.goo.gl/MAGaYhpJ1P8gNPyD9
+    goal: review
+    area: south_london
+    location: "Mitcham, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_008
+    name: Woolwich Plumbing & Heating
+    type: plumber
+    address: "Windrush House, London SE18 6EL"
+    share_link: https://maps.app.goo.gl/TdfVwksigLJvDmeN7
+    goal: review
+    area: south_east_london
+    location: "Woolwich, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_009
+    name: Epsom Plumbing & Heating
+    type: plumber
+    address: "55 Station Approach, Epsom KT19 8JS"
+    share_link: https://maps.app.goo.gl/EdpANMxWtpYy6cb17
+    goal: review
+    area: surrey
+    location: "Epsom, Surrey"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_010
+    name: Fix-A-Leak Plumber Walthamstow Ltd
+    type: plumber
+    address: "484-512 Forest Rd, London E17 4PZ"
+    share_link: https://maps.app.goo.gl/CQgSKTJ48yLuhY6B8
+    goal: review
+    area: east_london
+    location: "Walthamstow, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_011
+    name: Crystal Palace Plumbing and Home Maintenance
+    type: plumber
+    address: "10 Vicars Oak Rd, Norwood, London SE19 1HE"
+    share_link: https://maps.app.goo.gl/pb9cYoc9cBGZWp2q8
+    goal: review
+    area: south_east_london
+    location: "Crystal Palace, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_012
+    name: KO Edmonton Plumbing and Heating Ltd
+    type: plumber
+    address: "82 Galahad Rd, London N9 9WL"
+    share_link: https://maps.app.goo.gl/G94xtu5dGu4QQKHX6
+    goal: review
+    area: north_london
+    location: "Edmonton, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_013
+    name: Rush Green Electrical And Heating Services
+    type: plumber
+    address: "176A Rush Green Rd, Romford RM7 0JU"
+    share_link: https://maps.app.goo.gl/q2Kz75nQaeG4mYNX8
+    goal: review
+    area: east_london
+    location: "Romford, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_014
+    name: Express Plumbers
+    type: plumber
+    address: "Prince Georges Rd, London SW19 2FG"
+    share_link: https://maps.app.goo.gl/rdG1iFRVNmRbG1cX7
+    goal: review
+    area: south_west_london
+    location: "Wimbledon, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_015
+    name: Edmonton Plumbing And Heating Services
+    type: plumber
+    address: "1a Market Parade, London N9 9HF"
+    share_link: https://maps.app.goo.gl/TAEstGzc5t6icSxa9
+    goal: review
+    area: north_london
+    location: "Edmonton, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_016
+    name: Emergency Plumbers Edgware
+    type: plumber
+    address: "193 Station Rd, Edgware HA8 7JX"
+    share_link: https://maps.app.goo.gl/XWhtNpSyPTTpxJv47
+    goal: review
+    area: north_london
+    location: "Edgware, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_017
+    name: Blackfen Plumbing And Heating Services
+    type: plumber
+    address: "256 Blackfen Rd, Sidcup DA15 9PS"
+    share_link: https://maps.app.goo.gl/CEX8TQuMfqQRF9mS8
+    goal: review
+    area: sidcup
+    location: "Blackfen, Sidcup"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_018
+    name: Lewis Plumbing & Heating Specialists
+    type: plumber
+    address: Greenwich
+    share_link: https://maps.app.goo.gl/yG34QbqsGxWFwjst8
+    goal: review
+    area: south_east_london
+    location: "Greenwich, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_019
+    name: Campbell Plumbing & Heating Specialists
+    type: plumber
+    address: Battersea
+    share_link: https://maps.app.goo.gl/L3ubndYgpwcp43LJ7
+    goal: review
+    area: south_west_london
+    location: "Battersea, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_020
+    name: Carter Plumbing of Ripon Specialists
+    type: plumber
+    address: Islington
+    share_link: https://maps.app.goo.gl/3eRFP97s6GDKQkii9
+    goal: review
+    area: north_london
+    location: "Islington, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_021
+    name: Taylor Plumbing of Chichester Specialists
+    type: plumber
+    address: Camden Town
+    share_link: https://maps.app.goo.gl/bzkLYF3r51ftEBCYA
+    goal: review
+    area: north_london
+    location: "Camden, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_022
+    name: Richardson Plumbing & Heating Specialists
+    type: plumber
+    address: Beckenham
+    share_link: https://maps.app.goo.gl/LDUqSDsaoZZc3vB46
+    goal: review
+    area: south_east_london
+    location: "Beckenham, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_023
+    name: Smith Plumbing & Heating Specialists
+    type: plumber
+    address: London
+    share_link: https://maps.app.goo.gl/zgDLSAn6GjhSrspe8
+    goal: review
+    area: london
+    location: "London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_024
+    name: Wave Plumbing and Heating Ltd
+    type: plumber
+    address: "32 Nailcote Avenue, Coventry CV4 9GL"
+    share_link: https://maps.app.goo.gl/xsryCc37dNusH3uWA
+    goal: review
+    area: coventry
+    location: "Coventry"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_025
+    name: Gas Mark Services INC Ltd
+    type: plumber
+    address: "65 Wellesbourne Road, Coventry CV5 7HN"
+    share_link: https://maps.app.goo.gl/fT7ioqNyiJXEEJRw8
+    goal: review
+    area: coventry
+    location: "Coventry"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_026
+    name: Integrity Eco Solutions Ltd
+    type: plumber
+    address: Birmingham
+    share_link: https://maps.app.goo.gl/9TizamLVMminn9Rs6
+    goal: review
+    area: birmingham
+    location: "Birmingham"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_027
+    name: Gas and Electrical Maintenance Limited
+    type: plumber
+    address: Allesley
+    share_link: https://maps.app.goo.gl/7L3i6RKMJdPCEerEA
+    goal: review
+    area: coventry
+    location: "Allesley, Coventry"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_028
+    name: Collins Plumbing & Heating Specialists
+    type: plumber
+    address: "44 Hollycroft, Hinckley LE10 0HG"
+    share_link: https://maps.app.goo.gl/PzpucjUtfQXjvv1s5
+    goal: review
+    area: midlands
+    location: "Hinckley, Leicestershire"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_029
+    name: Chelsea Ward Plumbing & Heating Specialists
+    type: plumber
+    address: "London SW18 1JS"
+    share_link: https://maps.app.goo.gl/sRkq8JHMb5PUaUgn6
+    goal: review
+    area: south_west_london
+    location: "Wandsworth, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_030
+    name: JJ Hackney Plumber
+    type: plumber
+    address: "Stephen House, 1 Darnley Rd, London E9 6QH"
+    share_link: https://maps.app.goo.gl/HvVS1GuDyMoDUZvh6
+    goal: review
+    area: east_london
+    location: "Hackney, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_031
+    name: Wembley Emergency Plumbers
+    type: plumber
+    address: "10 Park Pl, Wembley HA9 8DB"
+    share_link: https://maps.app.goo.gl/8tCfEh8ye2xLecW76
+    goal: review
+    area: north_london
+    location: "Wembley, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_032
+    name: Havering Plumbing & Heating
+    type: plumber
+    address: "7 Manor Ave, Gidea Park, Hornchurch RM11 2EB"
+    share_link: https://maps.app.goo.gl/h61t8mo7zo3EgZv66
+    goal: review
+    area: east_london
+    location: "Hornchurch, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_033
+    name: HeatDoctor Canning Town 24 Hour Plumbing
+    type: plumber
+    address: "78 Cliff Walk, London E16 4HN"
+    share_link: https://maps.app.goo.gl/UB2yfyPhsz9jLwwj6
+    goal: review
+    area: east_london
+    location: "Canning Town, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null
+
+  - id: biz_034
+    name: D & S Yearling Plumbing Heating & Gas Services
+    type: plumber
+    address: "52 Kingsland Rd, London E13 9PA"
+    share_link: https://maps.app.goo.gl/cLYNsDWxsmfCyxe97
+    goal: review
+    area: east_london
+    location: "East Ham, London"
+    phone: ""
+    website: ""
+    lat: null
+    lng: null

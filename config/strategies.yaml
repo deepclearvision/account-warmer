@@ -1,0 +1,387 @@
+# Warming Strategies
+#
+# Assign a strategy to each account in accounts.yaml via:
+#   python warmer.py --assign acc_001 maps_heavy
+#
+# Available strategies:
+#   standard   — progressive warmup (search → email → maps → calendar → drive)
+#   maps_heavy — maps focused throughout all phases
+#   light      — low intensity, search and browse only
+#   pin_prep   — maximum maps focus, for accounts being groomed for Maps activity
+#
+# Each strategy uses the same week-band structure as schedule.yaml so the
+# orchestrator can load either file transparently.
+
+# ── STANDARD ──────────────────────────────────────────────────────────────────
+# Identical to schedule.yaml. Default for all accounts without a strategy field.
+
+standard:
+  weeks_1_2:
+    label: "Foundation"
+    actions_per_day: [1, 3]
+    sessions_per_day: 1
+    max_session_activities: 3
+    skip_day_probability: 0.15
+    allowed_activities:
+      - search
+      - newsletter_signup
+      - calendar_setup
+      - drive_setup
+    activity_weights:
+      search: 0.65
+      newsletter_signup: 0.13
+      calendar_setup: 0.11
+      drive_setup: 0.11
+    searches_per_session: [2, 4]
+    session_gap_hours: [8, 16]
+
+  weeks_3_4:
+    label: "Engagement"
+    actions_per_day: [1, 3]
+    sessions_per_day: 2
+    max_session_activities: 3
+    skip_day_probability: 0.10
+    allowed_activities:
+      - search
+      - email_read
+      - maps_browse
+      - calendar_browse
+      - calendar_add
+      - drive_browse
+      - drive_edit
+    activity_weights:
+      search: 0.42
+      email_read: 0.20
+      maps_browse: 0.12
+      calendar_browse: 0.09
+      calendar_add: 0.04
+      drive_browse: 0.08
+      drive_edit: 0.05
+    searches_per_session: [2, 5]
+    session_gap_hours: [5, 10]
+
+  weeks_5_6:
+    label: "Active"
+    actions_per_day: [2, 4]
+    sessions_per_day: 2
+    max_session_activities: 4
+    skip_day_probability: 0.10
+    allowed_activities:
+      - search
+      - email_read
+      - email_send
+      - maps_browse
+      - calendar_browse
+      - calendar_add
+      - drive_browse
+      - drive_edit
+      - drive_create
+    activity_weights:
+      search: 0.33
+      email_read: 0.18
+      email_send: 0.13
+      maps_browse: 0.10
+      calendar_browse: 0.07
+      calendar_add: 0.03
+      drive_browse: 0.08
+      drive_edit: 0.05
+      drive_create: 0.03
+    searches_per_session: [3, 6]
+    emails_sent_per_session: [1, 2]
+    session_gap_hours: [3, 8]
+
+  weeks_7_plus:
+    label: "Normal Use"
+    actions_per_day: [2, 5]
+    sessions_per_day: 3
+    max_session_activities: 5
+    skip_day_probability: 0.08
+    allowed_activities:
+      - search
+      - email_read
+      - email_send
+      - browse
+      - maps_browse
+      - calendar_browse
+      - calendar_add
+      - drive_browse
+      - drive_edit
+      - drive_create
+    activity_weights:
+      search: 0.26
+      email_read: 0.16
+      email_send: 0.15
+      browse: 0.07
+      maps_browse: 0.13
+      calendar_browse: 0.07
+      calendar_add: 0.03
+      drive_browse: 0.07
+      drive_edit: 0.04
+      drive_create: 0.02
+    searches_per_session: [3, 8]
+    emails_sent_per_session: [1, 4]
+    session_gap_hours: [2, 6]
+
+  multilogin:
+    api_base: "http://127.0.0.1:35000"
+    start_timeout_seconds: 90
+  session_cooldown_seconds: [30, 120]
+
+
+# ── MAPS HEAVY ────────────────────────────────────────────────────────────────
+# For accounts being built into credible Maps contributors.
+# maps_browse dominates from week 1.
+
+maps_heavy:
+  weeks_1_2:
+    label: "Maps Foundation"
+    actions_per_day: [2, 4]
+    sessions_per_day: 1
+    max_session_activities: 4
+    skip_day_probability: 0.12
+    allowed_activities:
+      - search
+      - maps_browse
+      - email_read
+      - newsletter_signup
+    activity_weights:
+      search: 0.30
+      maps_browse: 0.50
+      email_read: 0.12
+      newsletter_signup: 0.08
+    searches_per_session: [1, 3]
+    session_gap_hours: [6, 14]
+
+  weeks_3_4:
+    label: "Maps Engagement"
+    actions_per_day: [2, 3]
+    sessions_per_day: 2
+    max_session_activities: 3
+    skip_day_probability: 0.10
+    allowed_activities:
+      - search
+      - maps_browse
+      - email_read
+      - browse
+    activity_weights:
+      search: 0.20
+      maps_browse: 0.65
+      email_read: 0.10
+      browse: 0.05
+    searches_per_session: [2, 4]
+    session_gap_hours: [4, 10]
+
+  weeks_5_6:
+    label: "Maps Active"
+    actions_per_day: [2, 4]
+    sessions_per_day: 2
+    max_session_activities: 4
+    skip_day_probability: 0.10
+    allowed_activities:
+      - search
+      - maps_browse
+      - email_read
+      - email_send
+      - browse
+    activity_weights:
+      search: 0.15
+      maps_browse: 0.66
+      email_read: 0.10
+      email_send: 0.06
+      browse: 0.03
+    searches_per_session: [2, 5]
+    emails_sent_per_session: [1, 2]
+    session_gap_hours: [3, 8]
+
+  weeks_7_plus:
+    label: "Maps Power User"
+    actions_per_day: [2, 4]
+    sessions_per_day: 3
+    max_session_activities: 4
+    skip_day_probability: 0.08
+    allowed_activities:
+      - search
+      - maps_browse
+      - email_read
+      - email_send
+      - browse
+      - calendar_browse
+      - drive_browse
+    activity_weights:
+      search: 0.12
+      maps_browse: 0.62
+      email_read: 0.09
+      email_send: 0.07
+      browse: 0.04
+      calendar_browse: 0.03
+      drive_browse: 0.03
+    searches_per_session: [2, 6]
+    emails_sent_per_session: [1, 3]
+    session_gap_hours: [2, 6]
+
+  multilogin:
+    api_base: "http://127.0.0.1:35000"
+    start_timeout_seconds: 90
+  session_cooldown_seconds: [30, 120]
+
+
+# ── LIGHT ─────────────────────────────────────────────────────────────────────
+# Low intensity. Search and browse only, fewer sessions.
+# For accounts that need to look alive without building a deep footprint.
+# Useful as a holding pattern while deciding on a permanent strategy.
+
+light:
+  weeks_1_2:
+    label: "Light Start"
+    actions_per_day: [1, 2]
+    sessions_per_day: 1
+    max_session_activities: 2
+    skip_day_probability: 0.25
+    allowed_activities:
+      - search
+      - browse
+    activity_weights:
+      search: 0.80
+      browse: 0.20
+    searches_per_session: [1, 3]
+    session_gap_hours: [10, 20]
+
+  weeks_3_4:
+    label: "Light Settled"
+    actions_per_day: [1, 2]
+    sessions_per_day: 1
+    max_session_activities: 2
+    skip_day_probability: 0.20
+    allowed_activities:
+      - search
+      - browse
+      - email_read
+    activity_weights:
+      search: 0.65
+      browse: 0.20
+      email_read: 0.15
+    searches_per_session: [1, 3]
+    session_gap_hours: [8, 18]
+
+  weeks_5_6:
+    label: "Light Continued"
+    actions_per_day: [1, 2]
+    sessions_per_day: 1
+    max_session_activities: 2
+    skip_day_probability: 0.20
+    allowed_activities:
+      - search
+      - browse
+      - email_read
+    activity_weights:
+      search: 0.60
+      browse: 0.25
+      email_read: 0.15
+    searches_per_session: [2, 4]
+    session_gap_hours: [8, 16]
+
+  weeks_7_plus:
+    label: "Light Ongoing"
+    actions_per_day: [2, 3]
+    sessions_per_day: 2
+    max_session_activities: 3
+    skip_day_probability: 0.18
+    allowed_activities:
+      - search
+      - browse
+      - email_read
+      - maps_browse
+    activity_weights:
+      search: 0.55
+      browse: 0.25
+      email_read: 0.15
+      maps_browse: 0.05
+    searches_per_session: [2, 4]
+    session_gap_hours: [6, 14]
+
+  multilogin:
+    api_base: "http://127.0.0.1:35000"
+    start_timeout_seconds: 90
+  session_cooldown_seconds: [45, 150]
+
+
+# ── PIN PREP ──────────────────────────────────────────────────────────────────
+# Maximum maps focus — maps_browse dominates.
+# Builds credible Maps engagement history. No calendar or drive — keeps
+# signal focused on Maps.
+
+pin_prep:
+  weeks_1_2:
+    label: "Pin Prep - Maps Immersion"
+    actions_per_day: [2, 4]
+    sessions_per_day: 1
+    max_session_activities: 4
+    skip_day_probability: 0.10
+    allowed_activities:
+      - maps_browse
+      - search
+      - email_read
+    activity_weights:
+      maps_browse: 0.65
+      search: 0.25
+      email_read: 0.10
+    searches_per_session: [1, 3]
+    session_gap_hours: [6, 14]
+
+  weeks_3_4:
+    label: "Pin Prep - Maps Engagement"
+    actions_per_day: [2, 3]
+    sessions_per_day: 2
+    max_session_activities: 3
+    skip_day_probability: 0.10
+    allowed_activities:
+      - maps_browse
+      - search
+      - email_read
+    activity_weights:
+      maps_browse: 0.80
+      search: 0.12
+      email_read: 0.08
+    searches_per_session: [1, 3]
+    session_gap_hours: [4, 10]
+
+  weeks_5_6:
+    label: "Pin Prep - Heavy Maps"
+    actions_per_day: [2, 3]
+    sessions_per_day: 2
+    max_session_activities: 3
+    skip_day_probability: 0.08
+    allowed_activities:
+      - maps_browse
+      - search
+      - email_read
+    activity_weights:
+      maps_browse: 0.80
+      search: 0.12
+      email_read: 0.08
+    searches_per_session: [2, 4]
+    session_gap_hours: [4, 10]
+
+  weeks_7_plus:
+    label: "Pin Prep - Final Conditioning"
+    actions_per_day: [2, 3]
+    sessions_per_day: 3
+    max_session_activities: 3
+    skip_day_probability: 0.08
+    allowed_activities:
+      - maps_browse
+      - search
+      - email_read
+      - browse
+    activity_weights:
+      maps_browse: 0.78
+      search: 0.12
+      email_read: 0.07
+      browse: 0.03
+    searches_per_session: [2, 5]
+    session_gap_hours: [3, 8]
+
+  multilogin:
+    api_base: "http://127.0.0.1:35000"
+    start_timeout_seconds: 90
+  session_cooldown_seconds: [30, 120]
