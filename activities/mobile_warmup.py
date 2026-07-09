@@ -631,12 +631,44 @@ def _warmup_maps(phone_id: str, acc_id: str, log_acc_id: str = "") -> bool:
         _swipe_down(phone_id)
         time.sleep(2)
 
-        # Tap the first result to open its place detail card
-        tapped = _find_and_tap(phone_id, ["Directions", "Website", "Call", "Save", "Share", "Open"])
+        # ── STEP 1: Tap the first search result ────────────────────────────
+        # After a Maps search, the results page shows business cards with text
+        # like "Open"/"Closed", distances ("km"/"m away"), or "·" separators.
+        # Detail-card buttons ("Directions", "Website", "Call") only appear
+        # AFTER a listing is opened — we must tap a result card first.
+        #
+        # Try in priority order:
+        #   a) "Open"/"Closed" — every result card has one of these
+        #   b) distance units — "km", "m away", "mi away", "·"
+        #   c) the "filter" or "sort" & nearby result text as last resort
+        opened_listing = _find_and_tap(phone_id, [
+            "Open", "Closed",
+            "km", "m away", "mi away",
+            "·",
+        ])
         time.sleep(3)
+        if not opened_listing:
+            # No text node matched — fall back to a coordinate tap near where
+            # the first result card renders on most Android screen sizes.
+            # Maps places results ~35% down from the top of the viewport.
+            log.info("[%s] Maps: no text match for result — trying coordinate fallback", acc_id)
+            _shell(phone_id, "input tap 540 850")
+            time.sleep(3)
 
-        if tapped:
-            # Scroll through the place detail (reviews, photos, info)
+        # ── STEP 2: Verify we're on a listing detail card ──────────────────
+        # These labels confirm the place detail is open.
+        detail_opened = _find_and_tap(phone_id, [
+            "Directions", "Call", "Website", "Save", "Share",
+        ])
+        if not detail_opened:
+            # Maybe we opened the result card but the detail labels haven't
+            # rendered yet, or we're on a photo carousel. Do a short dwell
+            # so there's still *some* interaction (the result card itself).
+            log.info("[%s] Maps: listing opened but detail labels not visible — short dwell", acc_id)
+            time.sleep(random.randint(15, 25))
+
+        # ── STEP 3: Browse the listing ─────────────────────────────────────
+        if detail_opened:
             dwell = random.randint(20, 45)
             log.info("[%s] Browsing place detail for %ds", acc_id, dwell)
             scrolls = dwell // 8
@@ -646,8 +678,13 @@ def _warmup_maps(phone_id: str, acc_id: str, log_acc_id: str = "") -> bool:
             # Scroll back up naturally
             _shell(phone_id, "input swipe 540 400 540 1200 500")
             time.sleep(2)
-        else:
-            # Just dwell on the results list
+
+        # ── STEP 4: Guaranteed interaction check ───────────────────────────
+        # If we neither opened a listing nor a detail card, tap blindly at a
+        # second coordinate and dwell — some interaction > none at all.
+        if not opened_listing and not detail_opened:
+            log.warning("[%s] Maps: no listing interaction after all attempts — forced dwell", acc_id)
+            _shell(phone_id, "input tap 540 650")
             time.sleep(random.randint(15, 25))
 
         _press_home(phone_id)
