@@ -876,10 +876,10 @@ def _run_warmup_sync(job_id: str, account: dict) -> None:
             j["viewer_url"] = update["viewer_url"]
 
     try:
-        from activities.mobile_warmup import run_warmup_session
+        from activities.mobile_warmup import run_mobile_schedule_session
         from core.paths import DATA_DIR
         log_file = DATA_DIR / "logs" / "mobile_sessions.json"
-        result = run_warmup_session(account, log_file, progress_callback=_progress)
+        result = run_mobile_schedule_session(account, log_file, progress_callback=_progress, schedule_state=None)
         _jobs[job_id]["result"] = result
         _jobs[job_id]["status"] = "completed" if result["success"] else "failed"
         _jobs[job_id]["phase"]  = "complete" if result["success"] else "failed"
@@ -918,7 +918,7 @@ def _run_warmup_all_sync(job_id: str, accounts: list) -> None:
             j["progress"] = update["progress"]
 
     try:
-        from activities.mobile_warmup import run_all_warmup_sessions
+        from activities.mobile_warmup import run_all_warmup_sessions  # kept for backward compat
         from core.paths import DATA_DIR
         log_file = DATA_DIR / "logs" / "mobile_sessions.json"
         results = run_all_warmup_sessions(accounts, log_file, progress_callback=_progress)
@@ -1133,6 +1133,114 @@ def _run_batch_sync(job_id: str, account_ids: list[str], mode: str) -> None:
         job["result_detail"] = detail
 
     _batch_run_semaphore.release()
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ── Mobile Schedule endpoints ─────────────────────────────────────────────────
+
+@router.post("/schedule/run-forever")
+async def schedule_run_forever(body: dict | None = None):
+    """
+    Enroll selected accounts in BOTH the desktop scheduler and the new mobile
+    schedule scheduler — one button to start continuous dual-platform warming.
+
+    Body (optional): {"account_ids": ["acc_001", "acc_002", ...]}
+
+    If no account_ids provided, ALL desktop accounts with a paired provisioned
+    GeelarK phone are enrolled.
+    """
+    _check_active_hours()
+    acc_ids = (body or {}).get("account_ids", [])
+
+    from core.account_store import get_account_store
+    store = get_account_store()
+    desktop_accounts = store.get_desktop_accounts()
+
+    if acc_ids:
+        id_set = set(acc_ids)
+        desktop_accounts = [a for a in desktop_accounts if a["id"] in id_set]
+
+    # ── Desktop — resume scheduler + bulk-enroll ─────────────────────────────
+    from core.scheduler import get_scheduler as get_desktop_scheduler
+    desktop_svc = get_desktop_scheduler()
+    desktop_svc.resume()
+    desktop_enrolled = 0
+    for acc in desktop_accounts:
+        desktop_svc.enroll(acc["id"])
+        desktop_enrolled += 1
+
+    # ── Mobile — resolve GL accounts by email, enroll in mobile scheduler ───
+    from core.mobile_scheduler import get_mobile_scheduler
+    mobile_svc = get_mobile_scheduler()
+    mobile_svc.resume()
+
+    gl_accounts  = store.get_mobile_accounts()
+    email_to_gl  = {a.get("email", "").lower(): a for a in gl_accounts if a.get("email")}
+
+    mobile_enrolled = 0
+    errors = []
+    for acc in desktop_accounts:
+        email = (acc.get("email") or "").lower()
+        gl_acc = email_to_gl.get(email)
+        if not gl_acc:
+            errors.append({"account": acc["id"], "error": "no mobile phone linked"})
+            continue
+        if not gl_acc.get("geelark_phone_id"):
+            errors.append({"account": acc["id"], "error": "phone not provisioned"})
+            continue
+        if not gl_acc.get("mobile_warming_enabled", True):
+            errors.append({"account": acc["id"], "error": "mobile warming disabled"})
+            continue
+        mobile_svc.enroll(gl_acc["id"])
+        mobile_enrolled += 1
+
+    return {
+        "desktop": {"enrolled": desktop_enrolled,
+                    "scheduler_resumed": not desktop_svc.paused},
+        "mobile":  {"enrolled": mobile_enrolled,
+                     "schedule_paused": mobile_svc.paused},
+        "errors":  errors,
+    }
+
+
+@router.get("/schedule/status")
+def schedule_status():
+    """Return the mobile schedule state for all enrolled accounts."""
+    from core.mobile_scheduler import get_mobile_scheduler
+    return get_mobile_scheduler().get_status()
+
+
+@router.post("/schedule/pause")
+def schedule_pause():
+    """Pause the mobile schedule — no new phone sessions will start."""
+    from core.mobile_scheduler import get_mobile_scheduler
+    get_mobile_scheduler().pause()
+    return {"paused": True}
+
+
+@router.post("/schedule/resume")
+def schedule_resume():
+    """Resume the mobile schedule."""
+    from core.mobile_scheduler import get_mobile_scheduler
+    get_mobile_scheduler().resume()
+    return {"paused": False}
+
+
+@router.post("/schedule/{account_id}/enroll")
+def schedule_enroll(account_id: str):
+    """Add a single account to the mobile schedule."""
+    from core.mobile_scheduler import get_mobile_scheduler
+    return get_mobile_scheduler().enroll(account_id)
+
+
+@router.post("/schedule/{account_id}/unenroll")
+def schedule_unenroll(account_id: str):
+    """Remove a single account from the mobile schedule."""
+    from core.mobile_scheduler import get_mobile_scheduler
+    ok = get_mobile_scheduler().unenroll(account_id)
+    if not ok:
+        raise HTTPException(404, f"{account_id!r} is not in the mobile schedule")
+    return {"unenrolled": account_id}
 
 
 @router.get("/job/{job_id}")

@@ -195,10 +195,16 @@ async def lifespan(app: FastAPI):
     svc          = get_scheduler()
     sched_task   = asyncio.create_task(svc.run_loop())
     refresh_task = asyncio.create_task(_token_refresh_loop())
+
+    from core.mobile_scheduler import get_mobile_scheduler
+    mobile_svc   = get_mobile_scheduler()
+    mob_task     = asyncio.create_task(mobile_svc.run_loop())
+
     yield
     sched_task.cancel()
     refresh_task.cancel()
-    for t in (sched_task, refresh_task):
+    mob_task.cancel()
+    for t in (sched_task, refresh_task, mob_task):
         try:
             await t
         except asyncio.CancelledError:

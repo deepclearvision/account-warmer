@@ -1032,6 +1032,11 @@ tr.row-selected td { background: rgba(88,166,255,.06); }
     title="Start desktop scheduler + mobile warm-up for all accounts with one click">
     🚀 Start All
   </button>
+  <button id="btn-run-forever" class="btn" onclick="runForever()"
+    style="background:rgba(188,140,255,.2);color:var(--purple,#bc8cff);font-weight:700;border-color:rgba(188,140,255,.5)"
+    title="Enroll selected accounts in BOTH desktop & mobile continuous warming. Runs within active hours (7am-10pm).">
+    🔄 Run Forever
+  </button>
   <button id="btn-scheduler-toggle" class="btn btn-sched-paused" onclick="toggleScheduler()" title="Scheduler is PAUSED on startup — click to resume auto-warming">⏸ Scheduler Paused</button>
   <div id="concurrency-ctrl" style="display:flex;align-items:center;gap:5px;flex-shrink:0" title="Max simultaneous browser sessions">
     <span style="font-size:11px;color:var(--muted)">Browsers:</span>
@@ -6462,6 +6467,36 @@ async function startAllWarming() {
   // If mobile job started, poll it and drive the viewer window
   if (mobileJobId) {
     _pollMobileJobWithViewer(mobileJobId, 'Mobile warm-up');
+
+// ── Run Forever — dual scheduler enrollment ───────────────────────────────────
+async function runForever() {
+  const btn = document.getElementById('btn-run-forever');
+  btn.disabled = true;
+  btn.textContent = '⏳ Enrolling…';
+
+  const ids = [...selectedIds];
+  try {
+    const data = await apiFetch('/api/mobile/schedule/run-forever', {
+      method: 'POST',
+      body: ids.length ? { account_ids: ids } : {},
+    });
+    const msg = [];
+    if (data.desktop) msg.push(`Desktop: ${data.desktop.enrolled} enrolled`);
+    if (data.mobile)  msg.push(`Mobile: ${data.mobile.enrolled} enrolled`);
+    if (data.errors?.length) msg.push(`${data.errors.length} errors`);
+    showToast(msg.join(' | '), data.desktop?.enrolled ? 'ok' : 'info');
+    btn.style.background = 'rgba(63,185,80,.2)';
+    btn.style.color = 'var(--green)';
+    btn.style.borderColor = 'rgba(63,185,80,.5)';
+    btn.textContent = '✅ Running';
+    btn.disabled = true;
+    // Refresh scheduler / mobile status displays
+    _pollSchedulerStatus();
+  } catch (e) {
+    showToast('Run Forever failed: ' + e.message, 'error');
+    btn.disabled = false;
+    btn.textContent = '🔄 Run Forever';
+  }
   }
 
   // Refresh scheduler status after a moment

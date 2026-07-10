@@ -88,7 +88,7 @@ def main() -> None:
         _show_status()
         return
 
-    from activities.mobile_warmup import run_warmup_session, run_all_warmup_sessions
+    from activities.mobile_warmup import run_mobile_schedule_session, run_all_warmup_sessions
 
     pc_filter = args.pc or os.environ.get("PC_ID", "").strip()
     accounts  = _load_accounts(pc_filter)
@@ -98,7 +98,7 @@ def main() -> None:
         if not acc:
             log.error("Account %r not found in geelark_accounts.yaml", args.account)
             sys.exit(1)
-        result = run_warmup_session(acc, SESSION_LOG_FILE)
+        result = run_mobile_schedule_session(acc, SESSION_LOG_FILE, schedule_state=None)
         status = "OK" if result["success"] else "FAILED"
         log.info("Result: %s | Steps: %s | Duration: %.0fs | IP: %s",
                  status, result["steps_done"], result["duration_s"], result["ip"])

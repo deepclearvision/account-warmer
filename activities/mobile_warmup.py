@@ -58,6 +58,22 @@ _MAP_SEARCHES = [
     "post office near me",
 ]
 
+# High-commercial-intent keywords for the Money KW batch script.
+# Each query signals a user ready to spend money — solicitor, plumber, etc.
+_MONEY_KW_POOL = [
+    "best plumber near me", "emergency electrician london",
+    "cheapest car insurance uk", "same day flower delivery london",
+    "roof repair near me", "boiler service london",
+    "private dentist near me", "cheap taxi near me",
+    "best solicitor near me", "accountant near me",
+    "car mechanic near me", "pest control near me",
+    "drain unblocking near me", "locksmith 24 hour near me",
+    "skip hire near me", "removals company near me",
+    "car valeting near me", "conveyancing solicitor london",
+    "mortgage broker london", "will writing service near me",
+    "private gp london", "physiotherapist near me",
+]
+
 # London driving directions pairs — (dest_lat_lon, origin_lat, origin_lon, label)
 # dest_lat_lon used in saddr/daddr URL so Maps never falls back to IP/network location.
 # Pairs are ~0.5–3 km apart across South/Central/East London.
@@ -387,6 +403,289 @@ _GOOGLE_SEARCHES = [
     "how to dispute a parking ticket",
     "how to report a pothole uk",
 ]
+
+# ── Batch-mode schedule scripts ─────────────────────────────────────────────
+# These replace the old 5-activity random warmup.  Each runs exactly one
+# batch-mode session per day, determined by _day_to_script(schedule_day).
+
+def _day_to_script(day: int) -> str:
+    """
+    Monthly schedule pattern (days 1+).
+      Day  1-2:  local_discovery   (initial warming)
+      Day  3:    money_kw          (first business interaction)
+      Day  4-10: local_discovery
+      Day 11:    brand_1km
+      Day 12-20: local_discovery
+      Day 21:    brand_1km
+      Day 22-30: local_discovery
+    After day 30: daily local_discovery + brand_1km every 10th day.
+    """
+    cycle = ((day - 1) % 30) + 1
+    if day <= 30:
+        if cycle == 3:
+            return "money_kw"
+        if cycle in (11, 21):
+            return "brand_1km"
+        return "local_discovery"
+    if cycle % 10 == 0:
+        return "brand_1km"
+    return "local_discovery"
+
+
+def _batch_local_discovery(phone_id: str, acc_id: str, account: dict,
+                           log_acc_id: str = "") -> bool:
+    """
+    Everyday local browsing — Maps "near me" search + browse a listing.
+    Optionally also do a Chrome search or YouTube watch for variety.
+    This is the default bread-and-butter script (runs ~27 days/month).
+    """
+    log.info("[%s] Local Discovery batch …", acc_id)
+    try:
+        _open_app(phone_id, "com.google.android.apps.maps", acc_id)
+
+        # Tap My Location (40% chance)
+        if random.random() < 0.4:
+            time.sleep(random.uniform(1.5, 3.0))
+            _shell(phone_id, "input tap 1010 1650")
+            time.sleep(random.uniform(1.5, 2.5))
+
+        # Search a random "near me" category
+        query = random.choice(_MAP_SEARCHES)
+        tapped = _find_and_tap(phone_id, ["Search here", "Search Google Maps",
+                                          "Search Maps"])
+        if not tapped:
+            log.warning("[%s] Local Discovery: Maps search bar not found", acc_id)
+            _press_home(phone_id)
+            return False
+        time.sleep(2)
+        _type_and_search(phone_id, query)
+        time.sleep(4)
+        _swipe_down(phone_id)
+        time.sleep(2)
+
+        # Open a listing — same two-step pattern as _warmup_maps
+        opened = _find_and_tap(phone_id, ["Open", "Closed", "km", "m away", "·"])
+        time.sleep(3)
+        if not opened:
+            _shell(phone_id, "input tap 540 850")
+            time.sleep(3)
+        detail = _find_and_tap(phone_id, ["Directions", "Call", "Website",
+                                          "Save", "Share"])
+        if detail:
+            dwell = random.randint(20, 40)
+            scrolls = dwell // 8
+            for _ in range(scrolls):
+                _swipe_down(phone_id)
+                time.sleep(random.uniform(2.5, 5.0))
+            _shell(phone_id, "input swipe 540 400 540 1200 500")
+            time.sleep(2)
+        else:
+            time.sleep(random.randint(15, 25))
+
+        # Extra activity for variety (50% Chrome, 30% YouTube, 20% nothing)
+        roll = random.random()
+        if roll < 0.5:
+            _do_quick_chrome_search(phone_id, acc_id, log_acc_id)
+        elif roll < 0.8:
+            _warmup_youtube(phone_id, acc_id, log_acc_id)
+
+        _press_home(phone_id)
+        log.info("[%s] Local Discovery done.", acc_id)
+        return True
+    except Exception as e:
+        log.warning("[%s] Local Discovery failed: %s", acc_id, e)
+        _press_home(phone_id)
+        return False
+
+
+def _do_quick_chrome_search(phone_id: str, acc_id: str,
+                            log_acc_id: str = "") -> None:
+    """Quick Google search in Chrome — used as an add-on within batch scripts."""
+    try:
+        _shell(phone_id, "am start -a android.intent.action.VIEW "
+               "-d 'https://www.google.co.uk' com.android.chrome")
+        _wait_for_foreground_app(phone_id, "chrome", timeout=15, acc_id=acc_id)
+        # Dismiss Chrome first-run dialogs
+        _find_and_tap(phone_id, ["Accept & continue", "Got it"])
+        time.sleep(0.5)
+        _find_and_tap(phone_id, ["No thanks", "Skip", "Later", "Not now"])
+        time.sleep(2)
+
+        query = random.choice(_GOOGLE_SEARCHES[:50])  # first 50 are local/nearby
+        _find_and_tap(phone_id, ["Search or type web address",
+                                 "Search or type URL",
+                                 "Search or type a URL",
+                                 "Search web"])
+        time.sleep(1)
+        _type_and_search(phone_id, query)
+        time.sleep(random.randint(8, 15))
+        _press_home(phone_id)
+    except Exception:
+        _press_home(phone_id)
+
+
+def _batch_money_kw(phone_id: str, acc_id: str, account: dict,
+                    log_acc_id: str = "") -> bool:
+    """
+    High-commercial-intent keyword searches — signals the account is ready to
+    spend money. Two Google searches on a money keyword, clicking an organic
+    result, scrolling the landing page. Runs once in month 1 (day 3).
+    """
+    log.info("[%s] Money KW batch …", acc_id)
+    from core.activity_log import log_event
+    try:
+        _shell(phone_id, "am start -a android.intent.action.VIEW "
+               "-d 'https://www.google.co.uk' com.android.chrome")
+        _wait_for_foreground_app(phone_id, "chrome", timeout=15, acc_id=acc_id)
+        _find_and_tap(phone_id, ["Accept & continue", "Got it"])
+        time.sleep(0.5)
+        _find_and_tap(phone_id, ["No thanks", "Skip", "Later", "Not now"])
+        time.sleep(2)
+
+        keywords_used = []
+        for _ in range(2):
+            kw = random.choice(_MONEY_KW_POOL)
+            keywords_used.append(kw)
+            log.info("[%s] Money KW search: %s", acc_id, kw)
+            _find_and_tap(phone_id, ["Search or type web address",
+                                     "Search or type URL",
+                                     "Search or type a URL",
+                                     "Search web"])
+            time.sleep(1)
+            _type_and_search(phone_id, kw)
+            time.sleep(4)
+            # Tap first organic result (rough coordinates below the ad section)
+            _shell(phone_id, "input tap 540 650")
+            time.sleep(random.randint(8, 15))
+            # Back to results
+            _press_back(phone_id, times=1)
+            time.sleep(2)
+
+        if log_acc_id:
+            try:
+                log_event(log_acc_id, "mobile", "money_kw",
+                          {"keywords": keywords_used})
+            except Exception:
+                pass
+        _press_home(phone_id)
+        log.info("[%s] Money KW done.", acc_id)
+        return True
+    except Exception as e:
+        log.warning("[%s] Money KW failed: %s", acc_id, e)
+        _press_home(phone_id)
+        return False
+
+
+def _batch_brand_1km(phone_id: str, acc_id: str, account: dict,
+                     log_acc_id: str = "") -> bool:
+    """
+    Navigate to a specific named business in Maps — simulates a customer who
+    knows exactly what business they want. Searches by name, opens directions,
+    browses the listing. Runs twice in month 1 (days 11 and 21).
+    """
+    log.info("[%s] Brand 1km batch …", acc_id)
+    from core.activity_log import log_event
+    try:
+        _open_app(phone_id, "com.google.android.apps.maps", acc_id)
+
+        # Resolve target business — priority: account's target_businesses,
+        # then a random business from businesses.yaml, then a well-known chain
+        biz_name, biz_lat, biz_lng = _resolve_target_business(account)
+
+        tapped = _find_and_tap(phone_id, ["Search here", "Search Google Maps",
+                                          "Search Maps"])
+        if not tapped:
+            log.warning("[%s] Brand 1km: Maps search bar not found", acc_id)
+            _press_home(phone_id)
+            return False
+        time.sleep(2)
+
+        log.info("[%s] Brand 1km search: %s", acc_id, biz_name)
+        _type_and_search(phone_id, biz_name)
+        time.sleep(4)
+        _swipe_down(phone_id)
+        time.sleep(2)
+
+        # Open the listing
+        opened = _find_and_tap(phone_id, ["Open", "Closed", "km", "m away", "·"])
+        time.sleep(3)
+        if not opened:
+            _shell(phone_id, "input tap 540 850")
+            time.sleep(3)
+
+        # 50% chance: get directions
+        if random.random() < 0.5:
+            _find_and_tap(phone_id, ["Directions"])
+            time.sleep(random.randint(8, 15))
+
+        # Browse the detail card
+        detail = _find_and_tap(phone_id, ["Directions", "Call", "Website",
+                                          "Save", "Share"])
+        if detail:
+            dwell = random.randint(30, 60)
+            scrolls = dwell // 8
+            for _ in range(scrolls):
+                _swipe_down(phone_id)
+                time.sleep(random.uniform(2.5, 5.0))
+            _shell(phone_id, "input swipe 540 400 540 1200 500")
+            time.sleep(2)
+        else:
+            time.sleep(random.randint(15, 25))
+
+        if log_acc_id:
+            try:
+                log_event(log_acc_id, "mobile", "brand_1km",
+                          {"business_name": biz_name})
+            except Exception:
+                pass
+        _press_home(phone_id)
+        log.info("[%s] Brand 1km done.", acc_id)
+        return True
+    except Exception as e:
+        log.warning("[%s] Brand 1km failed: %s", acc_id, e)
+        _press_home(phone_id)
+        return False
+
+
+def _resolve_target_business(account: dict) -> tuple:
+    """Resolve a target business (name, lat, lng) for brand navigations."""
+    import yaml
+    from core.paths import DATA_DIR
+
+    # Priority 1: account's target_businesses list
+    biz_ids = account.get("target_businesses", [])
+    if biz_ids:
+        try:
+            biz_file = DATA_DIR / "businesses.yaml"
+            if biz_file.exists():
+                data = yaml.safe_load(biz_file.read_text(encoding="utf-8")) or {}
+                for b in data.get("businesses", []):
+                    if b.get("id") in biz_ids and b.get("lat") and b.get("lng"):
+                        return b.get("name"), b.get("lat"), b.get("lng")
+        except Exception:
+            pass
+
+    # Priority 2: random business from businesses.yaml with lat/lng
+    try:
+        biz_file = DATA_DIR / "businesses.yaml"
+        if biz_file.exists():
+            data = yaml.safe_load(biz_file.read_text(encoding="utf-8")) or {}
+            candidates = [b for b in data.get("businesses", [])
+                         if b.get("lat") and b.get("lng")]
+            if candidates:
+                b = random.choice(candidates)
+                return b.get("name"), b.get("lat"), b.get("lng")
+    except Exception:
+        pass
+
+    # Priority 3: well-known UK retail chain for generic interaction
+    chains = [
+        "Tesco", "Sainsbury's", "Waitrose", "Boots", "Costa Coffee",
+        "Greggs", "Pizza Express", "Nando's", "Wetherspoons",
+        "Pret a Manger", "Starbucks", "McDonald's",
+    ]
+    return random.choice(chains), None, None
+
 
 # ── ADB helpers ───────────────────────────────────────────────────────────────
 
@@ -1076,18 +1375,29 @@ def _log_session(log_file: Path, acc_id: str, steps: list, duration_s: float,
     log_file.write_text(json.dumps(records, indent=2), encoding="utf-8")
 
 
-# ── Main session runner ───────────────────────────────────────────────────────
+# ── Schedule-driven session runner ────────────────────────────────────────────
+# Replaces the old 5-activity random warmup with a single batch-mode script
+# determined by the account's schedule_day using the monthly pattern.
 
-def run_warmup_session(account: dict, log_file: Path, progress_callback=None) -> dict:
+def run_mobile_schedule_session(account: dict, log_file: Path,
+                                progress_callback=None,
+                                schedule_state: dict | None = None) -> dict:
     """
-    Run a single 2–5 min warm-up session for one GeelarK account.
+    Run ONE batch-mode session for one GeelarK account. The script is
+    determined by the account's schedule_day count using _day_to_script().
+
+    Keeps all the existing session infrastructure — proxy rotation, GPS,
+    health check, phone start/stop, screenshot, session logging — but
+    replaces the 5 random activities with exactly one batch-mode call.
 
     Args:
-        account:  dict from geelark_accounts.yaml
-        log_file: Path to mobile_sessions.json
+        account:   dict from geelark_accounts.yaml
+        log_file:  Path to mobile_sessions.json
+        schedule_state:  MobileScheduler's raw state dict (or None if
+                         running standalone / manual warmup)
 
     Returns:
-        dict with keys: success, steps_done, duration_s, ip, error
+        dict with keys: success, script, steps_done, duration_s, ip, error
     """
     from core.geelark_client import GeelarKClient
 
@@ -1166,26 +1476,28 @@ def run_warmup_session(account: dict, log_file: Path, progress_callback=None) ->
     except Exception as e:
         log.warning("[%s] GPS refresh failed: %s", acc_id, e)
 
-    # 5. Warm-up activities — randomise order each session for variety
-    activity_fns = [
-        ("maps",             lambda: _warmup_maps(phone_id, acc_id, log_acc_id)),
-        ("maps_directions",  lambda: _warmup_maps_directions(phone_id, acc_id, account, log_acc_id)),
-        ("youtube",          lambda: _warmup_youtube(phone_id, acc_id, log_acc_id)),
-        ("gmail",            lambda: _warmup_gmail(phone_id, acc_id, log_acc_id)),
-        ("google_search",    lambda: _warmup_google_search(phone_id, acc_id, log_acc_id)),
-    ]
-    random.shuffle(activity_fns)
+    # 5. Determine today's script from schedule
+    schedule_day = 1
+    if schedule_state and acc_id in schedule_state:
+        schedule_day = schedule_state[acc_id].get("schedule_day", 1)
+    script = _day_to_script(schedule_day)
+    log.info("[%s] Schedule day %d → script: %s", acc_id, schedule_day, script)
 
-    for step_name, fn in activity_fns:
-        try:
-            ok = fn()
-            if ok:
-                result["steps_done"].append(step_name)
-            else:
-                log.warning("[%s] %s returned False", acc_id, step_name)
-        except Exception as e:
-            log.warning("[%s] %s activity raised: %s", acc_id, step_name, e)
-        time.sleep(random.uniform(2.0, 4.0))
+    # Run exactly ONE batch-mode script
+    ok = False
+    if script == "brand_1km":
+        ok = _batch_brand_1km(phone_id, acc_id, account, log_acc_id)
+    elif script == "money_kw":
+        ok = _batch_money_kw(phone_id, acc_id, account, log_acc_id)
+    else:
+        ok = _batch_local_discovery(phone_id, acc_id, account, log_acc_id)
+
+    if ok:
+        result["steps_done"].append(script)
+        result["script"] = script
+    else:
+        result["script"] = script
+        log.warning("[%s] %s returned False", acc_id, script)
 
     # 6. Proof screenshot — capture current screen before stopping
     try:
@@ -1300,7 +1612,8 @@ def run_all_warmup_sessions(accounts: list, log_file: Path, progress_callback=No
                 "current_account": acc["id"],
                 "progress":        f"{i + 1}/{len(to_run)}",
             })
-        r = run_warmup_session(acc, log_file, progress_callback=progress_callback)
+        r = run_mobile_schedule_session(acc, log_file,
+                                         progress_callback=progress_callback)
         results.append({"account_id": acc["id"], **r})
         time.sleep(5)
 
@@ -1309,3 +1622,9 @@ def run_all_warmup_sessions(accounts: list, log_file: Path, progress_callback=No
     log.info("Mobile warm-up complete. OK: %d  Failed/partial: %d  Skipped (done today): %d",
              ok, failed, len(skipped))
     return results
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# LEGACY — Old warmup activity functions.  Not called by the new schedule system.
+# Kept for reference and as building blocks for the batch functions above.
+# ═══════════════════════════════════════════════════════════════════════════════

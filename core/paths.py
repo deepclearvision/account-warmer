@@ -60,7 +60,8 @@ LOGS_DIR             = DATA_DIR / "logs"
 STATE_DIR            = DATA_DIR / "logs" / "state"
 TOKEN_FILE           = STATE_DIR / "ml_token.json"
 SYNC_CACHE_FILE      = STATE_DIR / "ml_sync_cache.json"
-SCHEDULER_STATE_FILE = STATE_DIR / "scheduler.json"
+SCHEDULER_STATE_FILE        = STATE_DIR / "scheduler.json"
+MOBILE_SCHEDULER_STATE_FILE  = STATE_DIR / "mobile_schedule.json"
 
 # ── App config (ships with the software — strategies, schedules, behaviour) ───
 
