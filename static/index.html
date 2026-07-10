@@ -1945,10 +1945,15 @@ let syncData         = null;    // last sync result, for import
 let cityList         = [];      // [{key, label, lat, lng}] from /api/ml/cities
 
 // ── Init ───────────────────────────────────────────────────────────────────────
+window.addEventListener('error', (e) => {
+  const tbody = document.getElementById('accounts-body');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="19" class="state-cell" style="color:var(--red)">JS Error: ' + e.message + ' at line ' + e.lineno + ':' + e.colno + ' (' + (e.filename ? e.filename.split('/').pop() : '?') + ')</td></tr>';
+});
 document.addEventListener('DOMContentLoaded', () => {
   initClock();
   loadMLStatus();
-  loadLoginStatus().then(() => loadAccounts());
+  loadAccounts();
+  loadLoginStatus();
   loadErrorLog();
   loadFixesCount();
   loadBusinesses();
@@ -1965,9 +1970,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }).catch(() => {});
 
-  setInterval(loadAccounts,   60_000);
-  setInterval(loadMLStatus,  120_000);
-  setInterval(loadErrorLog,   30_000);
+  setInterval(() => { if (document.getElementById('pane-accounts').classList.contains('active')) loadAccounts(); }, 120_000);
+  setInterval(loadMLStatus,  300_000);
+  setInterval(loadErrorLog,  120_000);
   setInterval(loadFixesCount, 60_000);
   setInterval(loadLoginStatus, 300_000);  // refresh login status every 5 min
 });
@@ -2036,10 +2041,7 @@ async function refreshToken() {
 // ── Accounts ───────────────────────────────────────────────────────────────────
 async function loadAccounts() {
   try {
-    const [res] = await Promise.all([
-      fetch('/api/accounts'),
-      loadLoginStatus(),
-    ]);
+    const res = await fetch('/api/accounts');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     allAccounts = await res.json();
     _populateAccCatFilter();
@@ -2049,6 +2051,8 @@ async function loadAccounts() {
     document.getElementById('accounts-body').innerHTML =
       `<tr><td colspan="19" class="state-cell" style="color:var(--red)">Failed to load accounts: ${e.message}</td></tr>`;
   }
+  // Refresh login status independently — must never block the accounts table.
+  loadLoginStatus();
 }
 
 function updateCounts() {
@@ -5188,12 +5192,12 @@ function _initHScrollMirror() {
 // ── Init hooks (called from DOMContentLoaded) ──────────────────────────────────
 
 function initRunner() {
-  // Load errors on startup, then every 60s
+  // Load errors on startup, then every 120s
   _loadErrors();
-  _errPollId = setInterval(_loadErrors, 60_000);
-  // Load scheduler state immediately, then poll every 10s
+  _errPollId = setInterval(_loadErrors, 120_000);
+  // Load scheduler state immediately, then poll every 30s
   _pollSchedulerStatus();
-  _schedPollId = setInterval(_pollSchedulerStatus, 10_000);
+  _schedPollId = setInterval(_pollSchedulerStatus, 30_000);
 }
 
 // ── apiFetch helper ────────────────────────────────────────────────────────────
@@ -6549,6 +6553,8 @@ async function startAllWarming() {
   // If mobile job started, poll it and drive the viewer window
   if (mobileJobId) {
     _pollMobileJobWithViewer(mobileJobId, 'Mobile warm-up');
+  }
+}
 
 // ── Run Forever — dual scheduler enrollment ───────────────────────────────────
 async function runForever() {
@@ -6578,7 +6584,6 @@ async function runForever() {
     showToast('Run Forever failed: ' + e.message, 'error');
     btn.disabled = false;
     btn.textContent = '🔄 Run Forever';
-  }
   }
 
   // Refresh scheduler status after a moment

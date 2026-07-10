@@ -344,6 +344,20 @@ def _delete_geelark_phone_cloud(phone_id: str) -> dict:
                 "detail": str(e)[:200]}
 
 
+def _cleanup_schedulers(account_id: str) -> None:
+    """Remove an account from both the desktop and mobile schedulers if enrolled."""
+    try:
+        from core.scheduler import get_scheduler
+        get_scheduler().unenroll(account_id)
+    except Exception:
+        pass
+    try:
+        from core.mobile_scheduler import get_mobile_scheduler
+        get_mobile_scheduler().unenroll(account_id)
+    except Exception:
+        pass
+
+
 def _delete_account_platforms(acc: dict, delete_ml_profile: bool,
                               delete_geelark_phone: bool) -> dict:
     """
@@ -483,6 +497,7 @@ async def delete_account(account_id: str,
                                  f"stop it before deleting.")
 
     platform = _delete_account_platforms(acc, delete_ml_profile, delete_geelark_phone)
+    _cleanup_schedulers(account_id)
     new_list = [a for a in accounts if a["id"] != account_id]
     await save_accounts(new_list)
     return {"deleted": account_id, "email": acc.get("email", ""), "platform": platform}
@@ -516,6 +531,7 @@ async def bulk_delete(body: dict):
             skipped.append({"id": aid, "reason": "active session"})
             continue
         platform[aid] = _delete_account_platforms(acc, delete_ml, delete_gk)
+        _cleanup_schedulers(aid)
         deleted.append(aid)
 
     if deleted:
