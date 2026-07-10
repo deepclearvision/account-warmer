@@ -1417,6 +1417,18 @@ tr.row-selected td { background: rgba(88,166,255,.06); }
       <div style="font-weight:600;margin-bottom:8px" id="mobile-warmup-status-title">Warming in progress…</div>
       <div id="mobile-warmup-status-body" style="font-size:13px;color:var(--muted)"></div>
     </div>
+    <!-- Schedule status panel -->
+    <div id="mobile-schedule-card" style="margin:0 24px 16px;padding:14px 18px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-weight:600;font-size:14px">📅 Schedule Status</span>
+        <span style="display:flex;gap:6px">
+          <button class="btn btn-sm" id="mobile-sched-pause-btn" onclick="toggleMobileSchedule()" style="font-size:11px">⏸ Pause</button>
+          <span id="mobile-sched-info" style="font-size:11px;color:var(--muted)"></span>
+        </span>
+      </div>
+      <div id="mobile-schedule-body" style="font-size:12px;color:var(--muted)">Loading…</div>
+    </div>
+
     <!-- Login status panel -->
     <div id="mobile-login-status" style="display:none;margin:16px 24px;padding:16px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
       <div style="font-weight:600;margin-bottom:8px" id="mobile-login-status-title">Login in progress…</div>
@@ -5792,6 +5804,7 @@ async function loadMobilePhones() {
   } catch(e) {
     tbody.innerHTML = `<tr><td colspan="10" style="color:var(--red);padding:20px">${escHtml(e.message)}</td></tr>`;
   }
+  loadMobileScheduleStatus();  // refresh schedule panel too
 }
 
 async function mobileRecreate(accountId) {
@@ -6093,6 +6106,75 @@ function mobileBulkDelete() {
       } catch (e) { _delModalError(modal, 'Delete failed: ' + e.message); }
     },
   });
+}
+
+// ── Mobile schedule status ──────────────────────────────────────────────────
+
+async function loadMobileScheduleStatus() {
+  const body = document.getElementById('mobile-schedule-body');
+  const info = document.getElementById('mobile-sched-info');
+  const btn  = document.getElementById('mobile-sched-pause-btn');
+  if (!body) return;
+
+  try {
+    const s = await apiFetch('/api/mobile/schedule/status');
+    const accts = s.accounts || {};
+    const ids   = Object.keys(accts);
+    info.textContent = `${ids.length} enrolled`;
+
+    // Update pause/resume button
+    if (s.paused) {
+      btn.textContent = '▶ Resume';
+      btn.style.cssText = 'font-size:11px;background:rgba(63,185,80,.15);color:var(--green)';
+    } else {
+      btn.textContent = '⏸ Pause';
+      btn.style.cssText = 'font-size:11px;background:rgba(248,81,73,.15);color:var(--red)';
+    }
+
+    if (!ids.length) {
+      body.innerHTML = '<span style="color:var(--muted)">No accounts enrolled in the mobile schedule. Click <strong>Run Forever</strong> from the Accounts tab to enroll.</span>';
+      return;
+    }
+
+    let table = '<table style="width:100%;border-collapse:collapse;font-size:12px">' +
+      '<thead><tr style="border-bottom:1px solid var(--border)">' +
+      '<th style="text-align:left;padding:4px 6px">Account</th>' +
+      '<th style="text-align:center;padding:4px 6px">Day</th>' +
+      '<th style="text-align:center;padding:4px 6px">Script</th>' +
+      '<th style="text-align:center;padding:4px 6px">Last Run</th>' +
+      '<th style="text-align:right;padding:4px 6px">Status</th>' +
+      '</tr></thead><tbody>';
+
+    for (const [id, a] of Object.entries(accts)) {
+      const day   = a.schedule_day || 1;
+      const sc    = a.today_script || '—';
+      const lr    = a.last_run_date || 'never';
+      const st    = a.status || 'waiting';
+      const stCol = st === 'running' ? 'var(--green)' :
+                    st === 'error'   ? 'var(--red)'   : 'var(--muted)';
+      table += `<tr style="border-bottom:1px solid rgba(48,54,61,.4)">
+        <td style="padding:3px 6px;font-family:monospace;font-size:11px">${escHtml(id)}</td>
+        <td style="text-align:center;padding:3px 6px">${day}</td>
+        <td style="text-align:center;padding:3px 6px;font-weight:500">${escHtml(sc)}</td>
+        <td style="text-align:center;padding:3px 6px;color:var(--muted)">${escHtml(lr)}</td>
+        <td style="text-align:right;padding:3px 6px;color:${stCol};font-weight:600">${escHtml(st)}</td>
+      </tr>`;
+    }
+    table += '</tbody></table>';
+    body.innerHTML = table;
+  } catch (e) {
+    body.innerHTML = `<span style="color:var(--red)">Schedule unavailable: ${escHtml(e.message)}</span>`;
+  }
+}
+
+async function toggleMobileSchedule() {
+  const btn = document.getElementById('mobile-sched-pause-btn');
+  try {
+    const s  = await apiFetch('/api/mobile/schedule/status');
+    const ep = s.paused ? '/api/mobile/schedule/resume' : '/api/mobile/schedule/pause';
+    await apiFetch(ep, { method: 'POST' });
+    loadMobileScheduleStatus();
+  } catch (e) { showToast('Schedule toggle failed: ' + e.message, 'error'); }
 }
 
 // ── Multi-select helpers ───────────────────────────────────────────────────
