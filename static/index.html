@@ -6587,7 +6587,7 @@ async function runForever() {
   }
 
   // Refresh scheduler status after a moment
-  setTimeout(() => loadSchedulerStatus && loadSchedulerStatus(), 2500);
+  setTimeout(() => _pollSchedulerStatus(), 2500);
 }
 
 async function startAllWarmup() {
