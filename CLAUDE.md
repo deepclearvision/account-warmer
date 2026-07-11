@@ -366,3 +366,62 @@ Sensitive values live in two places (never commit them):
 - `config/settings.yaml` — Multilogin, GeelarK, Decodo, StreamVia credentials
 
 The dashboard reads `config/settings.yaml` and passes credentials to each module so subprocesses don't need their own copies.
+
+## Deployment Protocol (READ BEFORE MAKING CHANGES)
+
+This project runs across multiple PCs (PC 2 = dev, PC 1 = production). Every change you make **must** eventually reach PC 1. Follow this process:
+
+### Step 1 — Commit every change with descriptive messages
+
+```bash
+git add <changed files>
+git commit -m "type: short description
+
+Detailed explanation of what and why.
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+```
+
+Commit message format: `type: description` where type is one of:
+- `fix:` — bug fix
+- `feat:` — new feature
+- `chore:` — config, cleanup, version bumps
+- `docs:` — documentation
+
+### Step 2 — Bump version and tag
+
+```bash
+# Edit version.txt with the new version number
+# Then:
+git add version.txt
+git commit -m "chore: bump version to X.Y.Z"
+git tag vX.Y.Z -m "vX.Y.Z — summary of changes"
+git push origin master --tags
+```
+
+Version numbering:
+- **Patch** (1.2.3 → 1.2.4): bug fixes only
+- **Minor** (1.2.3 → 1.3.0): new features, non-breaking
+- **Major** (1.2.3 → 2.0.0): breaking changes (rare)
+
+### Step 3 — Deploy to other PCs
+
+After pushing, go to the other PC and run:
+```powershell
+cd <account-warmer-folder>
+git fetch origin --tags
+git checkout -f vX.Y.Z
+```
+
+Then restart the server via tray icon. Protected files (`warmer.env`, `config/settings.yaml`, `logs/`, `WarmingData/`) are in `.gitignore` and survive the checkout untouched.
+
+### Multi-PC facts
+
+| Machine | Port | Role |
+|---------|------|------|
+| PC 2 (this one) | 8001 | Development & testing |
+| PC 1 | 8000 | Production warming |
+
+Both share the same GitHub repo. Each PC has its own `warmer.env` (blocklisted in `.gitignore`) with its own `PC_ID`, `SERVER_PORT`, and credentials. Code changes flow: PC 2 → GitHub → PC 1. User data never leaves each PC.
+
+See `DEPLOY.md` for the full deploy guide including rollback, dry-run, and USB-based deployment.
