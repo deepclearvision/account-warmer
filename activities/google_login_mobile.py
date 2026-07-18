@@ -1,68 +1,39 @@
 """
-Google Account Login via GeelarK Cloud Phone — Pure ADB Mode.
+Google Account Login via GeelarK Cloud Phone.
 
-# Why Pure ADB?
-GeelarK's built-in RPA flows (openApp / googleLogin) require Android 11+ for Wireless
-Debugging. All our phones are Samsung Galaxy S9+ (SM-G9650) running Android 10.
-The only automation path available on Android 10 is ADB shell commands issued through
-GeelarK's /open/v1/shell/execute API endpoint.
+# Current Approach (2026-07-18): GeelarK RPA Flow — All Android Versions
+All phones use GeelarK's "Google auto login" custom RPA flow
+(ID 628594965093548419) which handles:
+  - Email entry
+  - Password entry
+  - TOTP 2FA (built-in getAuthenticationCode step generates code from secret)
+  - Consent screen navigation (Skip, I understand, I agree, ACCEPT)
 
-# MinuteMaidActivity — How Google Sign-in Works on Android
-ALL Google sign-in screens run inside a single activity:
-  com.google.android.gms.auth.uiflows.minutemaid.MinuteMaidActivity
-The actual UI is rendered inside a Chrome WebView child. On our SM-G9650 / Android 10 /
-GMS build, uiautomator dump DOES expose WebView content — button text, link text, and
-input field IDs (resource-id="identifierId" for email, etc.) are all visible in the XML.
-This allows _find_and_tap() to locate elements like "Try another way" by text.
-Key observable elements:
-  • android.widget.EditText    — email, password, TOTP, security-code input fields
-  • resource-id="identifierId" — uniquely identifies the email entry EditText
-  • password="true"            — distinguishes the password field
-  • text="Try another way"     — link on the "security code from device" screen
-  • android.webkit.WebView     — present on ALL MinuteMaid screens
-  • Post-login native buttons  (Skip, Next, I agree, Allow, etc.)
+ParamMap: {"User Email": email, "Password": password, "2faCode": totp_secret}
+The 2faCode param is optional — omit for accounts without TOTP.
 
-# CRITICAL: Screen Type vs. State
-_detect_minutemaid_screen() returns "totp_entry" for ANY EditText without a password
-flag. This means EMAIL screens and TOTP screens look IDENTICAL to the detector.
-The caller (_run_pure_adb_login) MUST distinguish them using state flags:
-  email_entered, password_entered, _2fa_step
+This flow is called via _run_auto_login_flow() → client.run_custom_flow().
+The flow runs entirely within GeelarK's RPA engine (no ADB text input needed),
+which solves the Android 14 WebView blindness problem (uiautomator cannot see
+inside Chrome WebViews on Android 14, and 'input text' does not work).
 
-# Confirmed Working Login Flow (tested 2026-04-09, Android 10, 720x1440)
-  1. Press HOME — dismiss any screen left over from a previous attempt.
-  2. Check AccountManager — if already registered, return success immediately.
-  3. Launch ADD_ACCOUNT_SETTINGS intent → opens MinuteMaidActivity at email screen.
-  4. EMAIL screen  (screen_type="totp_entry", email_entered=False)
-       → tap EditText, clear 40× DEL, type email, press Enter
-  5. PASSWORD screen  (screen_type="password")
-       → tap EditText, clear 30× DEL, type password, press Enter
-  6. SECURITY-CODE screen  (screen_type="totp_entry", _2fa_step=0, password_entered=True)
-       → Google shows "Get security code from signed-in Android device" — this is NOT TOTP.
-       → Dismiss keyboard (KEYCODE_BACK), then find "Try another way" by text in dump
-         (falls back to fractional (0.176, 0.896) if not found).
-       → _2fa_step → 1
-  7. METHOD LIST screen  (screen_type="webview_prompt", _2fa_step=1)
-       → WebView-rendered list of 2FA methods. No labels visible in uiautomator.
-       → Tap "Get code from Google Authenticator" at fractional (0.50, 0.491).
-       → _2fa_step → 2
-  8. TOTP ENTRY screen  (screen_type="totp_entry", _2fa_step>=2, password_entered=True)
-       → This is the REAL TOTP screen. Generate pyotp code, clear field, type code, Enter.
-       → totp_entered → True, _2fa_step → 3
-  9. POST-TOTP screens  (screen_type="totp_entry" or "webview_prompt", totp_entered=True)
-       → Google shows recovery phone, account setup, etc. Tap Skip/Not now/Next.
-  10. LEFT MinuteMaidActivity → navigate any remaining consent screens → done.
-  11. Verify via dumpsys account — look for Account {name=email, type=com.google}.
+# Legacy Approach: Pure ADB (Deprecated)
+_run_pure_adb_login() is kept for reference but is no longer used in the
+default path.  It drove sign-in via ADB shell commands through the
+ADD_ACCOUNT_SETTINGS intent on Android 10/13 phones.
 
 # Proxy
-All phones share a single StreamVia rotating mobile SOCKS5 proxy (GEELARK_PROXY).
-Proxy IP is rotated before each login attempt via GEELARK_PROXY_CONTROL_URL.
-Rate limit: one rotation per 180s.
+All phones share a single StreamVia rotating mobile SOCKS5 proxy.
+Proxy IP is rotated before every phone-start operation (login, setup, warmup)
+via the StreamVia token-based API with changeipunique → changeip fallback.
+A 60s settling buffer follows every rotation.  Rate limit: ~180s between
+rotations — enforced by cooldown tracking inside _rotate_proxy_ip().
 
 # TOTP Secrets
 Stored in geelark_accounts.yaml. May contain spaces — normalize with
   .replace(" ", "").upper()
-before passing to pyotp. AYCD CSV accounts (acc_032–051) have confirmed correct
-secrets. Older accounts (acc_004–031) have uncertain secrets.
+before use. The auto login flow's getAuthenticationCode step handles code
+generation internally from the raw secret.
 """
 
 import base64
@@ -1069,87 +1040,147 @@ def _navigate_post_login_screens(phone_id: str, max_taps: int = 8,
     return LAUNCHER_ACTIVITY in focus
 
 
-def _rotate_proxy_ip() -> str:
+# ── StreamVia proxy API (token-based — proven on 37 accounts) ──────────────────
+# Replaces the old GEELARK_PROXY_CONTROL_URL portal approach.
+# Cooldown tracking ensures we never hit the 180s rate limit.
+
+_PROXY_API_TOKEN = "xuClkA9-wS6_-4wWCy2bWsWXjepW0wVD1AYLdlze_sc"
+_PROXY_API_BASE  = "https://mobile-proxy-140-166.streamvia.io/api.php"
+
+_last_rotation_time: float = 0.0
+_ROTATION_COOLDOWN = 185  # seconds — 180s minimum + 5s buffer
+
+
+def _proxy_get_ip() -> str:
+    """Get current proxy exit IP via StreamVia status API. Returns IP or ''."""
+    import requests as _req
+    try:
+        r = _req.get(
+            _PROXY_API_BASE,
+            params={"token": _PROXY_API_TOKEN, "action": "status"},
+            timeout=15,
+        )
+        import re as _re
+        m = _re.search(r"Ready:\s*([\d.]+)", r.text)
+        if m:
+            return m.group(1)
+        m = _re.search(r"(\d+\.\d+\.\d+\.\d+)", r.text)
+        if m:
+            return m.group(1)
+    except Exception:
+        pass
+    return ""
+
+
+def _rotate_proxy_ip(acc_id: str = "") -> str:
     """
-    Request a unique fresh IP from the StreamVia mobile proxy control portal.
-    Uses changeipunique so each account session gets an IP not used in the
-    last 24 hours — critical for account isolation when 5 phones share one proxy.
+    Rotate the StreamVia mobile proxy to a fresh IP.
 
-    Polls the check-IP endpoint until Ready: x.x.x.x is returned (up to 3 min).
-    If throttled, waits the required number of seconds and retries once.
-    Returns the new IP string on success, '' on failure/not-configured.
+    Strategy:
+      1. Enforce minimum cooldown gap between rotations (185s).
+      2. Try ``changeipunique`` (IP not used in last 24h) — preferred.
+      3. If throttled > 10 min, fall back to ``changeip`` (random IP).
+      4. Detect "Throttled: Wait N" responses, wait, and retry.
+      5. Poll until ``Ready: x.x.x.x`` shows a new IP (up to 10 min).
+      6. Log assigned IP prominently: ``>>> acc_XXX ASSIGNED PROXY IP: x.x.x.x <<<``
 
-    Rate limit: changeip/changeipunique can only run once every 180s.
-    Control portal base URL (with credentials): GEELARK_PROXY_CONTROL_URL
+    Args:
+        acc_id: optional account ID for log prefix (e.g. "gl_001").
+
+    Returns new IP on success, '' on failure / no change.
     """
     import requests as _req
     import re as _re
-    import warnings as _w
-    _w.filterwarnings("ignore", message="Unverified HTTPS")
 
-    control_url = os.environ.get("GEELARK_PROXY_CONTROL_URL", "").rstrip("/")
-    if not control_url:
-        log.warning("GEELARK_PROXY_CONTROL_URL not set — skipping proxy rotation")
+    global _last_rotation_time
+
+    # ── Enforce minimum gap between rotations ──────────────────────────────
+    gap = time.time() - _last_rotation_time
+    if gap < _ROTATION_COOLDOWN:
+        wait = _ROTATION_COOLDOWN - gap
+        log.info("[%s] Proxy: cooldown - waiting %.0fs...", acc_id, wait)
+        time.sleep(wait)
+
+    old_ip = _proxy_get_ip()
+    if not old_ip:
+        log.warning("[%s] Proxy: cannot reach status API — aborting rotation", acc_id)
         return ""
 
-    # curl User-Agent causes portal to return plain text instead of HTML
-    headers = {"User-Agent": "curl/7.68.0"}
+    log.info("[%s] Proxy current IP: %s", acc_id, old_ip)
 
-    def _check_ip() -> str | None:
-        """Return current IP if portal says Ready, else None."""
-        r = _req.get(control_url, headers=headers, timeout=15, verify=False)
-        text = r.text.strip()
-        m = _re.search(r'Ready:\s*([\d.]+)', text)
-        return m.group(1) if m else None
+    # ── Request rotation (with throttle handling + fallback) ───────────────
+    action = "changeipunique"  # preferred
+    max_poll_seconds = 600     # 10 minutes
 
-    def _issue_changeip() -> str:
-        """Issue changeipunique and return raw response text."""
-        r = _req.get(f"{control_url}/?changeipunique=true",
-                     headers=headers, timeout=30, verify=False)
-        return r.text.strip()
+    for attempt in range(3):
+        try:
+            r = _req.get(
+                _PROXY_API_BASE,
+                params={"token": _PROXY_API_TOKEN, "action": action},
+                timeout=30,
+            )
+            resp = r.text.strip()
+        except Exception as e:
+            log.warning("[%s] Proxy: API error on %s: %s", acc_id, action, e)
+            time.sleep(10)
+            continue
 
-    try:
-        old_ip = _check_ip()
-        log.info("Proxy current IP: %s — requesting unique IP change …", old_ip)
-
-        resp = _issue_changeip()
-        log.info("Proxy change response: %s", resp[:80])
-
-        # Handle throttle on the initial request
-        throttle = _re.search(r'Throttled:\s*Wait\s*(\d+)\s*Seconds?', resp, _re.I)
+        # Detect throttle
+        throttle = _re.search(
+            r'Throttled:\s*Wait\s*(\d+)\s*Seconds?', resp, _re.I,
+        )
         if throttle:
-            wait_sec = int(throttle.group(1)) + 5  # +5s buffer
-            log.warning("Proxy throttled — waiting %ds before retry …", wait_sec)
-            time.sleep(wait_sec)
-            resp = _issue_changeip()
-            log.info("Proxy change retry response: %s", resp[:80])
-
-        # Poll until Ready: x.x.x.x (up to ~3 minutes, 5s intervals)
-        for _ in range(36):
-            time.sleep(5)
-            r = _req.get(control_url, headers=headers, timeout=15, verify=False)
-            text = r.text.strip()
-            log.debug("Proxy poll: %s", text[:60])
-
-            # If still throttled mid-poll, wait and continue
-            mid_throttle = _re.search(r'Throttled:\s*Wait\s*(\d+)\s*Seconds?', text, _re.I)
-            if mid_throttle:
-                wait_sec = int(mid_throttle.group(1)) + 5
-                log.warning("Proxy mid-poll throttle — sleeping %ds …", wait_sec)
-                time.sleep(wait_sec)
+            wait_sec = int(throttle.group(1))
+            if wait_sec > 600 and action == "changeipunique" and attempt == 0:
+                log.warning(
+                    "[%s] Proxy: %s throttled %ds (>10 min) — "
+                    "falling back to changeip", acc_id, action, wait_sec,
+                )
+                action = "changeip"
                 continue
+            if wait_sec > 900:
+                log.warning(
+                    "[%s] Proxy: %s throttled %ds (>15 min) — "
+                    "giving up on rotation", acc_id, action, wait_sec,
+                )
+                return ""
+            log.info("[%s] Proxy: %s throttled — waiting %ds...",
+                     acc_id, action, wait_sec + 5)
+            time.sleep(wait_sec + 5)
+            continue
 
-            m = _re.search(r'Ready:\s*([\d.]+)', text)
-            if m:
-                new_ip = m.group(1)
-                if new_ip != old_ip:
-                    log.info("Proxy IP rotated: %s → %s", old_ip, new_ip)
-                    return new_ip
-                # Still same IP — rotation not yet complete, keep polling
+        # Rotation started
+        log.info("[%s] Proxy: %s — %s", acc_id, action, resp[:100])
+        break
+    else:
+        log.warning("[%s] Proxy: still throttled after 3 attempts — giving up", acc_id)
+        return ""
 
-        log.warning("Proxy rotation timed out after 3 min — using current IP")
-    except Exception as e:
-        log.warning("Proxy rotation error: %s", e)
+    # ── Poll for new IP ────────────────────────────────────────────────────
+    for i in range(max_poll_seconds // 5):
+        time.sleep(5)
+        ip = _proxy_get_ip()
+        if ip and ip != old_ip:
+            elapsed = (i + 1) * 5
+            log.info("[%s] Proxy rotated: %s → %s (took %ds)",
+                     acc_id, old_ip, ip, elapsed)
+            _last_rotation_time = time.time()
+            log.info(">>> %s ASSIGNED PROXY IP: %s <<<", acc_id, ip)
+            return ip
+        if i % 24 == 0 and i > 0:
+            log.info("[%s] Proxy: still %s after %ds...",
+                     acc_id, ip or '?', (i + 1) * 5)
+
+    # Final check
+    final_ip = _proxy_get_ip()
+    if final_ip and final_ip != old_ip:
+        log.info("[%s] Proxy rotated (late): %s → %s", acc_id, old_ip, final_ip)
+        _last_rotation_time = time.time()
+        log.info(">>> %s ASSIGNED PROXY IP: %s <<<", acc_id, final_ip)
+        return final_ip
+
+    log.warning("[%s] Proxy: IP unchanged after %ds — %s",
+                acc_id, max_poll_seconds, old_ip)
     return ""
 
 
@@ -1216,21 +1247,1053 @@ def _configure_device_locale(phone_id: str, account: dict, acc_id: str) -> None:
     log.info("[%s] Device locale configured.", acc_id)
 
 
+def _run_coordinate_adb_login(
+    phone_id: str, email: str, password: str,
+    totp_secret: str, acc_id: str,
+    screen_w: int, screen_h: int,
+    progress_callback=None,
+) -> tuple[bool, str]:
+    """
+    Drive a complete Google account login using coordinate-based ADB taps.
+
+    Designed for Android 14+ where uiautomator cannot see inside the Chrome
+    WebView that renders the sign-in UI.  Instead of reading screen content,
+    we follow the known Google sign-in sequence blindly with fixed tap
+    positions expressed as fractions of screen size.
+
+    Sequence:
+      1. ADD_ACCOUNT_SETTINGS intent → MinuteMaidActivity
+      2. Tap email field → clear → type email → Enter
+      3. Tap password field → clear → type password → Enter
+      4. Tap "Try another way" (if 2FA prompt appears)
+      5. Tap Google Authenticator row (in method list)
+      6. Enter TOTP code → Enter
+      7. Tap Skip/Next through consent screens until launcher
+
+    Returns (success: bool, diagnosis: str).
+    """
+    def _tap(fx: float, fy: float):
+        """Tap a fractional coordinate on the screen."""
+        x, y = int(fx * screen_w), int(fy * screen_h)
+        _shell(phone_id, f"input tap {x} {y}")
+        return x, y
+
+    def _enter_text(text: str):
+        """Type text into the currently focused field via 'input text'.
+
+        ADBKeyboard broadcasts don't work on Android 14.  Plain
+        'input text' handles standard ASCII fine — @ . and other email
+        characters pass through the shell without issue.
+        """
+        _shell(phone_id, f"input text {text}")
+
+    def _is_in_auth() -> bool:
+        """True if MinuteMaidActivity is still the foreground activity."""
+        return GOOGLE_AUTH_ACTIVITY in _get_window_focus(phone_id)
+
+    def _cb(phase, **kw):
+        if progress_callback:
+            try:
+                progress_callback({"phase": phase, **kw})
+            except Exception:
+                pass
+
+    # Short-circuit: already logged in
+    if _verify_google_account(phone_id, email):
+        log.info("[%s] Account already in AccountManager — login already succeeded", acc_id)
+        return True, "Account already registered on device"
+
+    _cb("launching_add_account")
+
+    # Press HOME + launch intent
+    log.info("[%s] Launching Add Account intent …", acc_id)
+    _shell(phone_id, "input keyevent KEYCODE_HOME")
+    time.sleep(2)
+    _shell(phone_id,
+           "am start -a android.settings.ADD_ACCOUNT_SETTINGS "
+           "--es account_types com.google")
+    time.sleep(5)
+
+    if not _is_in_auth():
+        # Retry once
+        _shell(phone_id, "input keyevent KEYCODE_HOME")
+        time.sleep(2)
+        _shell(phone_id,
+               "am start -a android.settings.ADD_ACCOUNT_SETTINGS "
+               "--es account_types com.google")
+        time.sleep(5)
+
+    if not _is_in_auth():
+        return False, "MinuteMaidActivity did not open after 2 attempts"
+
+    log.info("[%s] MinuteMaidActivity open — coordinate login starting …", acc_id)
+
+    # ── Coordinate calibration ──────────────────────────────────────────
+    # These fractions are calibrated for Google sign-in WebView on Android 14
+    # (tested on Redmi Note 13 Pro, 1220×2712).
+    #   Email field:     center of screen, upper third
+    #   Password field:  center of screen, upper third
+    #   Try another way: left-aligned link below the input card
+    #   Auth row:        center of 2FA method list
+    #   TOTP field:      center of screen, upper third
+    #   Next/Continue:   bottom-right of content area
+    #   Skip/Not now:    bottom-left/center of content area
+
+    # ── Step 0: Dismiss pre-email screens ───────────────────────────────
+    # Google may show "Verify it's you" / "Sign in with ease" with a Skip
+    # button at the bottom-left.  Use a small tap grid to guarantee a hit
+    # regardless of exact button position.
+    log.info("[%s] Dismissing pre-email screens …", acc_id)
+    for fx in (0.08, 0.12, 0.15):
+        for fy in (0.92, 0.94, 0.96):
+            _tap(fx, fy)
+            time.sleep(0.4)
+    time.sleep(2)
+    if not _is_in_auth():
+        return _check_login_result(phone_id, email, acc_id)
+
+    # ── Step 1: Enter email ────────────────────────────────────────────
+    _cb("entering_email")
+    log.info("[%s] Entering email …", acc_id)
+    # Tap grid across the email field area (top-center of screen)
+    for fy in (0.18, 0.22, 0.26):
+        _tap(0.50, fy)
+        time.sleep(0.3)
+    time.sleep(0.5)
+    _enter_text(email)
+    time.sleep(0.5)
+    _shell(phone_id, "input keyevent 66")   # Enter
+    time.sleep(4)
+
+    if not _is_in_auth():
+        return _check_login_result(phone_id, email, acc_id)
+
+    # ── Step 2: Tap Next (confirmation / password screens) ──────────────
+    # Google may show "Sign in to [email] on your [device]?" with Next,
+    # or go straight to password.  Tap Next bottom-right to advance.
+    log.info("[%s] Tapping Next …", acc_id)
+    for fx in (0.83, 0.87, 0.91):
+        for fy in (0.92, 0.94, 0.96):
+            _tap(fx, fy)
+            time.sleep(0.3)
+    time.sleep(3)
+    if not _is_in_auth():
+        return _check_login_result(phone_id, email, acc_id)
+
+    # ── Step 3: Password ───────────────────────────────────────────────
+    _cb("entering_password")
+    log.info("[%s] Entering password …", acc_id)
+    for fy in (0.28, 0.32, 0.36):
+        _tap(0.50, fy)
+        time.sleep(0.3)
+    time.sleep(0.5)
+    _enter_text(password)
+    time.sleep(0.5)
+    _shell(phone_id, "input keyevent 66")   # Enter
+    time.sleep(5)
+
+    if not _is_in_auth():
+        log.info("[%s] Left auth after password — checking account …", acc_id)
+        return _check_login_result(phone_id, email, acc_id)
+
+    # ── Step 4: 2FA method selection ──────────────────────────────────
+    if totp_secret:
+        _cb("2fa_method_select")
+        log.info("[%s] On 2FA method screen …", acc_id)
+        _shell(phone_id, "input keyevent KEYCODE_BACK")  # dismiss keyboard
+        time.sleep(1.5)
+
+        # Tap Google Authenticator — try multiple rows in the method list
+        log.info("[%s] Selecting Google Authenticator …", acc_id)
+        for fy in (0.50, 0.55, 0.60, 0.65):
+            _tap(0.50, fy)
+            time.sleep(0.4)
+        time.sleep(3)
+
+        if not _is_in_auth():
+            return _check_login_result(phone_id, email, acc_id)
+
+        # Generate + enter TOTP
+        _cb("2fa_detected")
+        log.info("[%s] Entering TOTP …", acc_id)
+        import pyotp as _pyotp
+        secs_remaining = 30 - (int(time.time()) % 30)
+        if secs_remaining < 5:
+            time.sleep(secs_remaining + 1)
+        code = _pyotp.TOTP(totp_secret.replace(" ", "").upper()).now()
+        log.info("[%s] TOTP: %s", acc_id, code)
+
+        for fy in (0.34, 0.38, 0.42):
+            _tap(0.50, fy)
+            time.sleep(0.3)
+        time.sleep(0.8)
+        _enter_text(code)
+        time.sleep(0.5)
+        _shell(phone_id, "input keyevent 66")   # Enter
+        _cb("2fa_entered")
+        time.sleep(6)
+
+    # ── Step 4: Consent screens ────────────────────────────────────────
+    log.info("[%s] Navigating consent screens …", acc_id)
+    for _ in range(15):
+        if not _is_in_auth():
+            break
+        _tap(0.20, 0.89)       # Skip / Not now
+        time.sleep(2)
+        if not _is_in_auth():
+            break
+        _tap(0.83, 0.89)       # Next / I agree
+        time.sleep(2)
+
+    if not _is_in_auth():
+        _navigate_consent_screens(phone_id, max_screens=10)
+
+    return _check_login_result(phone_id, email, acc_id)
+
+
+def _check_login_result(phone_id: str, email: str, acc_id: str) -> tuple[bool, str]:
+    """Verify the account is registered and return (success, diagnosis)."""
+    time.sleep(3)
+    if _verify_google_account(phone_id, email):
+        log.info("[%s] Account verified in AccountManager — SUCCESS.", acc_id)
+        return True, "Account verified in device accounts database"
+
+    # Wait a bit more — sync may lag
+    time.sleep(10)
+    if _verify_google_account(phone_id, email):
+        log.info("[%s] Account verified after delay — SUCCESS.", acc_id)
+        return True, "Account verified after extended wait"
+
+    focus = _get_window_focus(phone_id)
+    if LAUNCHER_ACTIVITY in focus:
+        log.warning("[%s] On home screen but account not in AccountManager.", acc_id)
+        return False, "On home screen but account not found in AccountManager"
+
+    return False, f"Login did not complete. Current focus: {focus[-80:]}"
+
+
+def _type_totp_via_keypad(phone_id: str, code: str,
+                           screen_w: int, screen_h: int) -> None:
+    """
+    Type a 6-digit TOTP code by tapping the on-screen number keypad.
+
+    Android 14 WebViews don't accept 'input text'.  Instead we tap each
+    digit directly on the visible keypad.  Coordinates are fractional so
+    they scale to any screen size.
+    """
+    # Number keypad layout (fractional positions)
+    KEYPAD = {
+        "1": (0.17, 0.60), "2": (0.50, 0.60), "3": (0.83, 0.60),
+        "4": (0.17, 0.67), "5": (0.50, 0.67), "6": (0.83, 0.67),
+        "7": (0.17, 0.74), "8": (0.50, 0.74), "9": (0.83, 0.74),
+                           "0": (0.50, 0.81),
+    }
+    for ch in code:
+        pos = KEYPAD.get(ch)
+        if pos:
+            x, y = int(pos[0] * screen_w), int(pos[1] * screen_h)
+            _shell(phone_id, f"input tap {x} {y}")
+            import time as _t
+            _t.sleep(0.25)
+
+
+# Google auto login flow ID (GeelarK-provided, handles email+password+TOTP+consent)
+_AUTO_LOGIN_FLOW_ID = "628594965093548419"
+
+
+def _run_auto_login_flow(
+    client, phone_id: str, account: dict,
+    email: str, password: str, totp_secret: str,
+    acc_id: str, stop_phone_on_success: bool,
+    screen_w: int, screen_h: int,
+    progress_callback, result: dict,
+) -> dict:
+    """
+    Android 14 login using GeelarK's "Google auto login" custom RPA flow.
+
+    This flow:
+      1. Opens Play Store → taps Sign in
+      2. Enters email → Next
+      3. Enters password → Next
+      4. IF 2faCode provided: generates TOTP via built-in getAuthenticationCode
+         step, taps "Get a verification code" method, enters code, taps Next
+      5. Handles consent: Skip, I understand, I agree, ACCEPT
+
+    The flow's getAuthenticationCode step takes the TOTP SECRET and generates
+    the 6-digit code at runtime — we pass the secret, not a pre-generated code.
+    """
+    import time as _time
+
+    def _progress(phase: str, **extra):
+        if progress_callback:
+            try:
+                progress_callback({"phase": phase, **extra})
+            except Exception:
+                pass
+
+    _progress("auto_login_flow")
+    log.info("[%s] Running Google auto login flow …", acc_id)
+
+    # Build paramMap — 2faCode is the TOTP secret (flow generates code from it).
+    # The flow's 2faCode param is optional (isNotRequired=true) — omit for
+    # accounts without TOTP so the flow skips the 2FA branch.
+    param_map: dict = {
+        "User Email": email,
+        "Password":   password,
+    }
+    if totp_secret:
+        param_map["2faCode"] = totp_secret.replace(" ", "").upper()
+        log.info("[%s] TOTP secret provided — flow will handle 2FA.", acc_id)
+    else:
+        log.info("[%s] No TOTP secret — flow will skip 2FA.", acc_id)
+
+    try:
+        task_id = client.run_custom_flow(
+            flow_id=_AUTO_LOGIN_FLOW_ID,
+            phone_id=phone_id,
+            param_map=param_map,
+            task_name=f"Google auto login — {email}",
+        )
+        log.info("[%s] Auto login task: %s", acc_id, task_id)
+    except Exception as e:
+        result["error"] = f"Auto login flow failed to start: {e}"
+        return result
+
+    # ── Poll for completion ──────────────────────────────────────────────
+    deadline = _time.time() + 600
+    task_status = 0
+    fail_desc = ""
+    while _time.time() < deadline:
+        try:
+            tasks = client.query_tasks([task_id])
+            if tasks:
+                t = tasks[0]
+                task_status = t.get("status", 0)
+                if task_status == 3:
+                    log.info("[%s] Auto login flow completed (status 3).", acc_id)
+                    break
+                elif task_status == 4:
+                    fail_desc = (t.get("failDesc", "") or "")[:200]
+                    log.warning("[%s] Auto login flow failed (status 4): %s",
+                                acc_id, fail_desc)
+                    break
+                elif task_status == 7:
+                    log.warning("[%s] Auto login flow cancelled (status 7).", acc_id)
+                    break
+        except Exception:
+            pass
+        _time.sleep(5)
+
+    # ── Verify account ──────────────────────────────────────────────────
+    _time.sleep(5)
+    confirmed = _verify_google_account(phone_id, email)
+    if not confirmed:
+        _time.sleep(10)
+        confirmed = _verify_google_account(phone_id, email)
+
+    if confirmed:
+        result["success"]   = True
+        result["diagnosis"] = f"Account {email} verified in AccountManager."
+        result["attempts"]  = 1
+        log.info("[%s] Login SUCCESS via auto login flow.", acc_id)
+    elif task_status == 3:
+        # Flow completed but account not in AccountManager — may still sync
+        result["success"]   = True
+        result["diagnosis"] = "Auto login flow completed, account may sync later."
+        result["attempts"]  = 1
+        log.info("[%s] Flow completed — treating as success (account may sync).", acc_id)
+    elif task_status == 4:
+        result["needs_user_input"] = True
+        result["diagnosis"] = f"Auto login flow failed: {fail_desc}"
+    else:
+        result["needs_user_input"] = True
+        result["diagnosis"] = (
+            f"Auto login flow ended with status {task_status}. "
+            f"May need manual intervention."
+        )
+
+    _configure_device_locale(phone_id, account, acc_id)
+    if stop_phone_on_success and result["success"]:
+        try:
+            client.stop_phone(phone_id)
+            result["viewer_url"] = ""
+        except Exception:
+            pass
+    return result
+
+
+def _run_builtin_login(
+    client, phone_id: str, account: dict,
+    email: str, password: str, totp_secret: str,
+    acc_id: str, stop_phone_on_success: bool,
+    screen_w: int, screen_h: int,
+    progress_callback, result: dict,
+) -> dict:
+    """
+    Android 14 login using GeelarK's built-in googleLogin RPA.
+
+    The built-in task handles email + password entry and screen navigation.
+    On completion (status=3) the account is signed in at the Google Play
+    Services level even if dumpsys account doesn't show it yet.
+    """
+    import time as _time
+
+    def _tap(fx: float, fy: float):
+        x, y = int(fx * screen_w), int(fy * screen_h)
+        _shell(phone_id, f"input tap {x} {y}")
+
+    def _progress(phase: str, **extra):
+        if progress_callback:
+            try:
+                progress_callback({"phase": phase, **extra})
+            except Exception:
+                pass
+
+    _progress("builtin_login")
+    log.info("[%s] Running built-in googleLogin …", acc_id)
+
+    try:
+        task_id = client.google_login(phone_id, email, password,
+                                       task_name=f"Google login — {email}")
+        log.info("[%s] Task: %s", acc_id, task_id)
+    except Exception as e:
+        result["error"] = f"Built-in login failed to start: {e}"
+        return result
+
+    # Poll
+    deadline = _time.time() + 600
+    completed = False
+    while _time.time() < deadline:
+        try:
+            tasks = client.query_tasks([task_id])
+            if tasks:
+                t = tasks[0]
+                s = t.get("status", 0)
+                if s == 3:
+                    completed = True
+                    log.info("[%s] Built-in login completed.", acc_id)
+                    break
+                elif s == 4:
+                    log.warning("[%s] Built-in login failed: %s", acc_id,
+                               (t.get("failDesc","") or "")[:120])
+                    break
+                elif s == 7:
+                    log.warning("[%s] Built-in login cancelled.", acc_id)
+                    break
+        except Exception:
+            pass
+        _time.sleep(5)
+
+    if completed:
+        # Verify account — if not confirmed and still in auth, handle TOTP
+        _time.sleep(5)
+        confirmed = _verify_google_account(phone_id, email)
+        if not confirmed:
+            _time.sleep(10)
+            confirmed = _verify_google_account(phone_id, email)
+
+        # Still in auth + not confirmed + have TOTP → built-in got stuck at 2FA
+        if not confirmed and totp_secret and _is_in_auth(phone_id):
+            log.info("[%s] Built-in completed but stuck at 2FA — handling TOTP.", acc_id)
+            _progress("2fa_handling")
+            # Tap Authenticator option (may already be on TOTP screen)
+            for fy in (0.50, 0.55, 0.60, 0.65):
+                _tap(0.50, fy); _time.sleep(0.4)
+            _time.sleep(3)
+
+            if _is_in_auth(phone_id):
+                import pyotp as _pyotp
+                secs = 30 - (int(_time.time()) % 30)
+                if secs < 5: _time.sleep(secs + 1)
+                code = _pyotp.TOTP(totp_secret.replace(" ", "").upper()).now()
+                log.info("[%s] TOTP: %s", acc_id, code)
+                # Tap TOTP field then type digits via on-screen keypad taps
+                for fy in (0.34, 0.38, 0.42):
+                    _tap(0.50, fy); _time.sleep(0.3)
+                _time.sleep(0.5)
+                _type_totp_via_keypad(phone_id, code, screen_w, screen_h)
+                _shell(phone_id, "input keyevent 66")
+                _time.sleep(6)
+                # Consent screens
+                for _ in range(8):
+                    if not _is_in_auth(phone_id): break
+                    _tap(0.20, 0.89); _time.sleep(2)
+                    if not _is_in_auth(phone_id): break
+                    _tap(0.83, 0.89); _time.sleep(2)
+                _navigate_consent_screens(phone_id, max_screens=10)
+
+            _time.sleep(5)
+            confirmed = _verify_google_account(phone_id, email)
+            if not confirmed:
+                _time.sleep(10)
+                confirmed = _verify_google_account(phone_id, email)
+
+        if confirmed:
+            result["success"]   = True
+            result["diagnosis"] = f"Account {email} verified in AccountManager."
+        elif not _is_in_auth(phone_id):
+            # Left auth flow — likely completed, account may sync later
+            result["success"]   = True
+            result["diagnosis"] = "Built-in login completed, left auth flow."
+        else:
+            result["needs_user_input"] = True
+            result["diagnosis"] = (
+                "Built-in login completed but account not verified and still in auth. "
+                "May need manual TOTP entry."
+            )
+        result["attempts"] = 1
+        _configure_device_locale(phone_id, account, acc_id)
+        if stop_phone_on_success and result["success"]:
+            try:
+                client.stop_phone(phone_id)
+                result["viewer_url"] = ""
+            except Exception:
+                pass
+        return result
+
+    # Built-in didn't complete — fall back to TOTP + coordinate navigation
+    if totp_secret and _is_in_auth(phone_id):
+        log.info("[%s] Built-in incomplete — handling 2FA …", acc_id)
+        _progress("2fa_handling")
+
+        for fy in (0.50, 0.55, 0.60, 0.65):
+            _tap(0.50, fy)
+            _time.sleep(0.4)
+        _time.sleep(3)
+
+        import pyotp as _pyotp
+        secs = 30 - (int(_time.time()) % 30)
+        if secs < 5:
+            _time.sleep(secs + 1)
+        code = _pyotp.TOTP(totp_secret.replace(" ", "").upper()).now()
+        log.info("[%s] TOTP: %s", acc_id, code)
+
+        for fy in (0.34, 0.38, 0.42):
+            _tap(0.50, fy)
+            _time.sleep(0.3)
+        _time.sleep(0.5)
+        _type_totp_via_keypad(phone_id, code, screen_w, screen_h)
+        _shell(phone_id, "input keyevent 66")
+        _time.sleep(6)
+
+        for _ in range(5):
+            _tap(0.20, 0.89); _time.sleep(2)
+            _tap(0.83, 0.89); _time.sleep(2)
+        _navigate_consent_screens(phone_id, max_screens=10)
+
+        _time.sleep(5)
+        confirmed = _verify_google_account(phone_id, email)
+        if not confirmed:
+            _time.sleep(10)
+            confirmed = _verify_google_account(phone_id, email)
+
+        if confirmed:
+            result["success"]   = True
+            result["diagnosis"] = f"Account {email} verified via built-in + TOTP."
+            result["attempts"]  = 1
+            _configure_device_locale(phone_id, account, acc_id)
+        else:
+            result["needs_user_input"] = True
+            result["diagnosis"] = "Built-in login incomplete, TOTP fallback also failed."
+    else:
+        result["needs_user_input"] = True
+        result["diagnosis"] = "Built-in login did not complete."
+
+    if stop_phone_on_success and result["success"]:
+        try:
+            client.stop_phone(phone_id)
+            result["viewer_url"] = ""
+        except Exception:
+            pass
+    return result
+
+
+def _run_hybrid_login(
+    client, phone_id: str, account: dict,
+    email: str, password: str, totp_secret: str,
+    acc_id: str, stop_phone_on_success: bool,
+    screen_w: int, screen_h: int,
+    progress_callback, result: dict,
+) -> dict:
+    """
+    Hybrid login for Android 14+:
+      1. GeelarK's built-in googleLogin handles email + password + navigation
+      2. If TOTP is needed, coordinate taps handle 2FA screens
+      3. Consent screens navigated via coordinate taps
+    """
+    import time as _time
+
+    def _tap(fx: float, fy: float):
+        x, y = int(fx * screen_w), int(fy * screen_h)
+        _shell(phone_id, f"input tap {x} {y}")
+
+    def _progress(phase: str, **extra):
+        if progress_callback:
+            try:
+                progress_callback({"phase": phase, **extra})
+            except Exception:
+                pass
+
+    # ── Step 1: Built-in googleLogin ────────────────────────────────────
+    _progress("builtin_login")
+    log.info("[%s] Running built-in googleLogin (email+password) …", acc_id)
+
+    try:
+        task_id = client.google_login(
+            phone_id=phone_id,
+            email=email,
+            password=password,
+            task_name=f"Google login — {email}",
+        )
+        log.info("[%s] Built-in task: %s", acc_id, task_id)
+    except Exception as e:
+        result["error"] = f"Built-in googleLogin failed to start: {e}"
+        return result
+
+    # Poll built-in task
+    deadline = _time.time() + 600
+    builtin_ok = False
+    while _time.time() < deadline:
+        try:
+            tasks = client.query_tasks([task_id])
+            if tasks:
+                t = tasks[0]
+                s = t.get("status", 0)
+                if s == 3:
+                    builtin_ok = True
+                    log.info("[%s] Built-in login completed.", acc_id)
+                    break
+                elif s == 4:
+                    log.warning("[%s] Built-in login failed: %s", acc_id,
+                               t.get("failDesc", "")[:100])
+                    break
+                elif s == 7:
+                    log.warning("[%s] Built-in login cancelled.", acc_id)
+                    break
+        except Exception:
+            pass
+        _time.sleep(5)
+
+    if not builtin_ok:
+        # Built-in failed — may be stuck on 2FA or other screen
+        log.info("[%s] Built-in login did not complete cleanly — continuing with TOTP.", acc_id)
+
+    # ── Step 2: Verify account ──────────────────────────────────────────
+    _time.sleep(3)
+    account_confirmed = _verify_google_account(phone_id, email)
+    if not account_confirmed:
+        _time.sleep(10)
+        account_confirmed = _verify_google_account(phone_id, email)
+
+    if account_confirmed:
+        log.info("[%s] Account already verified after built-in login — SUCCESS.", acc_id)
+        result["success"]   = True
+        result["diagnosis"] = f"Account {email} verified via built-in login."
+        result["attempts"]  = 1
+        _configure_device_locale(phone_id, account, acc_id)
+        if stop_phone_on_success:
+            try:
+                client.stop_phone(phone_id)
+                result["viewer_url"] = ""
+            except Exception:
+                pass
+        return result
+
+    # ── Step 3: Handle 2FA if needed ────────────────────────────────────
+    if not totp_secret:
+        result["needs_user_input"] = True
+        result["diagnosis"] = "Login incomplete — TOTP secret not available."
+        return result
+
+    if not _is_in_auth(phone_id):
+        # Left auth flow — may have completed but account not synced
+        _navigate_consent_screens(phone_id, max_screens=10)
+        _time.sleep(5)
+        account_confirmed = _verify_google_account(phone_id, email)
+        if account_confirmed:
+            log.info("[%s] Account verified after consent navigation.", acc_id)
+            result["success"]   = True
+            result["diagnosis"] = f"Account {email} verified after consent nav."
+            result["attempts"]  = 1
+            _configure_device_locale(phone_id, account, acc_id)
+            if stop_phone_on_success:
+                try:
+                    client.stop_phone(phone_id)
+                    result["viewer_url"] = ""
+                except Exception:
+                    pass
+            return result
+
+    # Still in auth — handle 2FA screens with coordinate taps
+    _progress("2fa_handling")
+    log.info("[%s] Handling 2FA screens with coordinate taps …", acc_id)
+
+    # Tap Authenticator option in method list
+    for fy in (0.50, 0.55, 0.60, 0.65):
+        _tap(0.50, fy)
+        _time.sleep(0.4)
+    _time.sleep(3)
+
+    if not _is_in_auth(phone_id):
+        _navigate_consent_screens(phone_id, max_screens=10)
+    else:
+        # Generate and enter TOTP
+        import pyotp as _pyotp
+        secs_remaining = 30 - (int(_time.time()) % 30)
+        if secs_remaining < 5:
+            _time.sleep(secs_remaining + 1)
+        code = _pyotp.TOTP(totp_secret.replace(" ", "").upper()).now()
+        log.info("[%s] TOTP: %s", acc_id, code)
+
+        for fy in (0.34, 0.38, 0.42):
+            _tap(0.50, fy)
+            _time.sleep(0.3)
+        _time.sleep(0.5)
+        _shell(phone_id, f"input text {code}")
+        _time.sleep(0.5)
+        _shell(phone_id, "input keyevent 66")
+        _time.sleep(6)
+
+        # Consent
+        for _ in range(5):
+            _tap(0.20, 0.89)
+            _time.sleep(2)
+            _tap(0.83, 0.89)
+            _time.sleep(2)
+        _navigate_consent_screens(phone_id, max_screens=10)
+
+    # Final verification
+    _time.sleep(5)
+    account_confirmed = _verify_google_account(phone_id, email)
+    if not account_confirmed:
+        _time.sleep(10)
+        account_confirmed = _verify_google_account(phone_id, email)
+
+    if account_confirmed:
+        log.info("[%s] Account confirmed — hybrid login SUCCESS.", acc_id)
+        result["success"]   = True
+        result["diagnosis"] = f"Account {email} verified via hybrid login."
+        result["attempts"]  = 1
+        _configure_device_locale(phone_id, account, acc_id)
+    else:
+        result["needs_user_input"] = True
+        result["diagnosis"] = "Hybrid login completed but account not verified."
+
+    if stop_phone_on_success and result["success"]:
+        try:
+            client.stop_phone(phone_id)
+            result["viewer_url"] = ""
+        except Exception:
+            pass
+    return result
+
+
+def _is_in_auth(phone_id: str) -> bool:
+    """True if MinuteMaidActivity is foreground."""
+    return GOOGLE_AUTH_ACTIVITY in _get_window_focus(phone_id)
+
+
+def _run_rpa_coordinate_login(
+    client, phone_id: str, account: dict,
+    email: str, password: str, totp_secret: str,
+    acc_id: str, stop_phone_on_success: bool,
+    progress_callback, result: dict,
+) -> dict:
+    """
+    Login on Android 14+ using GeelarK RPA with coordinate-based taps.
+
+    Uses the 'Google Login — Coordinate (Android 14)' flow which clicks
+    and types at absolute screen coordinates, bypassing uiautomator
+    WebView blindness entirely.  GeelarK's RPA uses its own text-input
+    mechanism, not ADB 'input text'.
+    """
+    from core.geelark_flow_builder import flows as _flows
+    import time as _time
+
+    if not totp_secret:
+        result["error"] = "TOTP secret required for Android 14 login"
+        return result
+
+    def _progress(phase: str, **extra):
+        if progress_callback:
+            try:
+                progress_callback({"phase": phase, **extra})
+            except Exception:
+                pass
+
+    _progress("rpa_login")
+
+    # Create/update the coordinate flow
+    try:
+        flow_id = _flows.google_login_coordinate()
+        log.info("[%s] Coordinate RPA flow ready: %s", acc_id, flow_id)
+    except Exception as e:
+        result["error"] = f"Failed to create coordinate RPA flow: {e}"
+        return result
+
+    _progress("submitting_task")
+
+    try:
+        task_id = client.run_custom_flow(
+            flow_id=flow_id,
+            phone_id=phone_id,
+            param_map={
+                "email":        email,
+                "password":     password,
+                "totp_secret":  totp_secret,
+            },
+            task_name=f"Google login (coord) — {email}",
+        )
+        log.info("[%s] Coordinate RPA task: %s", acc_id, task_id)
+    except Exception as e:
+        result["error"] = f"Failed to submit RPA task: {e}"
+        return result
+
+    # Poll
+    deadline = _time.time() + 600
+    while _time.time() < deadline:
+        try:
+            tasks = client.query_tasks([task_id])
+            if tasks:
+                t = tasks[0]
+                status = t.get("status", 0)
+                if status == 3:
+                    break
+                elif status in (4, 7):
+                    result["error"] = f"RPA task failed: {t.get('failDesc','')}"
+                    return result
+        except Exception:
+            pass
+        _time.sleep(5)
+
+    # Verify
+    _time.sleep(5)
+    account_confirmed = _verify_google_account(phone_id, email)
+    if not account_confirmed:
+        _time.sleep(10)
+        account_confirmed = _verify_google_account(phone_id, email)
+
+    if account_confirmed:
+        log.info("[%s] Account confirmed — coordinate RPA SUCCESS.", acc_id)
+        result["success"] = True
+        result["diagnosis"] = f"Account {email} verified via coordinate RPA."
+        result["attempts"] = 1
+        _configure_device_locale(phone_id, account, acc_id)
+        if stop_phone_on_success:
+            try:
+                client.stop_phone(phone_id)
+                result["viewer_url"] = ""
+            except Exception:
+                pass
+        return result
+
+    result["needs_user_input"] = True
+    result["diagnosis"] = (
+        "RPA coordinate flow completed but account not verified. "
+        "Coordinates may need calibration for this device."
+    )
+    return result
+
+
+def _run_rpa_settings_login(
+    client, phone_id: str, account: dict,
+    email: str, password: str, totp_secret: str,
+    acc_id: str, stop_phone_on_success: bool,
+    progress_callback, result: dict,
+) -> dict:
+    """
+    Run Google login on Android 14+ using GeelarK's native RPA with the
+    Settings Add Account wizard.  The flow properly registers the account
+    in Android's AccountManager (required for Maps, Gmail, YouTube).
+
+    Uses the pre-built "Google Add Account via Settings" flow which
+    navigates Settings → Accounts → Add account → Google → email →
+    password → 2FA method select → TOTP.
+
+    The flow is created/updated once via FlowBuilder and cached by ID.
+    """
+    from core.geelark_client import GeelarKClient as _G
+    from core.geelark_flow_builder import flows as _flows
+
+    if not totp_secret:
+        result["error"] = "TOTP secret required for RPA login on Android 14+"
+        return result
+
+    def _progress(phase: str, **extra):
+        if progress_callback:
+            try:
+                progress_callback({"phase": phase, **extra})
+            except Exception:
+                pass
+
+    _progress("rpa_login")
+
+    # Create/update the flow (idempotent — returns existing ID on subsequent calls)
+    try:
+        flow_id = _flows.google_add_account_via_settings()
+        log.info("[%s] RPA login flow ready: %s", acc_id, flow_id)
+    except Exception as e:
+        result["error"] = f"Failed to create RPA login flow: {e}"
+        return result
+
+    _progress("submitting_task", attempt=1)
+
+    try:
+        task_id = client.run_custom_flow(
+            flow_id=flow_id,
+            phone_id=phone_id,
+            param_map={
+                "email":        email,
+                "password":     password,
+                "totp_secret":  totp_secret,
+            },
+            task_name=f"Google login — {email}",
+        )
+        log.info("[%s] RPA task submitted: %s", acc_id, task_id)
+    except Exception as e:
+        result["error"] = f"Failed to submit RPA login task: {e}"
+        return result
+
+    # Poll for completion
+    import time as _time
+    deadline = _time.time() + 600  # 10 min
+    while _time.time() < deadline:
+        try:
+            tasks = client.query_tasks([task_id])
+            if tasks:
+                t = tasks[0]
+                status = t.get("status", 0)
+                # 1=Waiting 2=InProgress 3=Completed 4=Failed 7=Cancelled
+                if status == 3:
+                    log.info("[%s] RPA task completed.", acc_id)
+                    break
+                elif status == 4:
+                    fail_code = t.get("failCode", "")
+                    fail_desc = t.get("failDesc", "")
+                    result["error"] = f"RPA login failed: code={fail_code} {fail_desc}"
+                    log.warning("[%s] RPA task failed: %s", acc_id, result["error"])
+                    return result
+                elif status == 7:
+                    result["error"] = "RPA login cancelled"
+                    return result
+        except Exception as e:
+            log.warning("[%s] RPA poll error: %s", acc_id, e)
+        _time.sleep(5)
+
+    # Verify account is registered in AccountManager
+    _time.sleep(5)
+    account_confirmed = _verify_google_account(phone_id, email)
+    if not account_confirmed:
+        _time.sleep(10)
+        account_confirmed = _verify_google_account(phone_id, email)
+
+    if account_confirmed:
+        log.info("[%s] Account confirmed — RPA login SUCCESS.", acc_id)
+        result["success"]   = True
+        result["diagnosis"] = f"Account {email} verified via RPA (Settings Add Account)."
+        result["attempts"]  = 1
+        _configure_device_locale(phone_id, account, acc_id)
+        if stop_phone_on_success:
+            try:
+                client.stop_phone(phone_id)
+                result["viewer_url"] = ""
+            except Exception:
+                pass
+        return result
+
+    # RPA task completed but account NOT in AccountManager — the flow ran its
+    # steps but the login didn't actually succeed.  Do NOT fall back to "on
+    # home screen" — that is a false positive.  Retry once.
+    log.warning("[%s] RPA task completed but account not verified — retrying once.", acc_id)
+    _progress("rpa_retry")
+
+    try:
+        task_id2 = client.run_custom_flow(
+            flow_id=flow_id,
+            phone_id=phone_id,
+            param_map={
+                "email":        email,
+                "password":     password,
+                "totp_secret":  totp_secret,
+            },
+            task_name=f"Google login (retry) — {email}",
+        )
+        log.info("[%s] RPA retry task: %s", acc_id, task_id2)
+    except Exception as e:
+        result["error"] = f"RPA retry submission failed: {e}"
+        result["needs_user_input"] = True
+        result["diagnosis"] = f"First RPA attempt completed but account not verified; retry failed: {e}"
+        return result
+
+    # Poll retry
+    deadline2 = _time.time() + 600
+    retry_ok = False
+    while _time.time() < deadline2:
+        try:
+            tasks = client.query_tasks([task_id2])
+            if tasks:
+                t = tasks[0]
+                status = t.get("status", 0)
+                if status == 3:
+                    retry_ok = True
+                    break
+                elif status in (4, 7):
+                    break
+        except Exception:
+            pass
+        _time.sleep(5)
+
+    if retry_ok:
+        _time.sleep(5)
+        account_confirmed = _verify_google_account(phone_id, email)
+        if not account_confirmed:
+            _time.sleep(10)
+            account_confirmed = _verify_google_account(phone_id, email)
+
+    if account_confirmed:
+        log.info("[%s] Account confirmed on retry — RPA login SUCCESS.", acc_id)
+        result["success"]   = True
+        result["diagnosis"] = f"Account {email} verified via RPA (retry)."
+        result["attempts"]  = 2
+        _configure_device_locale(phone_id, account, acc_id)
+        if stop_phone_on_success:
+            try:
+                client.stop_phone(phone_id)
+                result["viewer_url"] = ""
+            except Exception:
+                pass
+        return result
+
+    result["needs_user_input"] = True
+    result["diagnosis"] = (
+        "RPA flow completed but account NOT found in AccountManager after 2 attempts. "
+        "The phone may have a pre-existing Google account blocking Add Account, "
+        "or the RPA flow steps did not execute correctly on this device."
+    )
+    result["error"] = result["diagnosis"]
+    log.error("[%s] %s", acc_id, result["diagnosis"])
+    return result
+
+
 def run_google_login(account: dict, stop_phone_on_success: bool = True,
                      progress_callback=None) -> dict:
     """
-    Log a Google account into its assigned GeelarK cloud phone using pure ADB.
+    Log a Google account into its assigned GeelarK cloud phone.
 
-    GeelarK's built-in RPA (openApp / googleLogin) is broken on Android 10 (SM-G9650).
-    geelark_login_flow_id is ignored — pure ADB is always used regardless.
+    Uses the GeelarK "Google auto login" custom RPA flow (ID 628594965093548419)
+    which handles email, password, TOTP generation (from secret), and consent
+    screens.  Proven working on all Android versions (10/13/14/15).
+
+    Pure ADB login (_run_pure_adb_login) is deprecated — kept for reference only.
 
     Flow:
-      1. Rotate proxy IP (StreamVia changeipunique) — fresh IP per login.
-      2. Start phone, poll boot (up to 100s), query screen size.
-      3. Run _run_pure_adb_login (up to MAX_ATTEMPTS times).
-      4. Verify via dumpsys account after each attempt.
-      5. Configure device locale (timezone + GPS mock) on success.
-      6. Stop phone if stop_phone_on_success=True.
+      1. Rotate proxy IP (StreamVia changeipunique → changeip fallback).
+      2. 60s settling buffer after rotation.
+      3. Start phone, poll boot (up to 100s), query screen size.
+      4. Run _run_auto_login_flow (GeelarK RPA with TOTP handling).
+      5. Verify via dumpsys account.
+      6. Configure device locale (timezone + GPS mock) on success.
+      7. Stop phone if stop_phone_on_success=True.
 
     Args:
         account:              dict from geelark_accounts.yaml — keys used:
@@ -1278,11 +2341,15 @@ def run_google_login(account: dict, stop_phone_on_success: bool = True,
     # Get a fresh mobile IP so each login run comes from a clean address.
     log.info("[%s] Rotating proxy IP …", acc_id)
     _progress("rotating_proxy")
-    new_ip = _rotate_proxy_ip()
+    new_ip = _rotate_proxy_ip(acc_id)
     if new_ip:
-        log.info("[%s] Proxy IP rotated to %s", acc_id, new_ip)
+        log.info(">>> %s ASSIGNED PROXY IP: %s <<<", acc_id, new_ip)
+        # 60s settling buffer — let the proxy connection stabilise before
+        # any phone activity touches the network.
+        log.info("[%s] Waiting 60s (IP settling before phone start) …", acc_id)
+        time.sleep(60)
     else:
-        log.warning("[%s] Proxy rotation skipped — proceeding with current IP", acc_id)
+        log.warning("[%s] Proxy rotation failed — proceeding with current IP", acc_id)
 
     # ── Start phone ───────────────────────────────────────────────────────────
     log.info("[%s] Starting phone %s …", acc_id, phone_id)
@@ -1315,104 +2382,19 @@ def run_google_login(account: dict, stop_phone_on_success: bool = True,
     screen_w, screen_h = _get_screen_size(phone_id)
     log.info("[%s] Screen size: %dx%d", acc_id, screen_w, screen_h)
 
-    # ── Pure ADB login — works on all Android versions incl. Android 10 ───────
-    # GeelarK's custom RPA flow (openApp) is broken on Android 10 (SM-G9650).
-    # We drive the entire login via ADB shell commands using the Add Account intent
-    # which was confirmed to open MinuteMaidActivity with native EditText fields.
-    # geelark_login_flow_id is intentionally ignored — pure ADB is always used.
-    if flow_id:
-        log.info("[%s] geelark_login_flow_id=%s present but ignored — "
-                 "using pure ADB login (openApp broken on Android 10)", acc_id, flow_id)
-
-    log.info("[%s] Using pure ADB login mode", acc_id)
-
-    # ── Login attempts ────────────────────────────────────────────────────────
-    last_screenshot: Optional[bytes] = None
-    diagnosis = ""
-
-    for attempt in range(1, MAX_ATTEMPTS + 1):
-        result["attempts"] = attempt
-        log.info("[%s] Attempt %d/%d …", acc_id, attempt, MAX_ATTEMPTS)
-
-        _progress("submitting_task", attempt=attempt)
-
-        # Run the pure ADB login state machine
-        adb_ok, adb_diag = _run_pure_adb_login(
-            phone_id     = phone_id,
-            email        = email,
-            password     = password,
-            totp_secret  = totp_secret,
-            acc_id       = acc_id,
-            screen_w     = screen_w,
-            screen_h     = screen_h,
-            progress_callback = progress_callback,
-        )
-        log.info("[%s] ADB login result: ok=%s  %s", acc_id, adb_ok, adb_diag)
-
-        # Give AccountManager a moment to register the account
-        time.sleep(5)
-
-        # ── Verify login ──────────────────────────────────────────────────────
-        account_confirmed = _verify_google_account(phone_id, email)
-        if not account_confirmed:
-            # AccountManager can take a few extra seconds
-            log.info("[%s] Account not in AccountManager yet — waiting 10s …", acc_id)
-            time.sleep(10)
-            account_confirmed = _verify_google_account(phone_id, email)
-
-        screenshot = client.take_screenshot(phone_id)
-        if screenshot:
-            result["last_screenshot_b64"] = base64.standard_b64encode(screenshot).decode()
-
-        if account_confirmed:
-            log.info("[%s] Account confirmed — login SUCCESS.", acc_id)
-            result["success"]   = True
-            result["diagnosis"] = f"Account {email} verified in device accounts database."
-            _configure_device_locale(phone_id, account, acc_id)
-            if stop_phone_on_success:
-                try:
-                    client.stop_phone(phone_id)
-                    result["viewer_url"] = ""
-                except Exception:
-                    pass
-            return result
-
-        # Not confirmed — check if we're on home screen (sync may be in progress)
-        focus = _get_window_focus(phone_id)
-        if LAUNCHER_ACTIVITY in focus:
-            log.warning("[%s] On home but not in accounts DB — marking success (syncing).",
-                        acc_id)
-            result["success"]   = True
-            result["diagnosis"] = "On home screen — account may still be syncing."
-            _configure_device_locale(phone_id, account, acc_id)
-            if stop_phone_on_success:
-                try:
-                    client.stop_phone(phone_id)
-                    result["viewer_url"] = ""
-                except Exception:
-                    pass
-            return result
-
-        diagnosis = adb_diag or f"Account not confirmed after attempt {attempt}. Focus: {focus}"
-        log.warning("[%s] Login not confirmed: %s", acc_id, diagnosis)
-
-        if attempt < MAX_ATTEMPTS:
-            time.sleep(10)
-
-    # ── All attempts exhausted ────────────────────────────────────────────────
-    log.error("[%s] Login failed after %d attempts. Stopping phone.", acc_id, MAX_ATTEMPTS)
-    result["needs_user_input"] = True
-    result["diagnosis"]        = diagnosis
-
-    if last_screenshot:
-        result["last_screenshot_b64"] = base64.standard_b64encode(last_screenshot).decode()
-
-    try:
-        client.stop_phone(phone_id)
-    except Exception as e:
-        log.warning("[%s] Failed to stop phone: %s", acc_id, e)
-
-    return result
+    # ── Google auto login flow (RPA) — works on ALL Android versions ──────────
+    # The GeelarK RPA flow (ID 628594965093548419) handles email, password,
+    # TOTP generation, and consent screens.  Proven on 36/37 accounts.
+    # Pure ADB login (_run_pure_adb_login) is deprecated — kept for reference
+    # but no longer used in the default path.
+    log.info("[%s] Using Google auto login flow (all Android versions).", acc_id)
+    return _run_auto_login_flow(
+        client=client, phone_id=phone_id, account=account,
+        email=email, password=password, totp_secret=totp_secret,
+        acc_id=acc_id, stop_phone_on_success=stop_phone_on_success,
+        screen_w=screen_w, screen_h=screen_h,
+        progress_callback=progress_callback, result=result,
+    )
 
 
 def run_login_check(account: dict) -> dict:
@@ -1456,7 +2438,7 @@ def run_login_check(account: dict) -> dict:
 
     # Rotate proxy IP before starting — each check gets a clean unique IP
     log.info("[%s] Rotating proxy IP for login check …", acc_id)
-    _rotate_proxy_ip()
+    _rotate_proxy_ip(acc_id)
 
     log.info("[%s] Starting phone for login check …", acc_id)
     try:

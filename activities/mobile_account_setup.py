@@ -24,6 +24,7 @@ log = logging.getLogger("mobile_account_setup")
 from activities.google_login_mobile import (
     _shell, _find_and_tap, _get_window_focus,
     _wait_for_foreground_app, _wait_for_ui_text, _poll_until_installed,
+    _rotate_proxy_ip,
 )
 
 
@@ -378,6 +379,16 @@ def run_account_setup(account: dict) -> dict:
 
     client = GeelarKClient()
 
+    # ── Rotate proxy IP before starting the phone ────────────────────────────
+    log.info("[%s] Rotating proxy IP for setup …", acc_id)
+    new_ip = _rotate_proxy_ip(acc_id)
+    if new_ip:
+        log.info(">>> %s ASSIGNED PROXY IP: %s <<<", acc_id, new_ip)
+        log.info("[%s] Waiting 60s (IP settling before phone start) …", acc_id)
+        time.sleep(60)
+    else:
+        log.warning("[%s] Proxy rotation failed — proceeding with current IP", acc_id)
+
     # Start phone
     log.info("[%s] Starting phone for setup …", acc_id)
     try:
@@ -389,9 +400,30 @@ def run_account_setup(account: dict) -> dict:
     from activities.mobile_warmup import _wait_for_phone_ready
     log.info("[%s] Waiting for phone to boot …", acc_id)
     if not _wait_for_phone_ready(phone_id, acc_id, timeout=90):
-        log.warning("[%s] Phone did not boot in time — proceeding anyway", acc_id)
+        result["error"] = "Phone did not boot in 90s"
+        log.warning("[%s] %s", acc_id, result["error"])
+        _stop_phone(client, phone_id)
+        return result
+
+    # ── Pre-check: Google account must be present ──────────────────────────
+    from activities.google_login_mobile import _verify_google_account
+    email = account.get("email", "")
+    if email and not _verify_google_account(phone_id, email):
+        result["error"] = (
+            f"Google account {email} not found on device. "
+            f"Run Login first — setup requires a signed-in account for Play Store installs."
+        )
+        log.error("[%s] %s", acc_id, result["error"])
+        _stop_phone(client, phone_id)
+        return result
 
     home_address = account.get("home_address", "")
+    CRITICAL_APPS = [
+        ("com.google.android.apps.maps",     "Maps"),
+        ("com.google.android.gm",            "Gmail"),
+        ("com.google.android.youtube",       "YouTube"),
+    ]
+
     steps = [
         # 1. Install mock GPS app first — every subsequent step that opens Maps
         #    needs reliable location spoofing to seed Timeline correctly.
@@ -416,13 +448,32 @@ def run_account_setup(account: dict) -> dict:
             log.warning("[%s] ✗ %s raised: %s — continuing", acc_id, step_name, e)
         time.sleep(2)
 
-    # Stop phone
-    try:
-        client.stop_phone(phone_id)
-        log.info("[%s] Phone stopped.", acc_id)
-    except Exception as e:
-        log.warning("[%s] Failed to stop phone: %s", acc_id, e)
+    # ── Verify critical apps are actually installed ────────────────────────
+    missing_apps = []
+    for pkg, name in CRITICAL_APPS:
+        if not _is_installed(phone_id, pkg):
+            missing_apps.append(name)
+            log.warning("[%s] %s not installed after setup attempt.", acc_id, name)
 
-    result["success"] = len(result["steps_completed"]) >= 2  # partial success is ok
+    if missing_apps:
+        result["error"] = f"Apps not installed: {', '.join(missing_apps)}. Play Store may not be logged in."
+        log.error("[%s] %s", acc_id, result["error"])
+        # Don't mark setup done — the phone is not ready for warming
+    else:
+        result["success"] = len(result["steps_completed"]) >= 2
+        log.info("[%s] All critical apps confirmed installed.", acc_id)
+
+    # Stop phone
+    _stop_phone(client, phone_id)
+
     log.info("[%s] Setup complete. Steps done: %s", acc_id, result["steps_completed"])
     return result
+
+
+def _stop_phone(client, phone_id: str) -> None:
+    """Stop a phone, swallowing any error."""
+    try:
+        client.stop_phone(phone_id)
+        log.info("Phone stopped.")
+    except Exception as e:
+        log.warning("Failed to stop phone: %s", e)

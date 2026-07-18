@@ -38,11 +38,6 @@ from activities.google_login_mobile import (
 
 LAUNCHER_ACTIVITY = "com.android.launcher3"
 
-# Proxy rotation rate limit: StreamVia enforces a 180s minimum between rotations.
-# Track the last rotation time so we never rotate too quickly.
-_last_proxy_rotation: float = 0.0
-_PROXY_ROTATION_COOLDOWN = 185  # seconds (5s buffer over the 180s limit)
-
 # ── Random content pools ──────────────────────────────────────────────────────
 
 _MAP_SEARCHES = [
@@ -1441,17 +1436,16 @@ def run_mobile_schedule_session(account: dict, log_file: Path,
         log.warning("[%s] Skipping warmup — phone unhealthy: %s", acc_id, health["reason"])
         return result
 
-    # 1. Rotate proxy IP (enforce 180s cooldown between rotations)
-    global _last_proxy_rotation
-    elapsed = time.time() - _last_proxy_rotation
-    if elapsed < _PROXY_ROTATION_COOLDOWN:
-        wait = _PROXY_ROTATION_COOLDOWN - elapsed
-        log.info("[%s] Proxy cooldown — waiting %.0fs before rotating …", acc_id, wait)
-        time.sleep(wait)
+    # 1. Rotate proxy IP (cooldown is handled inside _rotate_proxy_ip)
     log.info("[%s] Rotating proxy IP …", acc_id)
-    ip = _rotate_proxy_ip()
-    _last_proxy_rotation = time.time()
+    ip = _rotate_proxy_ip(acc_id)
     result["ip"] = ip
+    if ip:
+        # 60s settling buffer — let the proxy connection stabilise
+        log.info("[%s] Waiting 60s (IP settling before phone start) …", acc_id)
+        time.sleep(60)
+    else:
+        log.warning("[%s] Proxy rotation failed — proceeding with current IP", acc_id)
 
     # 2. Start phone
     log.info("[%s] Starting phone …", acc_id)

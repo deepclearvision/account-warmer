@@ -1362,6 +1362,12 @@ tr.row-selected td { background: rgba(88,166,255,.06); }
               title="Run today's warm-up session for all enabled phones (sequential, one at a time)">
         🔥 Start Daily Warming
       </button>
+      <button class="btn" id="btn-integrity-check"
+              style="background:rgba(88,166,255,.15);color:var(--blue);font-weight:600"
+              onclick="startIntegrityAudit()"
+              title="Install Play Integrity API Checker on every phone, run the check, parse verdicts (sequential — 2 min/phone)">
+        🛡 Check Integrity
+      </button>
       <span style="flex:1"></span>
       <span id="mobile-summary" style="color:var(--muted);font-size:12px"></span>
     </div>
@@ -1416,6 +1422,26 @@ tr.row-selected td { background: rgba(88,166,255,.06); }
     <div id="mobile-warmup-status" style="display:none;margin:16px 24px;padding:16px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
       <div style="font-weight:600;margin-bottom:8px" id="mobile-warmup-status-title">Warming in progress…</div>
       <div id="mobile-warmup-status-body" style="font-size:13px;color:var(--muted)"></div>
+    </div>
+    <!-- Integrity Audit results panel -->
+    <div id="integrity-audit-panel" style="display:none;margin:16px 24px;padding:16px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <span style="font-weight:600;font-size:14px" id="integrity-audit-title">🛡 Play Integrity Audit</span>
+        <span style="display:flex;gap:8px">
+          <span id="integrity-audit-summary" style="font-size:12px;color:var(--muted)"></span>
+          <button class="btn btn-sm" onclick="document.getElementById('integrity-audit-panel').style.display='none'" title="Dismiss panel">✕</button>
+        </span>
+      </div>
+      <div class="table-wrap" style="max-height:400px;overflow-y:auto">
+        <table style="width:100%;font-size:12px">
+          <thead><tr>
+            <th>Account</th><th>Device</th><th>OS</th><th>IP</th>
+            <th>Basic</th><th>Device</th><th>Strong</th><th>Tier</th><th></th>
+          </tr></thead>
+          <tbody id="integrity-audit-tbody"></tbody>
+        </table>
+      </div>
+      <div id="integrity-audit-aborted" style="display:none;margin-top:12px;padding:12px;background:rgba(248,81,73,.1);border:1px solid var(--red);border-radius:6px;color:var(--red);font-weight:600"></div>
     </div>
     <!-- Schedule status panel -->
     <div id="mobile-schedule-card" style="margin:0 24px 16px;padding:14px 18px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
@@ -5766,7 +5792,10 @@ async function loadMobilePhones() {
         const shotLink = ls.screenshot
           ? `<div style="margin-top:3px"><a href="/api/mobile/screenshots/${encodeURIComponent(ls.screenshot.replace('screenshots/',''))}" target="_blank" style="font-size:11px;color:var(--blue)">📷 screenshot</a></div>`
           : '';
-        lastWarmupCell = `<div style="font-size:12px">${dateLabel}</div><div style="margin-top:2px">${stepBadges}</div>${shotLink}`;
+        const ipLine = ls.ip
+          ? `<div style="margin-top:2px;font-family:monospace;font-size:10px;color:var(--purple)" title="Proxy IP assigned for this session">🌐 ${escHtml(ls.ip)}</div>`
+          : '';
+        lastWarmupCell = `<div style="font-size:12px">${dateLabel}</div><div style="margin-top:2px">${stepBadges}</div>${shotLink}${ipLine}`;
       }
 
       return `<tr data-id="${p.id}">
@@ -6614,6 +6643,126 @@ async function startAllWarmup() {
     statusDiv.style.borderColor = 'var(--red)';
     btn.disabled = false;
     btn.textContent = '🔥 Start Daily Warming';
+  }
+}
+
+// ── Play Integrity Audit ────────────────────────────────────────────────────────
+
+let _integrityPollTimer = null;
+
+async function startIntegrityAudit() {
+  const btn   = document.getElementById('btn-integrity-check');
+  const panel = document.getElementById('integrity-audit-panel');
+  const title = document.getElementById('integrity-audit-title');
+  const tbody = document.getElementById('integrity-audit-tbody');
+  const summaryEl = document.getElementById('integrity-audit-summary');
+  const abortedEl = document.getElementById('integrity-audit-aborted');
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Checking…';
+  panel.style.display = 'block';
+  abortedEl.style.display = 'none';
+  title.textContent = '🛡 Play Integrity Audit — running…';
+  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px">Starting phones and running integrity checks…<br><small style="color:var(--amber)">~2 min per phone — do not close this tab</small></td></tr>';
+  summaryEl.textContent = '';
+
+  try {
+    const job = await apiFetch('/api/mobile/audit-play-integrity', { method: 'POST' });
+    if (_integrityPollTimer) clearInterval(_integrityPollTimer);
+    _integrityPollTimer = setInterval(() => _pollIntegrityAudit(job.job_id), 6000);
+  } catch(e) {
+    title.textContent = '🛡 Play Integrity Audit — failed to start';
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--red);padding:20px">${escHtml(e.message)}</td></tr>`;
+    btn.disabled = false;
+    btn.textContent = '🛡 Check Integrity';
+  }
+}
+
+async function _pollIntegrityAudit(jobId) {
+  const btn       = document.getElementById('btn-integrity-check');
+  const title     = document.getElementById('integrity-audit-title');
+  const tbody     = document.getElementById('integrity-audit-tbody');
+  const summaryEl = document.getElementById('integrity-audit-summary');
+  const abortedEl = document.getElementById('integrity-audit-aborted');
+
+  try {
+    const job = await apiFetch(`/api/mobile/job/${jobId}`);
+    summaryEl.textContent = job.progress || '';
+
+    if (job.status === 'running') {
+      title.textContent = `🛡 Play Integrity Audit — running… (${job.progress || ''})`;
+      if (job.current_account) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px">' +
+          `Checking ${escHtml(job.current_account)}…  (${job.results_so_far || 0} phones done)</td></tr>`;
+      }
+      return;
+    }
+
+    // Done (completed, aborted, or error)
+    clearInterval(_integrityPollTimer);
+    _integrityPollTimer = null;
+    btn.disabled = false;
+    btn.textContent = '🛡 Check Integrity';
+
+    const results = job.result;
+    if (!Array.isArray(results) || results.length === 0) {
+      title.textContent = '🛡 Play Integrity Audit — no results';
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px">No phones were checked.</td></tr>';
+      return;
+    }
+
+    // Render the results table
+    const tiers = { strong: '🟢 Strong', device_only: '🟡 Device Only', basic_only: '🟠 Basic Only', failed: '🔴 Failed' };
+    function _tierBadge(tier) {
+      const colors = { strong: 'var(--green)', device_only: 'var(--amber)', basic_only: '#ff9800', failed: 'var(--red)' };
+      const c = colors[tier] || 'var(--muted)';
+      return `<span style="font-weight:600;color:${c}">${tiers[tier] || tier}</span>`;
+    }
+    function _boolIcon(v) { return v ? '<span style="color:var(--green)">✅</span>' : '<span style="color:var(--red)">❌</span>'; }
+
+    tbody.innerHTML = results.map(r => {
+      const i = r.integrity || {};
+      const shotLink = r.screenshot_path
+        ? `<a href="/api/mobile/screenshots/${encodeURIComponent(r.screenshot_path.replace('screenshots/',''))}" target="_blank" title="Fallback screenshot">📷</a>`
+        : '';
+      const errorNote = r.error ? `<br><span style="color:var(--red);font-size:10px">${escHtml(r.error.slice(0,80))}</span>` : '';
+      return `<tr style="${r.error && !r.parsed ? 'opacity:0.6' : ''}">
+        <td><strong>${escHtml(r.account_id)}</strong>${errorNote}</td>
+        <td>${escHtml(r.device_brand)} ${escHtml(r.device_model)}</td>
+        <td>${escHtml(r.os_version)}</td>
+        <td style="font-family:monospace;font-size:11px">${escHtml(r.proxy_ip || '—')}</td>
+        <td>${_boolIcon(i.basic_integrity)}</td>
+        <td>${_boolIcon(i.device_integrity)}</td>
+        <td>${_boolIcon(i.strong_integrity)}</td>
+        <td>${r.parsed ? _tierBadge(r.tier) : '<span style="color:var(--muted)">—</span>'}</td>
+        <td>${shotLink}</td>
+      </tr>`;
+    }).join('');
+
+    if (job.status === 'aborted') {
+      abortedEl.style.display = 'block';
+      abortedEl.textContent = `⚠ ABORTED: ${job.abort_reason || 'Duplicate proxy IP detected — audit stopped to protect account isolation.'}`;
+      title.textContent = '⚠ Play Integrity Audit — ABORTED';
+    } else {
+      abortedEl.style.display = 'none';
+      const ok = results.filter(r => r.parsed && !r.error).length;
+      const fail = results.filter(r => r.error && r.proxy_ip).length;
+      const skip = results.length - ok - fail;
+      title.textContent = `🛡 Play Integrity Audit — ${ok} OK, ${fail} failed, ${skip} skipped`;
+      const strongCt = results.filter(r => r.tier === 'strong').length;
+      const deviceCt = results.filter(r => r.tier === 'device_only').length;
+      const basicCt = results.filter(r => r.tier === 'basic_only').length;
+      const failedCt = results.filter(r => r.tier === 'failed').length;
+      summaryEl.textContent = `${strongCt} strong | ${deviceCt} device-only | ${basicCt} basic-only | ${failedCt} failed`;
+    }
+
+    loadMobilePhones();
+  } catch(e) {
+    clearInterval(_integrityPollTimer);
+    _integrityPollTimer = null;
+    btn.disabled = false;
+    btn.textContent = '🛡 Check Integrity';
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--red);padding:20px">Poll error: ${escHtml(e.message)}</td></tr>`;
   }
 }
 

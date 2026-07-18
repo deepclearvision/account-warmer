@@ -184,6 +184,7 @@ def list_phones():
                     "steps":      s.get("steps_done", []),
                     "screenshot": s.get("screenshot", ""),
                     "success":    s.get("success", False),
+                    "ip":         s.get("ip", ""),
                 }
         except Exception:
             pass
@@ -1133,6 +1134,103 @@ def _run_batch_sync(job_id: str, account_ids: list[str], mode: str) -> None:
         job["result_detail"] = detail
 
     _batch_run_semaphore.release()
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ── Play Integrity Audit ─────────────────────────────────────────────────────
+
+@router.post("/audit-play-integrity")
+async def audit_play_integrity(body: dict | None = None):
+    """
+    Run the Play Integrity API Checker on every provisioned GeelarK phone.
+    Accepts optional {"account_ids": ["gl_001", ...]} to limit the scope.
+    Rotates proxy IP before each phone; ABORTS if a duplicate IP is detected.
+
+    Returns a job_id — poll GET /api/mobile/job/{job_id} for results.
+    The completed job will have:
+      - status: "completed" | "aborted" | "error"
+      - results: list of per-phone verdict dicts
+      - summary: "N OK, M failed, K skipped"
+    """
+    acc_ids = (body or {}).get("account_ids", [])
+    accounts = _load_gl_accounts()
+    if acc_ids:
+        id_set = set(acc_ids)
+        accounts = [a for a in accounts if a["id"] in id_set]
+
+    # Filter to provisioned phones only
+    accounts = [a for a in accounts if a.get("geelark_phone_id")]
+
+    if not accounts:
+        raise HTTPException(400, "No provisioned phones found to audit.")
+
+    job_id = str(uuid.uuid4())[:8]
+    async with _jobs_lock:
+        _jobs[job_id] = {
+            "job_id":          job_id,
+            "type":            "play_integrity_audit",
+            "status":          "running",
+            "phase":           "queued",
+            "started_at":      time.time(),
+            "current_account": "",
+            "progress":        "",
+            "summary":         "",
+            "result":          None,
+            "aborted":         False,
+            "abort_reason":    "",
+        }
+
+    loop = asyncio.get_event_loop()
+    loop.run_in_executor(None, _run_integrity_audit_sync, job_id, accounts)
+    return {"job_id": job_id, "status": "running", "total_accounts": len(accounts)}
+
+
+def _run_integrity_audit_sync(job_id: str, accounts: list) -> None:
+    """Background worker — runs the Play Integrity audit sequentially."""
+    job = _jobs.get(job_id)
+    if job:
+        job["phase"] = "running"
+
+    def _on_progress(update: dict) -> None:
+        j = _jobs.get(job_id)
+        if not j:
+            return
+        if "phase" in update:
+            j["phase"] = update["phase"]
+        if "current_account" in update:
+            j["current_account"] = update["current_account"]
+        if "progress" in update:
+            j["progress"] = update["progress"]
+        if "summary" in update:
+            j["summary"] = update["summary"]
+        if "results_so_far" in update:
+            j["results_so_far"] = update["results_so_far"]
+        if update.get("phase") == "aborted":
+            j["aborted"] = True
+            j["abort_reason"] = update.get("reason", "Duplicate proxy IP detected")
+
+    try:
+        from activities.play_integrity_check import run_integrity_audit
+        results = run_integrity_audit(accounts, progress_callback=_on_progress)
+        j = _jobs.get(job_id)
+        if j:
+            j["result"] = results
+            if j.get("aborted"):
+                j["status"] = "aborted"
+                j["phase"]  = "aborted"
+            else:
+                j["status"] = "completed"
+                j["phase"]  = "complete"
+            ok   = sum(1 for r in results if r.get("parsed") and not r.get("error"))
+            fail = sum(1 for r in results if r.get("error") and "No phone" not in str(r.get("error", "")))
+            skip = len(results) - ok - fail
+            j["summary"] = f"{ok} OK, {fail} failed, {skip} skipped"
+    except Exception as e:
+        j = _jobs.get(job_id)
+        if j:
+            j["status"] = "error"
+            j["phase"]  = "error"
+            j["result"] = {"error": str(e)}
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
