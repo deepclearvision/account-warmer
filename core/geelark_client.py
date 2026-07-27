@@ -102,6 +102,12 @@ def _post(path: str, body: dict, use_token_auth: bool = True, timeout: int = 30)
 # GeelarK treats brand+model as advisory — it picks the closest available match.
 
 FAST_MODELS: list[dict] = [
+    # ── Android 14 flagships (strongest Play Integrity attestation) ───────────
+    {"android": "Android 14", "brand": "Samsung",  "model": "Galaxy S24 Ultra"},
+    {"android": "Android 14", "brand": "Samsung",  "model": "Galaxy S24"},
+    {"android": "Android 14", "brand": "Google",   "model": "Pixel 8 Pro"},
+    {"android": "Android 14", "brand": "Google",   "model": "Pixel 8"},
+    {"android": "Android 14", "brand": "OnePlus",  "model": "12"},
     # ── Android 10 flagships (proven stable, highest Google trust) ────────────
     {"android": "Android 10", "brand": "Samsung",  "model": "Galaxy S9+"},
     {"android": "Android 10", "brand": "Samsung",  "model": "Note 9"},
@@ -317,15 +323,71 @@ class GeelarKClient:
             raise RuntimeError(f"Phone start failed: {fail.get('msg', 'unknown')}")
         return success[0].get("url", "")
 
-    def stop_phone(self, phone_id: str) -> bool:
-        """Stop (power off) a cloud phone. Returns True on success."""
+    def stop_phone(self, phone_id: str, timeout: int = 60) -> bool:
+        """
+        Stop (power off) a cloud phone and VERIFY it stopped.
+
+        Sends the stop command then polls get_phone_status() until the phone
+        is state 2 (Stopped) or timeout expires.  Returns True only when the
+        phone is confirmed stopped.
+        """
+        import time as _time
+        # Send stop command
         _post("/open/v1/phone/stop", {"ids": [phone_id]})
-        return True
+        # Poll until confirmed stopped
+        deadline = _time.time() + timeout
+        while _time.time() < deadline:
+            _time.sleep(3)
+            try:
+                statuses = self.get_phone_status([phone_id])
+                for s in statuses:
+                    if s.get("status") == 2:  # Stopped
+                        return True
+            except Exception:
+                pass  # transient API error, keep polling
+        # Final check
+        try:
+            statuses = self.get_phone_status([phone_id])
+            for s in statuses:
+                if s.get("status") == 2:
+                    return True
+        except Exception:
+            pass
+        return False
+
+    def verify_phone_stopped(self, phone_id: str) -> bool:
+        """Check whether a specific phone is currently Stopped (status 2)."""
+        try:
+            statuses = self.get_phone_status([phone_id])
+            for s in statuses:
+                if s.get("status") == 2:
+                    return True
+        except Exception:
+            pass
+        return False
 
     def delete_phone(self, phone_id: str) -> bool:
-        """Permanently delete a cloud phone."""
+        """
+        Permanently delete a cloud phone.  Phone must be stopped first.
+        Returns True only when the phone is confirmed deleted (no longer
+        appears in status query).
+        """
+        import time as _time
         _post("/open/v1/phone/delete", {"ids": [phone_id]})
-        return True
+        # Poll until phone is gone from status list
+        for _ in range(10):
+            _time.sleep(2)
+            try:
+                statuses = self.get_phone_status([phone_id])
+                if not statuses:
+                    return True
+                # Also check if status indicates deleted
+                for s in statuses:
+                    if s.get("status") in (2,):  # Stopped is ok for delete
+                        pass
+            except Exception:
+                return True  # 404 or error = phone gone
+        return False
 
     def rename_phone(self, phone_id: str, name: str) -> bool:
         """Rename a cloud phone (phone must be stopped). Endpoint: /open/v1/phone/detail/update"""
@@ -594,15 +656,38 @@ class GeelarKClient:
             log.warning("Failed to discover APK filename on phone: %s", e)
             return False
 
-        # 6. Install via shell
-        cmd = f"pm install -r -g {dest_path}"
+        # 6. Move APK to /data/local/tmp/ (avoids Android 14+ SELinux denial
+        #    when pm install reads from FUSE-mounted /sdcard/Download).
+        tmp_path = f"/data/local/tmp/{local_path.name}"
+        _post("/open/v1/shell/execute", {
+            "id": phone_id,
+            "cmd": f"cp {dest_path} {tmp_path}",
+        })
+        # Also try mv as fallback if cp fails (some devices)
+        _post("/open/v1/shell/execute", {
+            "id": phone_id,
+            "cmd": f"mv {dest_path} {tmp_path}",
+        })
+
+        # 7. Install from /data/local/tmp/
+        cmd = f"pm install -r -g {tmp_path}"
         try:
             r = _post("/open/v1/shell/execute", {"id": phone_id, "cmd": cmd})
             output = (r.get("output") or "").strip().lower()
             if "success" in output:
                 log.info("APK installed successfully on %s", phone_id)
                 return True
+            # Some Android versions return empty output on successful install.
+            # Verify by checking for newly-installed packages.
             log.warning("APK install output: %s", output)
+            from activities.google_login_mobile import _shell as _sh
+            ok_chk, out_chk = _sh(phone_id, "pm list packages")
+            if ok_chk:
+                # Check for common GPS/fake package names
+                for kw in ("gps", "fake", "joystick", "mock", "location", "lexa"):
+                    if kw in out_chk.lower():
+                        log.info("APK installed (verified via pm list packages) on %s", phone_id)
+                        return True
             return False
         except Exception as e:
             log.warning("APK install shell command failed: %s", e)

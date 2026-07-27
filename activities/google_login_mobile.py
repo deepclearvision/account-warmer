@@ -798,23 +798,127 @@ def _navigate_consent_screens(phone_id: str, max_screens: int = 12) -> bool:
 
 def _verify_google_account(phone_id: str, email: str) -> bool:
     """
-    Confirm the Google account is actually signed into the device by querying
-    the Android accounts database via ADB.  Returns True if email appears in
-    a com.google account entry.
+    Confirm the Google account is actually signed into the device.
+
+    Uses THREE independent checks, any one passing = confirmed logged in:
+
+      Check 1 — dumpsys account (most reliable):
+        dumpsys account | grep -i 'com.google'
+        Looks for the email in Google-authenticated account entries.
+
+      Check 2 — Google account count:
+        dumpsys account | grep -c 'Account {'
+        Quick count — if >0 Google accounts exist and email matches any, confirmed.
+
+      Check 3 — Android settings provider:
+        settings get secure google_accounts
+        System-level list of Google accounts on the device.
+
+    Returns True if the email is found by ANY check.
     """
+    import re
+
+    email_lower = email.lower().strip()
+    checks_passed = 0
+
+    # ── Check 1: dumpsys account (Google accounts only) ──────────────────
     _, out = _shell(phone_id, "dumpsys account | grep -i 'com.google'")
-    if not out:
-        # Fallback: broader search
+    if out and email_lower in out.lower():
+        log.info("[%s] Account FOUND via dumpsys account (check 1)", email)
+        return True
+    if out:
+        checks_passed += 1  # at least the command worked
+
+    # ── Check 2: broader dumpsys account search ──────────────────────────
+    _, out = _shell(phone_id, "dumpsys account")
+    if out:
+        # Count Google accounts
+        google_count = len(re.findall(r"type=com\.google", out, re.IGNORECASE))
+        log.info("[%s] Google accounts on device: %d", email, google_count)
+        if google_count > 0 and email_lower in out.lower():
+            log.info("[%s] Account FOUND via broad dumpsys (check 2)", email)
+            return True
+        checks_passed += 1
+
+    # ── Check 3: Android settings provider ────────────────────────────────
+    _, out = _shell(phone_id, "settings get secure google_accounts")
+    if out and out.strip() and out.strip() != "null":
+        log.info("[%s] Settings google_accounts: %s", email, out.strip()[:100])
+        if email_lower in out.lower():
+            log.info("[%s] Account FOUND via settings (check 3)", email)
+            return True
+        checks_passed += 1
+
+    # ── Log detailed state for debugging ──────────────────────────────────
+    if checks_passed == 0:
+        log.warning("[%s] ALL account checks returned empty — phone may not be logged in", email)
+    else:
+        log.warning("[%s] Account NOT FOUND after %d/3 checks", email, checks_passed)
+        # Dump full account info for debugging
         _, out = _shell(phone_id, "dumpsys account")
-    if not out:
-        log.warning("dumpsys account returned no output — cannot verify")
-        return False
-    # Look for the email address in the account dump
-    found = email.lower() in out.lower()
-    log.info("Account verification for %s: %s", email, "FOUND" if found else "NOT FOUND")
-    if not found:
-        log.debug("dumpsys account output: %s", out[:500])
-    return found
+        if out:
+            log.debug("Full dumpsys account: %s", out[:800])
+
+    return False
+
+
+def _dismiss_post_login_screens(phone_id: str, email: str, acc_id: str = "") -> bool:
+    """
+    After Google login, dismiss any post-login setup screens.
+
+    Google often shows "confirm contact details", "accept services", etc.
+    These are rendered in a Chrome WebView invisible to uiautomator on
+    Android 14, so we use coordinate taps for known button positions.
+
+    Once the account appears in dumpsys, we press HOME to skip remaining
+    screens — the account is already signed in.
+
+    Returns True if account is confirmed signed in after dismissal.
+    """
+    # Known button positions on 1080x2400 screens
+    _TAPS = [
+        (920, 2220, "bottom-right (Save/Accept/Next/Confirm)"),
+        (540, 2220, "bottom-center (I agree/Accept)"),
+        (140, 2220, "bottom-left (More/No thanks)"),
+        (920, 400,  "top-right (Skip/Close)"),
+        (920, 1800, "mid-right (Next/Continue)"),
+        (200, 2300, "very bottom-left"),
+    ]
+
+    import re
+    for round_num in range(5):
+        # Tap each position in the sequence
+        for x, y, desc in _TAPS:
+            _shell(phone_id, f"input tap {x} {y}")
+            time.sleep(2)
+
+        # Check if account is signed in
+        if _verify_google_account(phone_id, email):
+            log.info("[%s] Account verified after %d dismissal rounds — pressing HOME",
+                     acc_id or phone_id, round_num + 1)
+            _shell(phone_id, "input keyevent KEYCODE_HOME")
+            time.sleep(2)
+            return True
+
+        # Check if we're still on a Google setup screen
+        ok, xml = _shell(phone_id, "uiautomator dump /sdcard/ui.xml && cat /sdcard/ui.xml")
+        if ok and xml:
+            pkg_match = re.search(r'package="([^"]+)"', xml)
+            pkg = pkg_match.group(1) if pkg_match else ""
+            # If we've left Google packages, we're done with setup
+            google_pkgs = ["com.google.android.gms", "com.android.vending",
+                          "com.google.android.apps", "com.google.android.setupwizard"]
+            if not any(gp in pkg for gp in google_pkgs):
+                log.info("[%s] Left Google setup (package: %s)", acc_id or phone_id, pkg)
+                _shell(phone_id, "input keyevent KEYCODE_HOME")
+                time.sleep(2)
+                return True
+
+    # Final check — account might have been there all along
+    if _verify_google_account(phone_id, email):
+        _shell(phone_id, "input keyevent KEYCODE_HOME")
+        return True
+    return False
 
 
 def _detect_minutemaid_screen(phone_id: str) -> tuple[str, str]:

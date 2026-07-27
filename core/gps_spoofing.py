@@ -166,10 +166,8 @@ def launch_app(phone_id: str, package: str = _GPS_APP_PACKAGE) -> bool:
     """
     _shell(phone_id, f"am force-stop {package}")
     time.sleep(0.5)
-    # Try explicit activity first, fallback to monkey
-    ok, _ = _shell(phone_id, f"am start -n {package}/com.lexa.fakegps.ui.MainActivity")
-    if not ok:
-        ok, _ = _shell(phone_id, f"monkey -p {package} -c android.intent.category.LAUNCHER 1")
+    # Use monkey — works with ANY package regardless of activity name
+    ok, _ = _shell(phone_id, f"monkey -p {package} -c android.intent.category.LAUNCHER 1")
     time.sleep(3)
     log.info("[%s] Launched %s (ok=%s)", phone_id, package, ok)
     return ok
@@ -189,7 +187,12 @@ def configure_mock_location(phone_id: str, package: str = _GPS_APP_PACKAGE) -> b
 
     # Register the mock GPS app as the system's mock location provider
     # (Settings -> Developer Options -> Select mock location app)
+    # NOTE: The app MUST be running first for this setting to stick on Android 14
+    _shell(phone_id, f"monkey -p {package} -c android.intent.category.LAUNCHER 1")
+    time.sleep(3)
     _shell(phone_id, f"settings put secure mock_location_app {package}")
+    # Also grant mock location via appops (needed on Android 14+)
+    _shell(phone_id, f"appops set {package} android:mock_location allow")
 
     # Allow GPS and network location providers
     _shell(phone_id, "settings put secure location_providers_allowed gps,network")
