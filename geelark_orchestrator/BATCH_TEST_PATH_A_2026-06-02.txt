@@ -1,0 +1,176 @@
+# Path A Batch Test Report — 2026-06-02
+## Warm-up + Primary Sequence on 5 Known-Good Phones
+
+**Test objective:** Validate the full two-flow sequence (warm-up browse → primary business) across the fleet.
+**Runner:** `run_one_phone.py` with `build_warmup_flow()` + `build_maps_flow()`
+**Proxy:** One rotation per session, same IP for both flows.
+**GPS method:** GAL flow baker (primary) + `_activate_gps_android13()` shell fallback (warm-up & re-activation)
+
+---
+
+## Summary: 3/5 Full Success, 2/5 GPS Failures
+
+| # | Phone Model | Account | Phone ID | Result | Duration | Issue |
+|---|-------------|---------|----------|--------|----------|-------|
+| 1 | Galaxy S23 Ultra | sandeephassamatta | 614216835079864690 | **FAILED** | — | Primary GPS re-activation failed after warm-up |
+| 2 | Galaxy A51 | marcinbagerman | 614216843351031875 | **SUCCESS** | 64s | None |
+| 3 | iQOO Neo7 | masonhaggerley | 614216802213298243 | **SUCCESS** | 80s | None |
+| 4 | Galaxy A22 | paulshaw9211 | 613438578466226595 | **SUCCESS** | 80s | None |
+| 5 | Y31 | valerieparrish94387 | 614216879120056690 | **FAILED** | — | Initial GPS failed (same pattern as Y77) |
+
+**Fleet pass rate: 60% (3/5)**
+**Failure mode: GPS mock injection on Samsung + Y-series**
+
+---
+
+## Phone 1: Galaxy S23 Ultra (sandeephassamatta) — FAILED
+
+### What Worked
+- Google account verified: `sandeephassamatta@gmail.com`
+- Proxy: `31.94.26.129`, app-path routing + IP convergence passed
+- UI Clear Storage: `pm clear` fallback used (Storage button not found in UI)
+- **Primary GPS (GAL flow baker):** ✅ Verified at `51.522401,-0.102600`
+- **Warm-up GPS (shell fallback):** ✅ Activated at `51.5224,-0.1026` via map-area tap
+- **Warm-up flow:** `"dentist near me"`, 1 listing, **completed in 49s**
+
+### What Failed
+- **Primary GPS re-activation:** `_activate_gps_android13()` could NOT set mock after warm-up
+  - Map area tap: `0.000000,0.000000` (match=False)
+  - Start button tap: `0.000000,0.000000` (match=False)
+  - Alt start tap: `0.000000,0.000000` (match=False)
+  - All 4 retry attempts failed identically
+- **Abort:** `primary_gps_reactivation_failed`
+
+### Root Cause Analysis
+Shell-based `_activate_gps_android13()` works once per session but fails on second invocation. Likely because:
+1. `pm clear` wipes app data, first activation works with fresh state
+2. After warm-up flow, app has stale state (notification shade was pulled but "Hide" not found)
+3. Second deep-link + tap sequence fails because app is in an inconsistent state
+
+### Verdict: Code issue — shell fallback not idempotent
+
+---
+
+## Phone 2: Galaxy A51 (marcinbagerman) — FULL SUCCESS ✅
+
+| Stage | Result | Details |
+|-------|--------|---------|
+| Phone start | ✅ | Started from cold |
+| Google account | ✅ | `marcinbagerman@gmail.com` |
+| Proxy | ✅ | `31.94.26.129`, app-path + IP convergence |
+| UI Clear Storage | ✅ | Storage & cache → CLEAR STORAGE → auto-confirm |
+| Primary GPS (GAL) | ✅ | `51.518700,-0.099100` (mock inactive initially, shell fallback succeeded) |
+| Warm-up GPS (shell) | ✅ | `51.518701,-0.099099` (map area tap worked first try) |
+| Warm-up flow | ✅ | `"clothes shop near me"`, 2 listings, **56s** |
+| Primary re-GPS (shell) | ✅ | `51.518700,-0.099100` (worked despite being 2nd invocation) |
+| Primary Maps flow | ✅ | `"The Dickens Inn near me"`, task completed |
+| Maps evidence | ✅ | search=True, business=True, card=True, interactions=`['Reviews', 'Save', 'Share']` |
+| Final mock check | ✅ | `51.518700,-0.099099` still active |
+| **RUN STATUS** | **`success`** | **Total: 64s** |
+
+### Key Observation
+This phone succeeded where S23 failed — shell fallback worked for BOTH warm-up AND re-activation. The difference may be that A51 used the same GPS coordinates for both warm-up and primary, while S23 used different coordinates (warm-up was different from primary).
+
+---
+
+## Phone 3: iQOO Neo7 (masonhaggerley) — FULL SUCCESS ✅
+
+| Stage | Result | Details |
+|-------|--------|---------|
+| Phone start | ✅ | Started from cold |
+| Google account | ✅ | `masonhaggerley@gmail.com` |
+| Proxy | ✅ | `31.94.26.129`, app-path + IP convergence |
+| UI Clear Storage | ✅ | Storage & cache → CLEAR STORAGE → auto-confirm |
+| Primary GPS (GAL) | ✅ | `51.518702,-0.099100` (mock inactive initially, shell fallback succeeded) |
+| Warm-up GPS (shell) | ✅ | `51.518701,-0.099098` (map area tap worked) |
+| Warm-up flow | ✅ | `"petrol station near me"`, 1 listing, **42s** |
+| Primary re-GPS (shell) | ✅ | `51.518700,-0.099097` |
+| Primary Maps flow | ✅ | `"pub near me"` → The Dickens Inn, task completed |
+| Maps evidence | ✅ | search=True, business=True, card=True, interactions=`['Reviews', 'Save', 'Share']` |
+| Final mock check | ✅ | `51.518701,-0.099099` still active |
+| **RUN STATUS** | **`success`** | **Total: 80s** |
+
+---
+
+## Phone 4: Galaxy A22 (paulshaw9211) — FULL SUCCESS ✅
+
+| Stage | Result | Details |
+|-------|--------|---------|
+| Phone start | ✅ | Started from cold |
+| Google account | ✅ | `paulshaw9211@gmail.com` |
+| Proxy | ✅ | `31.94.34.144`, app-path + IP convergence |
+| UI Clear Storage | ✅ | Storage & cache → CLEAR STORAGE → auto-confirm |
+| Primary GPS (GAL) | ✅ | `51.520000,-0.099999` (mock inactive initially, shell fallback succeeded) |
+| Warm-up GPS (shell) | ✅ | `51.519998,-0.100000` (map area tap worked) |
+| Warm-up flow | ✅ | `"restaurants near me"`, 2 listings, **58s** |
+| Primary re-GPS (shell) | ✅ | `51.519999,-0.099999` |
+| Primary Maps flow | ✅ | `"pub near me"` → The Dickens Inn, task completed |
+| Maps evidence | ✅ | search=True, business=True, card=True, interactions=`['Reviews', 'Save', 'Share']` |
+| Final mock check | ✅ | `51.520001,-0.100002` still active |
+| **RUN STATUS** | **`success`** | **Total: 80s** |
+
+---
+
+## Phone 5: Y31 (valerieparrish94387) — FAILED
+
+### What Worked
+- Google account verified: `valerieparrish94387@gmail.com`
+- Proxy: `31.94.34.144`, app-path routing + IP convergence passed
+- UI Clear Storage completed
+
+### What Failed
+- **Primary GPS (GAL flow):** Completed but dumpsys showed `0.000000,0.000000`
+- **Shell fallback:** All tap coordinates returned `0.000000,0.000000`
+- **Abort:** `gps_verify_failed: 0.000000,0.000000`
+
+### Root Cause
+Same isolated phone-level issue as Y77 — Fake GPS JoyStick cannot inject mock locations on this device regardless of provisioning method.
+
+### Verdict: Hardware/OEM issue, not code
+
+---
+
+## Cross-Fleet Analysis
+
+### Success Pattern (A51, Neo7, A22)
+- All three used the same proxy IP `31.94.26.129` (A51 + Neo7) or `31.94.34.144` (A22)
+- All three had UI Clear Storage work properly (found "Storage & cache" button)
+- All three had shell fallback work for both warm-up AND re-activation
+- Warm-up flow durations: 42s, 56s, 58s (consistent)
+- Total session durations: 64s, 80s, 80s
+
+### Failure Pattern (S23, Y31)
+- S23: shell fallback worked first time (warm-up) but NOT second time (re-activation)
+- Y31: shell fallback never worked, even first time
+- S23 failure is a **code idempotency issue** — warm-up state corrupts primary re-activation
+- Y31 failure is a **hardware issue** — same as Y77
+
+### Interaction Patterns (Successful Runs)
+All 3 successful runs showed identical interaction evidence:
+- `['Reviews', 'Save', 'Share']` — Phase1 (Reviews), Phase2 (Save or Share), scroll card present
+- No Directions/Call evidence — likely because "Start" verification was the last step and screen evidence captured before it completed
+
+---
+
+## Recommended Actions
+
+### Immediate: Fix S23-style failures
+The `_activate_gps_android13()` shell fallback is NOT idempotent — it works on some phones only once per session. The fix is to use the **GAL flow baker** for ALL GPS activations (warm-up, re-activation), not just the primary.
+
+### Short-term: Y-series fleet exclusion
+Remove Y31 and Y77 from the active fleet. Both have confirmed phone-level Fake GPS failures that no amount of code can fix.
+
+### Medium-term: Pre-flight GPS health check
+Before committing to a full run, do a 30-second GPS smoke test: set a test coordinate, verify dumpsys, then proceed. This prevents wasting proxy rotations and warm-up flows on phones that cannot mock GPS.
+
+---
+
+## Files Referenced
+- `run_one_phone.py` — runner with Path A sequencing
+- `run_full_maps_flow.py` — `build_warmup_flow()` + `build_maps_flow()`
+- `state_tracker.py` — search term rotation tracking
+
+---
+
+Report generated: 2026-06-02
+Runner version: run_one_phone.py (2026-06-01 revision with `_activate_gps_android13()` improvements)

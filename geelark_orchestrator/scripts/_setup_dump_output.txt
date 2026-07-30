@@ -1,0 +1,5 @@
+=== FOCUS ===
+  mCurrentFocus=Window{6177f2 u0 com.theappninjas.fakegpsjoystick/com.theappninjas.fakegpsjoystick.ui.setup.SetupWizardActivity}
+
+
+=== RAW XML LENGTH: 8113 ===

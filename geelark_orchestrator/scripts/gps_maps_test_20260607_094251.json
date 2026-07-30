@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-06-07T09:45:49.933495",
+  "phone_id": "614216875076747634",
+  "account_email": "ellieallison9987@gmail.com",
+  "business_name": "Collins Plumbing & Heating Specialists",
+  "business_lat": "52.545329",
+  "business_lng": "-1.375792",
+  "target_nearby_lat": "52.555423",
+  "target_nearby_lng": "-1.381182",
+  "mock_set_success": true,
+  "maps_search_result": "FOUND",
+  "business_found_text": "Collins Plumbing &",
+  "screenshot_path": null,
+  "ui_dump_path": "C:/Users/Administrator/Desktop/AccountWarmer-Deploy-Enhanced/geelark_orchestrator/scripts/screenshots_20260607_094251/614216875076747634_maps_ui.xml",
+  "error": null
+}

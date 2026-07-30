@@ -1,0 +1,89 @@
+{
+  "timestamp": "2026-06-09T15:17:30.656056",
+  "script_name": "gps_maps_production_v1.py",
+  "run_id": "20260609_151256",
+  "phone_id": "614216769833271363",
+  "account_email": "oliverjohnsondrains@gmail.com",
+  "account_id": "acc_005",
+  "business_id": "biz_001",
+  "business_name": "Southwark Plumbers",
+  "keyword_type": "branded",
+  "keyword_used": "Southwark Plumbers 24 hour",
+  "all_keywords": [
+    "Southwark Plumbers",
+    "Southwark Plumbers near me",
+    "Southwark Plumbers reviews",
+    "Southwark Plumbers phone number",
+    "Southwark Plumbers contact",
+    "Southwark Plumbers opening hours",
+    "Southwark Plumbers emergency",
+    "Southwark Plumbers 24 hour",
+    "Southwark Plumbers services",
+    "Southwark Plumbers 12 Crosby Row",
+    "Southwark Plumbers London SE1 3PT",
+    "Southwark Plumbers Southwark, London",
+    "Southwark Plumbers Google Maps",
+    "Southwark Plumbers directions",
+    "Southwark Plumbers website",
+    "Southwark Plumbers call",
+    "Southwark Plumbers cheap",
+    "Southwark Plumbers best",
+    "Southwark Plumbers local",
+    "Southwark Plumbers address"
+  ],
+  "all_nearby_points": [
+    "51.506099,-0.0676",
+    "51.485855,-0.089144",
+    "51.490978,-0.074357",
+    "51.505522,-0.064634",
+    "51.515524,-0.106329",
+    "51.51256,-0.082737",
+    "51.487054,-0.073413",
+    "51.501429,-0.062217",
+    "51.500401,-0.079247",
+    "51.493941,-0.111381",
+    "51.491913,-0.082144",
+    "51.491878,-0.075993"
+  ],
+  "attempt": 1,
+  "started_ok": true,
+  "overall_status": "SUCCESS",
+  "provisioning_gates": {
+    "gate_1_phone_running": true,
+    "gate_2_developer_options": true,
+    "gate_3_mock_app_set": true,
+    "gate_4_overlay_service": true,
+    "gate_5_google_account": true,
+    "gate_6_proxy_routing": true,
+    "gate_7_ip_freshness": true
+  },
+  "gps_test": {
+    "target_lat": 51.491878,
+    "target_lng": -0.075993,
+    "mock_success": true,
+    "dumpsys_mock_ok": true,
+    "dumpsys_mock_info": "51.491878,-0.075992"
+  },
+  "maps_test": {
+    "search_term": "Southwark Plumbers 24 hour",
+    "maps_search_result": "SUCCESS",
+    "business_found_text": "Southwark Plumbers",
+    "card_opened": true,
+    "interactions_tapped": [
+      "Directions",
+      "Website"
+    ],
+    "scrolls": 0,
+    "screenshots": {
+      "01_geo_opened": "C:/Users/Administrator/Desktop/AccountWarmer-Deploy-Enhanced/geelark_orchestrator/scripts/live_test_acc_005_20260609_151256/screenshots/614216769833271363_maps_01_geo_opened_151607.png",
+      "02_business_tapped": "C:/Users/Administrator/Desktop/AccountWarmer-Deploy-Enhanced/geelark_orchestrator/scripts/live_test_acc_005_20260609_151256/screenshots/614216769833271363_maps_02_business_tapped_151628.png",
+      "03_card_verify": "C:/Users/Administrator/Desktop/AccountWarmer-Deploy-Enhanced/geelark_orchestrator/scripts/live_test_acc_005_20260609_151256/screenshots/614216769833271363_maps_03_card_verify_151642.png",
+      "04_after_interactions": "C:/Users/Administrator/Desktop/AccountWarmer-Deploy-Enhanced/geelark_orchestrator/scripts/live_test_acc_005_20260609_151256/screenshots/614216769833271363_maps_04_after_interactions_151706.png",
+      "05_final": "C:/Users/Administrator/Desktop/AccountWarmer-Deploy-Enhanced/geelark_orchestrator/scripts/live_test_acc_005_20260609_151256/screenshots/614216769833271363_maps_05_final_151719.png"
+    },
+    "error": null
+  },
+  "errors": [],
+  "live_view_url": "https://phone.geelark.com/index.html?isApi=true&target=SG&env=prod&id=614216769833271363&envName=oliverjohnsondrains@gmail.com&envNo=11&w=336&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1IjoiNjEzMTIyOTgzNTgxNDUwMzQ3IiwidCI6IjYxMzEyMjk4MzU4MTUxNTg4MyIsImUiOiI2MTQyMTY3Njk4MzMyNzEzNjMuMTc4MTAxNDM3OCJ9.TDoZeNYbLAhRFuRFZNHb32ldbVgZYL5gJiPINAd1Eo4&lang=en-US&center=true&energySavingMode=0",
+  "duration_seconds": 274
+}

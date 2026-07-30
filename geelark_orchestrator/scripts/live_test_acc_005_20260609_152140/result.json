@@ -1,0 +1,85 @@
+{
+  "timestamp": "2026-06-09T15:26:50.469527",
+  "script_name": "gps_maps_production_v1.py",
+  "run_id": "20260609_152140",
+  "phone_id": "614216769833271363",
+  "account_email": "oliverjohnsondrains@gmail.com",
+  "account_id": "acc_005",
+  "business_id": "biz_001",
+  "business_name": "Southwark Plumbers",
+  "keyword_type": "standalone",
+  "keyword_used": "gas plumber",
+  "all_keywords": [
+    "plumber",
+    "plumber near me",
+    "emergency plumber",
+    "emergency plumber near me",
+    "best plumber",
+    "best plumber near me",
+    "24 hour plumber",
+    "24 hour plumber near me",
+    "cheap plumber",
+    "cheap plumber near me",
+    "local plumber",
+    "local plumber near me",
+    "gas plumber",
+    "gas plumber near me",
+    "boiler repair",
+    "boiler repair near me",
+    "drain unblocking",
+    "drain unblocking near me",
+    "leak detection",
+    "leak detection near me"
+  ],
+  "all_nearby_points": [
+    "51.502272,-0.084085",
+    "51.499749,-0.084501",
+    "51.500252,-0.095184",
+    "51.500863,-0.088226",
+    "51.501495,-0.093309",
+    "51.502533,-0.094845",
+    "51.497087,-0.090069",
+    "51.50414,-0.092458",
+    "51.500627,-0.093227",
+    "51.501305,-0.093775",
+    "51.502496,-0.086795",
+    "51.504062,-0.086748"
+  ],
+  "attempt": 1,
+  "started_ok": true,
+  "overall_status": "PARTIAL",
+  "provisioning_gates": {
+    "gate_1_phone_running": true,
+    "gate_2_developer_options": true,
+    "gate_3_mock_app_set": true,
+    "gate_4_overlay_service": true,
+    "gate_5_google_account": true,
+    "gate_6_proxy_routing": true,
+    "gate_7_ip_freshness": true
+  },
+  "gps_test": {
+    "target_lat": 51.504062,
+    "target_lng": -0.086748,
+    "mock_success": true,
+    "dumpsys_mock_ok": true,
+    "dumpsys_mock_info": "51.504062,-0.086749"
+  },
+  "maps_test": {
+    "search_term": "gas plumber",
+    "maps_search_result": "BUSINESS_NOT_FOUND",
+    "business_found_text": null,
+    "card_opened": false,
+    "interactions_tapped": [],
+    "scrolls": 16,
+    "screenshots": {
+      "01_geo_opened": "C:/Users/Administrator/Desktop/AccountWarmer-Deploy-Enhanced/geelark_orchestrator/scripts/live_test_acc_005_20260609_152140/screenshots/614216769833271363_maps_01_geo_opened_152338.png",
+      "02_no_business": "C:/Users/Administrator/Desktop/AccountWarmer-Deploy-Enhanced/geelark_orchestrator/scripts/live_test_acc_005_20260609_152140/screenshots/614216769833271363_maps_02_no_business_152635.png"
+    },
+    "error": "business_not_found_after_16_scrolls"
+  },
+  "errors": [
+    "business_not_found_after_16_scrolls"
+  ],
+  "live_view_url": "https://phone.geelark.com/index.html?isApi=true&target=SG&env=prod&id=614216769833271363&envName=oliverjohnsondrains@gmail.com&envNo=11&w=336&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1IjoiNjEzMTIyOTgzNTgxNDUwMzQ3IiwidCI6IjYxMzEyMjk4MzU4MTUxNTg4MyIsImUiOiI2MTQyMTY3Njk4MzMyNzEzNjMuMTc4MTAxNDkwMiJ9.8SGWpcLb_H7YsvQ4gZbZtH753d05czaCYc-L0tmC8tk&lang=en-US&center=true&energySavingMode=0",
+  "duration_seconds": 310
+}

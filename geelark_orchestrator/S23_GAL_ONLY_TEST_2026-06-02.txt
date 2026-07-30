@@ -1,0 +1,77 @@
+# Path A GAL-Only GPS Test — Galaxy S23 Ultra — 2026-06-02
+
+## Test Objective
+Validate that `run_one_phone.py` with **GAL baker ONLY** (no shell fallback) works on Galaxy S23 Ultra.
+
+## Changes Applied
+- Removed shell fallback (`_activate_gps_android13()`) from primary GPS verification.
+- Replaced warm-up GPS shell activation with GAL baker (`bake_gps_flow` + `run_custom_flow` + `poll_task`).
+- Replaced primary re-activation GPS shell activation with GAL baker.
+- Set `reuse_flow_id=None` for all GPS stages (always bake fresh) for guaranteed idempotency.
+
+## Test Result: FAILED
+
+### Phone
+- **Model:** Galaxy S23 Ultra
+- **Account:** sandeephassamatta
+- **Phone ID:** 614216835079864690
+- **Seed:** 100011
+
+### Sequence Executed
+1. Phone already running.
+2. Google account: `sandeephassamatta@gmail.com` ✅
+3. Proxy: `31.94.18.95`, app-path + IP convergence ✅
+4. UI Clear Storage: `pm clear` fallback (Storage button not found) ✅
+5. **Primary GPS (GAL baker):** Fresh flow `622178126515929203` baked, dispatched, task completed.
+6. **GPS verification (dumpsys):** ❌ `0.000000,0.000000` — does NOT match resolved `51.5224,-0.1026`
+7. **Abort:** `gps_mismatch: dumpsys=-0.000000,0.000000 resolved=51.5224,-0.1026`
+
+### Key Observation
+The GAL flow task completed with status=3, but `dumpsys location` showed `last location=Location[gps -0.000000,0.000000]`. The mock provider was NOT actually set.
+
+This is the **same root cause** as Y77/Y31 — the GAL flow completes successfully but Fake GPS JoyStick on this phone does not actually inject mock locations.
+
+### Evidence from Previous Test (Seed 100001, shell fallback present)
+In the previous test on the same phone:
+- GAL flow completed, dumpsys showed `mock inactive`
+- Shell fallback `_activate_gps_android13()` kicked in
+- Map-area tap succeeded, mock activated at `51.522401,-0.102600`
+- **Warm-up flow completed (49s)**
+- Shell re-activation **failed** (all taps returned `0.000000,0.000000`)
+- Run aborted at `primary_gps_reactivation_failed`
+
+This shows the S23 CAN set GPS via shell, but only **once per session**. After `pm clear`, the first shell activation works. The second fails.
+
+### Root Cause
+The GAL baker GPS flow template does NOT include the shell-level provisioning steps that make Fake GPS work on Samsung phones:
+- `appops set ... MOCK_LOCATION allow`
+- `settings put secure mock_location_app ...`
+- `settings put secure mock_location 1`
+- `settings put secure location_mode 3`
+- Starting `OverlayService`
+- Dismissing first-run dialogs
+
+The GAL flow only runs the UI-based GPS setup (open app → tap Set Location → type coords → tap START). On some phones this UI sequence alone is sufficient. On Samsung S23 (and Y77/Y31), it is NOT sufficient — the app needs additional shell-level provisioning to actually inject mock locations.
+
+## Conclusion
+**The GAL baker alone is NOT sufficient for Samsung S23.** The phone requires shell-level provisioning that the GAL flow template does not include.
+
+## Options
+
+1. **Keep shell fallback** (restore `_activate_gps_android13()` as fallback after GAL baker fails) — minimal code change, works on all tested phones.
+2. **Add shell provisioning to GAL flow template** — update the GPS flow template to include shell commands via `inputContent` or `keyOption` steps that run provisioning. This is complex and fragile.
+3. **Exclude S23 from fleet** — mark this phone as incompatible with GAL-only GPS and skip it.
+4. **Hybrid: GAL baker primary + shell fallback only for re-activation** — keep GAL baker for primary and warm-up, but use shell for re-activation (where the idempotency issue is most acute).
+
+## Recommendation
+Option 4 (Hybrid) is the safest interim fix:
+- Primary GPS: GAL baker (already works on most phones, shell fallback if needed)
+- Warm-up GPS: GAL baker (fresh flow, different coords)
+- Primary re-activation: Shell fallback (one-time per session, no idempotency issue since it's the second activation)
+
+However, the user's explicit instruction is "use the GAL flow baker for ALL GPS activations." If we follow this strictly, the S23 will fail.
+
+---
+File: `BATCH_TEST_PATH_A_2026-06-02.txt`
+Changes: `run_one_phone.py` (removed shell fallback, added GAL baker for warm-up + re-activation)
+Test time: 2026-06-02 05:02 UTC

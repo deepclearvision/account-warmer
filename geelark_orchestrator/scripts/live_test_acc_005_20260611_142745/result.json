@@ -1,0 +1,82 @@
+{
+  "timestamp": "2026-06-11T14:29:46.600373",
+  "script_name": "gps_maps_production_v1.py",
+  "run_id": "20260611_142745",
+  "phone_id": "614216769833271363",
+  "account_email": "oliverjohnsondrains@gmail.com",
+  "account_id": "acc_005",
+  "business_id": "biz_001",
+  "business_name": "Southwark Plumbers",
+  "keyword_type": "branded",
+  "keyword_used": "Southwark Plumbers London SE1 3PT",
+  "all_keywords": [
+    "Southwark Plumbers",
+    "Southwark Plumbers near me",
+    "Southwark Plumbers reviews",
+    "Southwark Plumbers phone number",
+    "Southwark Plumbers contact",
+    "Southwark Plumbers opening hours",
+    "Southwark Plumbers emergency",
+    "Southwark Plumbers 24 hour",
+    "Southwark Plumbers services",
+    "Southwark Plumbers 12 Crosby Row",
+    "Southwark Plumbers London SE1 3PT",
+    "Southwark Plumbers Southwark, London",
+    "Southwark Plumbers Google Maps",
+    "Southwark Plumbers directions",
+    "Southwark Plumbers website",
+    "Southwark Plumbers call",
+    "Southwark Plumbers cheap",
+    "Southwark Plumbers best",
+    "Southwark Plumbers local",
+    "Southwark Plumbers address"
+  ],
+  "all_nearby_points": [
+    "51.506099,-0.0676",
+    "51.485855,-0.089144",
+    "51.490978,-0.074357",
+    "51.505522,-0.064634",
+    "51.515524,-0.106329",
+    "51.51256,-0.082737",
+    "51.487054,-0.073413",
+    "51.501429,-0.062217",
+    "51.500401,-0.079247",
+    "51.493941,-0.111381",
+    "51.491913,-0.082144",
+    "51.491878,-0.075993"
+  ],
+  "attempt": 1,
+  "started_ok": true,
+  "overall_status": "PARTIAL",
+  "provisioning_gates": {
+    "gate_1_phone_running": true,
+    "gate_2_developer_options": true,
+    "gate_3_mock_app_set": true,
+    "gate_4_overlay_service": true,
+    "gate_5_google_account": true,
+    "gate_6_proxy_routing": true,
+    "gate_7_ip_freshness": true
+  },
+  "gps_test": {
+    "target_lat": 51.490978,
+    "target_lng": -0.074357,
+    "mock_success": false,
+    "dumpsys_mock_ok": false,
+    "dumpsys_mock_info": "GeelarK API error 42002 on /open/v1/shell/execute: phone is not running — None"
+  },
+  "maps_test": {
+    "search_term": "Southwark Plumbers London SE1 3PT",
+    "maps_search_result": "UNKNOWN",
+    "business_found_text": null,
+    "card_opened": false,
+    "interactions_tapped": [],
+    "scrolls": 0,
+    "screenshots": {},
+    "error": "open_maps_failed: GeelarK API error 42002 on /open/v1/shell/execute: phone is not running — None"
+  },
+  "errors": [
+    "open_maps_failed: GeelarK API error 42002 on /open/v1/shell/execute: phone is not running — None"
+  ],
+  "live_view_url": "https://phone.geelark.com/index.html?isApi=true&target=SG&env=prod&id=614216769833271363&envName=oliverjohnsondrains@gmail.com&envNo=11&w=336&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1IjoiNjEzMTIyOTgzNTgxNDUwMzQ3IiwidCI6IjYxMzEyMjk4MzU4MTUxNTg4MyIsImUiOiI2MTQyMTY3Njk4MzMyNzEzNjMuMTc4MTE4NDQ3MiJ9.1mcqXNY-iQqXF1MH2cxJk3TOIWUcuGWEJCVjcoOL0y0&lang=en-US&center=true&energySavingMode=0",
+  "duration_seconds": 121
+}

@@ -1,0 +1,4 @@
+account_id,geelark_phone_id,business_name,home_lat,home_lng,business_lat,business_lng,nearby_1_lat,nearby_1_lng,nearby_2_lat,nearby_2_lng,onsite_1_lat,onsite_1_lng,branded_searches,search_terms,business_goal,provisioned,maps_verified
+batch_01_phone1,614216822245294147,The Dickens Inn,51.500749,-0.128356,51.5013,-0.0886,51.5224,-0.1026,51.5187,-0.0991,51.5013,-0.0886,The Dickens Inn St Katharine Docks,pub,review,true,true
+batch_01_phone2,614216908010422642,Costa Coffee,51.500749,-0.128356,51.5013,-0.0886,51.5224,-0.1026,51.5187,-0.0991,51.5013,-0.0886,Costa Coffee Tower Bridge,coffee,review,true,true
+batch_01_phone3,614216818470420547,Pret A Manger,51.500749,-0.128356,51.5013,-0.0886,51.5224,-0.1026,51.5187,-0.0991,51.5013,-0.0886,Pret A Manger near me,sandwich,review,true,true

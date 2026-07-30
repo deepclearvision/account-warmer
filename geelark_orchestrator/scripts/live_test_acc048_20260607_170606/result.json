@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-06-07T17:08:51.329586",
+  "phone_id": "614216903581237315",
+  "account_email": "oakleighoneal9987@gmail.com",
+  "business_name": "Southwark Plumbers",
+  "business_lat": 51.501364,
+  "business_lng": -0.088611,
+  "target_nearby_lat": 51.501512,
+  "target_nearby_lng": -0.071167,
+  "mock_set_success": true,
+  "dumpsys_mock_ok": true,
+  "dumpsys_mock_info": "51.501509,-0.071168",
+  "maps_search_result": "FOUND",
+  "business_found_text": "Southwark Plumbers",
+  "screenshot_path": null,
+  "ui_dump_path": "C:/Users/Administrator/Desktop/AccountWarmer-Deploy-Enhanced/geelark_orchestrator/scripts/live_test_acc048_20260607_170606/screenshots/614216903581237315_maps_ui.xml",
+  "error": null
+}

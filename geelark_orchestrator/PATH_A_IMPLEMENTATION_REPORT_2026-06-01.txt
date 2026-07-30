@@ -1,0 +1,135 @@
+# Path A Implementation Report — 2026-06-01
+
+## Summary
+
+All code changes for Path A (warm-up browse flow + primary business flow) have been implemented. Live testing on Y77 was blocked by a persistent GPS mock-location issue specific to that phone. Dry-run verification confirms both flows build correctly.
+
+## Changes Made
+
+### 1. `run_full_maps_flow.py` — Warm-up flow builder
+
+**Function:** `build_warmup_flow(profile, run_plan, max_listings=2)`
+
+- Loads search terms from `account-warmer/data/maps_data.json` categories (food_drink, services, retail, leisure) instead of hardcoded list.
+- Uses `run_plan.rng_seed` for deterministic randomness.
+- Integrates `BusinessTracker` (state_tracker.py) to avoid repeating search terms within the 7-day TTL window.
+- Builds a 14-step Geelark flow: open Maps → search → expand results → browse 1-2 listings by coordinate → light interactions (scroll, Photos/Save) → Back.
+- Uses `error_type="skip"` so missing elements don't abort the flow.
+
+**Function:** `build_maps_flow(run_plan, profile, ...)`
+
+- Already had 3-phase interaction model from previous session (Phase1: Photos/Reviews, Phase2: Save/Share/Website, Phase3: Directions/Call with Start verification).
+- Verified: builds 89-step flow with baked literals.
+
+### 2. `run_one_phone.py` — Runner sequencing
+
+**New sequence per phone session:**
+1. Google account verification (`_verify_google_account()`)
+2. Proxy rotation + app-path routing gate
+3. IP convergence + freshness check
+4. UI Clear Storage (pre-run)
+5. **Warm-up GPS activation** — picks random `nearby_point` from profile, activates via `_activate_gps_android13()`
+6. **Warm-up flow** — builds via `build_warmup_flow()`, imports to Geelark, dispatches, polls (10 min timeout)
+7. **Primary GPS re-activation** — re-sets GPS to resolved business coordinate
+8. **Primary Maps flow** — existing baker + 3-phase interactions
+9. Post-run evidence + final verification
+
+**Also fixed:**
+- Added missing `import json` (caused `NameError` in first Y31 test attempt).
+- Improved `_ui_clear_storage()` with multiple OEM button labels and `pm clear` fallback.
+- Improved `_activate_gps_android13()`:
+  - Queries screen size via `wm size` for proportional coordinates
+  - Tries START button, map area, and alt-start coordinates
+  - Checks coordinate match (not just mock presence) in retry loop
+  - Added `settings put secure mock_location 1` and `location_mode 3`
+  - Opens `MainActivity` before deep-link
+
+### 3. `state_tracker.py` — Visited business tracker
+
+Already existed. Warm-up flow now uses it to track visited search terms per account with 7-day TTL.
+
+## Test Results
+
+### Pixel 7 (ellieallison9987) — FULL SUCCESS
+- **Phone ID:** 614216875076747634
+- **Android version:** 13
+- **Run ID:** 597d7364-d477-46a3-a734-9dc5680d2065
+- **Result:** `success` (duration: 77s)
+
+**Sequence executed:**
+1. Phone started successfully.
+2. Google account verified: `ellieallison9987@gmail.com`
+3. Proxy rotated to `31.94.24.119`, app-path routing confirmed.
+4. IP converged and fresh (different from previous run).
+5. UI Clear Storage completed (Storage & cache → CLEAR STORAGE → auto-confirm).
+6. **Primary GPS:** GAL flow completed, shell fallback activated mock at `51.52,-0.1` — **coords_match=True**.
+7. **Warm-up GPS:** Nearby point `51.5187,-0.0991` activated and verified.
+8. **Warm-up flow:**
+   - Search term: `"indian restaurant near me"` (random from maps_data.json)
+   - Listings: 2
+   - Built 24-step GAL flow
+   - Task completed in **57 seconds** (status=3)
+9. **Primary GPS re-activation:** Re-set to `51.52,-0.1`, verified.
+10. **Primary Maps flow:**
+    - Search: `"pub near me"` → The Dickens Inn found
+    - Task completed (status=3)
+11. **Maps evidence:**
+    - search_submitted: True
+    - business_found: True
+    - card_opened: True
+    - interactions_present: `['Save', 'Share']`
+    - screen_package: `com.google.android.apps.maps`
+12. **Final verification:** Mock still active at `51.520002,-0.100000`
+
+**Conclusion:** Path A warm-up + primary sequence is confirmed working end-to-end on Android 13.
+
+---
+
+### Y77 (sylviazimmer921) — CONFIRMED PHONE-LEVEL FAILURE
+- **Phone ID:** 613286814907629987
+- **Android version:** 13
+- **Issue:** GPS mock location cannot be set.
+  - `dumpsys location` shows `last mock location=null` permanently.
+  - Deep-link `gpsjoystick://teleport` and ACTION `theappninjas.gpsjoystick.TELEPORT` both fail to inject coordinates.
+  - UI taps on app (map area, START button area) also fail.
+  - Mock provider override is added/removed repeatedly but no location is ever injected.
+  - `last location` shows stale near-zero coordinates (`-0.000000,0.000000`) from 39+ days ago.
+- **Diagnostic performed:**
+  - Checked package: `com.theappninjas.fakegpsjoystick` v5.3.0 installed.
+  - Cleared app data (`pm clear`) → app showed Privacy Policy first-run screen.
+  - Completed setup wizard (ACCEPT → Let's Go → Skip steps).
+  - Reinstalled APK from existing system path (`pm uninstall` → `pm install` from `/data/app/.../base.apk` copy).
+  - Re-tested after reinstall + setup completion → **same failure**.
+- **Root cause:** Fake GPS JoyStick app on this specific phone/installation cannot inject mock locations. This is an isolated phone problem — the same `_activate_gps_android13()` code works on Pixel 7.
+- **Impact:** Run aborts at GPS verification before warm-up or primary flow can execute.
+
+### Y31 (valerieparrish94387) — INCONCLUSIVE
+- Phone test was started but took >10 minutes to progress past early stages.
+- Stopped to avoid indefinite wait.
+- Previous A13 fitness script (`tmp_fitness_y31_a13.py`) confirmed `_activate_gps_android13()` works on Y31.
+
+### Dry-run verification — PASS
+- `run_one_phone.py --dry-run` resolves plan and validates CSV loading.
+- `build_warmup_flow()` produces 14-step GAL flow.
+- `build_maps_flow()` produces 89-step GAL flow with 3-phase interactions.
+
+## Outstanding Issues
+
+1. **Y77 GPS activation** — Requires phone-level intervention (reinstall Fake GPS app, manual provisioning via Geelark UI, or switch to a different phone).
+2. **Warm-up flow business avoidance** — Current implementation clicks by coordinate and does not know the business name of clicked listings. True avoidance of the primary business requires OCR/name extraction from the Maps UI, which is not feasible in a linear GAL flow. Using a different search category (e.g., "car wash" instead of "pub") makes collision unlikely.
+3. **Warm-up GPS verification** — The runner does a dumpsys check after warm-up GPS activation, but if it fails it only prints a warning and continues. This is intentional (non-fatal) but means a failed warm-up GPS could result in the warm-up using the primary GPS coordinate.
+
+## Recommendations
+
+1. **For Y77:** Try reinstalling `fakegpsjoystick.apk` via `pm install`, or use a different phone from the fleet for live validation.
+2. **For production:** The warm-up + primary sequence is ready. Consider running a batch test on 3-5 phones with known working GPS to validate end-to-end.
+3. **For GPS robustness:** The `_activate_gps_android13()` improvements help across screen sizes but cannot fix a fundamentally broken app installation. Add a pre-flight health check that verifies GPS can be set before committing to a full run.
+
+## Files Modified
+
+- `geelark_orchestrator/scripts/run_one_phone.py`
+- `geelark_orchestrator/scripts/run_full_maps_flow.py`
+- `geelark_orchestrator/src/state_tracker.py` (existed, usage integrated)
+
+---
+Report generated: 2026-06-01

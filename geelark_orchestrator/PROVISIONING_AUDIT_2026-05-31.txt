@@ -1,0 +1,287 @@
+================================================================================
+GEELARK ORCHESTRATOR — PROVISIONING / FITNESS CHECK AUDIT
+Generated: 2026-05-31
+Source files read: run_one_phone.py, provisioning.py, data_layer.py, schema.sql,
+                   runs_store.py, provision_phone_24.py, maps_evidence.py,
+                   flow_registry.py, Geelark_Master_Reference Section 9.10
+================================================================================
+
+TABLE OF CONTENTS
+  1. Fitness Checks BEFORE Maps Flow Dispatch
+  2. Standalone Provisioning Script (provision_phone_24.py)
+  3. provisioned & maps_verified — Where Implemented
+  4. Google Account Verification — Existence in Codebase
+  5. Enforced vs. Assumed — Exact State
+  6. Critical Gap: CSV-Only Static Flags
+
+================================================================================
+1. FITNESS CHECKS BEFORE MAPS FLOW DISPATCH (run_one_phone.py)
+================================================================================
+
+The function run_phone() executes the following gates IN ORDER before dispatching
+the Maps flow. Each gate aborts the run if it fails.
+
+--- GATE 1: check_phone_fit (provisioning.py) ---
+  Verifies:  CSV fields "provisioned" and "maps_verified" are both True
+  Command:   NO shell command. Reads Profile dataclass booleans from CSV.
+  Pass:      Continue to next gate
+  Fail:      Return {"status": "aborted", "abort_reason": "Phone X not provisioned"}
+
+--- GATE 2: ensure_running (run_one_phone.py:71) ---
+  Verifies:  Cloud phone is started and Geelark reports status 0
+  Command:   client.get_phone_status([phone_id]) then client.start_phone(phone_id)
+  Pass:      Continue to next gate
+  Fail:      Abort with failed_step="phone_start_failed"
+
+--- GATE 3: Proxy rotation (run_one_phone.py:663) ---
+  Verifies:  StreamVia proxy control endpoint responds
+  Command:   change_proxy_ip() — HTTP call to proxy control panel
+  Pass:      Continue to next gate
+  Fail:      Abort with "Proxy rotation failed"
+
+--- GATE 4: _verify_app_path_proxy (run_one_phone.py:293) ---
+  Verifies:  App-path traffic (Chrome -> what's-my-IP) routes through rotated proxy
+  Command:   Opens Chrome to https://ifconfig.me or https://icanhazip.com,
+             polls UI via "uiautomator dump", extracts IP, compares to expected proxy IP.
+             Also dismisses Chrome first-run dialogs: "Use without an account",
+             "Accept & continue", "Got it", "Next", "No thanks".
+  Pass:      Continue to next gate
+  Fail:      Abort with "Proxy routing leak"
+
+--- GATE 5: IP gate / shell convergence (run_one_phone.py:686) ---
+  Verifies:  Shell-level curl outbound IP matches proxy IP
+  Command:   curl -s http://ifconfig.me and curl -s https://icanhazip.com
+             via _post("/open/v1/shell/execute", ...)
+  Pass:      Continue to next gate
+  Fail:      Abort with "Phone IP did not converge to proxy IP within 90s"
+
+--- GATE 6: IP freshness check (run_one_phone.py:703) ---
+  Verifies:  Current proxy IP differs from previous run's interaction_ip
+  Command:   SQLite query: SELECT interaction_ip FROM runs WHERE profile_key=?
+             ORDER BY created_at DESC LIMIT 1
+  Pass:      Continue to next gate
+  Fail:      Abort with "IP not fresh"
+
+--- GATE 7: UI Clear Storage (run_one_phone.py:717) ---
+  Verifies:  Fake GPS app storage cleared to prevent ad interstitial stall
+  Command:   _ui_clear_storage(phone_id, package=FAKE_GPS_PACKAGE)
+             Opens Settings -> App Info -> Storage -> CLEAR STORAGE -> OK via shell taps
+  Pass:      Non-fatal; continues even if fails
+  Fail:      Warning printed; run continues
+
+--- GATE 8: GPS flow bake + dispatch + poll (run_one_phone.py:720) ---
+  Verifies:  Geelark GPS RPA flow executes successfully (task status = 3)
+  Command:   bake_gps_flow(...) -> client.run_custom_flow(...) -> poll_task(...)
+  Pass:      Continue to GPS verification
+  Fail:      Abort with "GPS flow failed"
+
+--- GATE 9: dumpsys_mock_check (run_one_phone.py:101) ---
+  Verifies:  Mock location is active in Android location service
+  Command:   _post("/open/v1/shell/execute", {"cmd": "dumpsys location"})
+             Greps for "mock" + "Location[" + extracts lat,lng via regex
+  Pass:      Continue to coordinate match check
+  Fail:      FALLBACK to _activate_gps_android13() or _activate_gps_via_deeplink()
+             If fallback also fails -> Abort with "gps_verify_failed"
+
+--- GATE 10: Coordinate match (run_one_phone.py:814) ---
+  Verifies:  dumpsys coords match resolver within 0.0002 tolerance
+  Command:   Pure Python comparison: abs(dumpsys_lat - run_plan.gps_lat) <= 0.0002
+  Pass:      MAPS FLOW IS DISPATCHED
+  Fail:      Abort with "dumpsys coords do NOT match resolved"
+
+WHAT IS NEVER VERIFIED BY THESE GATES:
+  - Google account login status
+  - Google Maps is signed into any account
+  - Developer Options are enabled
+  - Fake GPS is set as mock location app via system settings UI
+  - Maps is signed into the correct account
+
+
+================================================================================
+2. STANDALONE PROVISIONING SCRIPT (scripts/provision_phone_24.py)
+================================================================================
+
+This is an ad-hoc script for ONE hardcoded phone (serial_24 / 614216822245294147).
+It is NOT called by run_one_phone.py.
+
+Step | Action                                           | Command
+-----|--------------------------------------------------|--------------------------------------------------
+  0  | dumpsys baseline (before changes)                | dumpsys location | head -n 40
+  1  | Set mock location via shell injection            | appops set com.theappninjas.fakegpsjoystick android:mock_location allow
+     |                                                  | settings put secure mock_location_app com.theappninjas.fakegpsjoystick
+     |                                                  | settings put secure mock_location 1
+     |                                                  | settings put secure location_mode 3
+  2  | Verify Fake GPS installed                        | pm list packages | grep com.theappninjas.fakegpsjoystick
+  3  | Open Fake GPS + tap center/Set Location/START    | am start -n ...MainActivity
+     |                                                  | input tap 360 720
+     |                                                  | input tap 360 1150
+     |                                                  | input tap 540 1200
+  4a | Post-check dumpsys (mock active?)                | dumpsys location | head -n 60
+  4b | Specific mock provider grep                      | dumpsys location | grep -i 'mock\|fakegps\|theappninjas'
+  5  | Open Maps + check foreground                     | am start -n com.google.android.apps.maps/...
+     |                                                  | dumpsys activity activities | grep mResumedActivity
+  6  | Screenshot                                       | client.take_screenshot(PHONE_ID, max_wait=30)
+
+QUESTIONS ANSWERED:
+
+Q: Does it verify Google account login status?
+A: NO. Never runs dumpsys account or any account query.
+
+Q: Does it verify Google Maps is installed AND logged into the correct account?
+A: PARTIALLY. It verifies Maps opens to the foreground (dumpsys activity activities).
+   It does NOT verify Maps is signed into any account, or the correct account.
+
+Q: Does it verify Developer Options are enabled?
+A: NO. Assumes they are already enabled. Never taps Build number x7 or checks
+   settings get global development_settings_enabled.
+
+Q: Does it verify Fake GPS is set as the mock location app?
+A: YES, via shell injection. It runs "settings put secure mock_location_app ..."
+   directly, bypassing the UI-based "Select mock location app" step.
+   It does NOT confirm the setting was written (no "settings get" verification).
+
+Q: Does it verify the mock actually activates (dumpsys check)?
+A: YES. Steps 4a and 4b grep dumpsys location for mock/fakegps/theappninjas.
+
+
+================================================================================
+3. provisioned & maps_verified — WHERE IMPLEMENTED
+================================================================================
+
+DECLARED IN data_layer.py (lines 60-61):
+    provisioned: bool = False   # dumpsys verified: Fake GPS is active mock provider
+    maps_verified: bool = False  # BEHAVIOUR-based: Maps opens cleanly, NO Play Store interstitial
+
+PARSED FROM CSV in data_layer.py (lines 151-155):
+    def _bool_field(raw: str | None) -> bool:
+        return (raw or "").strip().lower() in ("1", "true", "yes")
+    provisioned = _bool_field(row.get("provisioned"))
+    maps_verified = _bool_field(row.get("maps_verified"))
+
+ENFORCED IN provisioning.py (lines 28-54):
+    def check_phone_fit(profile: Profile) -> tuple[bool, str]:
+        if not profile.provisioned:
+            return (False, "Phone X not provisioned — Fake GPS mock provider not verified")
+        if not profile.maps_verified:
+            return (False, "Phone X maps not verified — Maps must open to a usable search screen")
+        return True, ""
+
+ENFORCED IN run_one_phone.py (lines 616-625):
+    fit, reason = check_phone_fit(profile)
+    if not fit:
+        run_plan.abort = True
+        return {"status": "aborted", "abort_reason": reason}
+
+STORED IN SQLite schema.sql (lines 27-28):
+    provisioned   INTEGER DEFAULT 0  -- verified via dumpsys: Fake GPS is mock provider
+    maps_verified INTEGER DEFAULT 0  -- BEHAVIOUR-based: Maps opens to usable search screen
+
+PERSISTED IN runs_store.py (lines 73-97):
+    def upsert_profile(self, p) -> None:
+        self.conn.execute(
+            """INSERT INTO profiles ... (provisioned, maps_verified) VALUES (..., ?, ?)
+               ON CONFLICT(profile_key) DO UPDATE SET
+                 provisioned=excluded.provisioned,
+                 maps_verified=excluded.maps_verified""",
+            (..., int(p.provisioned), int(p.maps_verified)),
+        )
+
+
+================================================================================
+4. GOOGLE ACCOUNT VERIFICATION — EXISTENCE IN CODEBASE
+================================================================================
+
+Full-text search across geelark_orchestrator for:
+  dumpsys account | google.*account | login.*maps | sign.*in
+
+RESULTS:
+
+  Production pipeline (run_one_phone.py):
+    ZERO references to account verification.
+
+  Provisioning script (provision_phone_24.py):
+    ZERO references to account verification.
+
+  One-off diagnostic scripts:
+    tmp_google_leak_test.py (line 67) contains:
+        r = _post("/open/v1/shell/execute",
+                  {"id": PHONE_ID, "cmd": "dumpsys account | grep -A 2 'Account {' | head -20"})
+    This is a TEMPORARY diagnostic script, NOT imported by any production code.
+
+  Master Reference Section 9.10:
+    States: "Maps opens CLEANLY to a usable search screen with NO Play Store / update interstitial"
+    Does NOT mention verifying:
+      - Google account presence
+      - Maps sign-in state
+      - Correct account binding
+
+CONCLUSION: There is ZERO production logic that verifies the phone is logged into
+the correct Google account before running Maps.
+
+
+================================================================================
+5. ENFORCED vs. ASSUMED — EXACT STATE
+================================================================================
+
+ENFORCED (hard gates that abort the run):
+  [1]  CSV "provisioned" flag is True
+  [2]  CSV "maps_verified" flag is True
+  [3]  Phone starts successfully (Geelark status=0)
+  [4]  Proxy rotation succeeds (StreamVia control endpoint)
+  [5]  Chrome app-path IP matches proxy IP (_verify_app_path_proxy)
+  [6]  Shell curl IP matches proxy IP (_get_phone_ip)
+  [7]  IP is fresh (different from previous run's interaction_ip)
+  [8]  GPS Geelark flow completes (task status = 3)
+  [9]  dumpsys location shows active mock at correct coordinates
+  [10] UI Clear Storage runs (non-fatal if fails)
+  [11] Maps flow completes (task status = 3) — post-run classification
+  [12] Search submitted (uiautomator evidence) — post-run classification
+  [13] Business found on screen — post-run classification
+  [14] >=2 interactions fired — success criterion
+
+ASSUMED (never verified in production code):
+  [A] Developer Options are enabled
+  [B] Fake GPS is set as mock app via Developer Options UI
+      NOTE: "settings put secure mock_location_app" is a SHELL BYPASS, not verification.
+      The production run does NOT verify this setting exists.
+  [C] Google account exists on phone
+  [D] Maps is signed into any Google account
+  [E] Maps is signed into the CORRECT account
+  [F] Play Store / Play Services interstitial is absent
+      NOTE: Only checked via the CSV "maps_verified" flag, not at runtime.
+
+
+================================================================================
+6. CRITICAL GAP: CSV-ONLY STATIC FLAGS
+================================================================================
+
+"provisioned" and "maps_verified" are STATIC BOOLEAN FIELDS in the CSV file.
+
+They are:
+  - Parsed from CSV by data_adapter.py / data_layer.py
+  - Enforced at load time by check_phone_fit()
+  - Persisted to SQLite by upsert_profile()
+
+They are NOT:
+  - Verified at runtime by shell commands
+  - Automatically set by any provisioning flow
+  - Updated based on actual current phone state
+
+PRACTICAL CONSEQUENCE:
+  A phone whose CSV row has provisioned=1,maps_verified=1 will pass check_phone_fit()
+  and proceed to the full run, EVEN IF:
+    - Developer Options were reset since CSV creation
+    - Fake GPS was uninstalled since CSV creation
+    - Maps was updated and now shows a Play Store interstitial
+    - The Google account was removed from the phone
+
+The flags reflect THE LAST KNOWN STATE AT CSV CREATION TIME, not current phone state.
+
+The only runtime verification that PARTIALLY overlaps with these flags:
+  - dumpsys_mock_check() verifies mock is active  (overlaps with "provisioned" intent)
+  - Post-run gather_maps_evidence() verifies Maps worked  (overlaps with "maps_verified"
+    intent, but only AFTER the run has already executed)
+
+================================================================================
+END OF AUDIT
+================================================================================

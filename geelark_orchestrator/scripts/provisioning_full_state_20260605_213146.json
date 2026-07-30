@@ -1,0 +1,2113 @@
+{
+  "run_timestamp": "20260605_213146",
+  "total_phones": 43,
+  "phones": [
+    {
+      "phone_id": "614216915744719218",
+      "account": "makaylacrane9987@gmail.com",
+      "timestamp": "2026-06-05T21:31:47.389481",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.76",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.76 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216911852404803",
+      "account": "tannerchambers9987@gmail.com",
+      "timestamp": "2026-06-05T21:34:06.247043",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+6d20h15m23s7ms ago; rejectTime=+7d10h39m46s487ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": ":0",
+        "public_ip": "31.94.74.77",
+        "leak_status": "POTENTIAL_LEAK",
+        "notes": "Could not verify proxy match (missing IP data)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216908010422642",
+      "account": "eddievilla9987@gmail.com",
+      "timestamp": "2026-06-05T21:36:24.336747",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+12d12h20m30s448ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.76",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.76 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216903581237315",
+      "account": "oakleighoneal9987@gmail.com",
+      "timestamp": "2026-06-05T21:38:46.089480",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": false,
+          "detail": "enabled (0)"
+        },
+        "gate7_stay_awake": {
+          "passed": true,
+          "detail": "enabled (1)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "LOCKED (enabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216899286270322",
+      "account": "huxleymcmillan9912@gmail.com",
+      "timestamp": "2026-06-05T21:40:39.849200",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": false,
+          "detail": "enabled (0)"
+        },
+        "gate7_stay_awake": {
+          "passed": true,
+          "detail": "enabled (1)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "LOCKED (enabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216895242960963",
+      "account": "gracelynvillanueva9987@gmail.com",
+      "timestamp": "2026-06-05T21:42:21.511582",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+5d19h27m46s696ms ago; rejectTime=+7d5h38m37s90ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216890796998723",
+      "account": "gustavostanley92327@gmail.com",
+      "timestamp": "2026-06-05T21:45:09.439486",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": false,
+          "detail": "enabled (0)"
+        },
+        "gate7_stay_awake": {
+          "passed": true,
+          "detail": "enabled (1)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "LOCKED (enabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216886971793475",
+      "account": "luisamathis93437@gmail.com",
+      "timestamp": "2026-06-05T21:46:51.693605",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+5d19h9m7s124ms ago; rejectTime=+7d5h29m32s74ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216883146588530",
+      "account": "jakobebranch9987@gmail.com",
+      "timestamp": "2026-06-05T21:49:06.309797",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+5d14h12m20s794ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method3: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216879120056690",
+      "account": "valerieparrish94387@gmail.com",
+      "timestamp": "2026-06-05T21:51:20.513685",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+3d11h55m49s618ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216875076747634",
+      "account": "ellieallison9987@gmail.com",
+      "timestamp": "2026-06-05T21:53:47.316304",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+2d18h42m10s193ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216871117324355",
+      "account": "priscillagiles9987@gmail.com",
+      "timestamp": "2026-06-05T22:03:00.370497",
+      "attempt": 2,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+5d7h58m43s251ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216867258564675",
+      "account": "azariahtrevino9987@gmail.com",
+      "timestamp": "2026-06-05T22:05:51.376833",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+5d8h9m15s408ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216863500468594",
+      "account": "crystalwiggins9533@gmail.com",
+      "timestamp": "2026-06-05T22:07:56.425627",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+5d5h50m55s812ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216858970620274",
+      "account": "leopeck9987@gmail.com",
+      "timestamp": "2026-06-05T22:10:06.157018",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": false,
+          "detail": "enabled (0)"
+        },
+        "gate7_stay_awake": {
+          "passed": true,
+          "detail": "enabled (1)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "LOCKED (enabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216854994420082",
+      "account": "helenscott9987@gmail.com",
+      "timestamp": "2026-06-05T22:11:56.544609",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+3d9h12m31s936ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216851202768963",
+      "account": "waylonswanson92387@gmail.com",
+      "timestamp": "2026-06-05T22:14:55.497614",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+3d8h37m17s730ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216847293677635",
+      "account": "cleoperry9987@gmail.com",
+      "timestamp": "2026-06-05T22:18:03.201808",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+5d5h55m59s51ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216843351031875",
+      "account": "marcinbagerman@gmail.com",
+      "timestamp": "2026-06-05T22:20:19.304858",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+2d10h42m6s207ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216838938624067",
+      "account": "bramblejustice@gmail.com",
+      "timestamp": "2026-06-05T22:22:53.391953",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": false,
+          "detail": "enabled (0)"
+        },
+        "gate7_stay_awake": {
+          "passed": true,
+          "detail": "enabled (1)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "LOCKED (enabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216835079864690",
+      "account": "sandeephassamatta@gmail.com",
+      "timestamp": "2026-06-05T22:25:01.045226",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+3d14h48m28s742ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216831053332547",
+      "account": "jacobbareethe@gmail.com",
+      "timestamp": "2026-06-05T22:27:23.557628",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216826674479171",
+      "account": "jasonbabora@gmail.com",
+      "timestamp": "2026-06-05T22:31:51.668077",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": false,
+          "detail": "enabled (0)"
+        },
+        "gate7_stay_awake": {
+          "passed": true,
+          "detail": "enabled (1)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "LOCKED (enabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216822245294147",
+      "account": "hamptonmcfinn@gmail.com",
+      "timestamp": "2026-06-05T22:33:40.819832",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": false,
+          "detail": "enabled (0)"
+        },
+        "gate7_stay_awake": {
+          "passed": true,
+          "detail": "enabled (1)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "LOCKED (enabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216818470420547",
+      "account": "sweeneyjanus@gmail.com",
+      "timestamp": "2026-06-05T22:35:21.844393",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216814192230770",
+      "account": "shilamagnus@gmail.com",
+      "timestamp": "2026-06-05T22:37:30.360721",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": false,
+          "detail": "enabled (0)"
+        },
+        "gate7_stay_awake": {
+          "passed": true,
+          "detail": "enabled (1)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "LOCKED (enabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216810182475843",
+      "account": "bensonmacrite@gmail.com",
+      "timestamp": "2026-06-05T22:39:18.216980",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+2d18h2m40s411ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216806256607602",
+      "account": "vincehawthorne92@gmail.com",
+      "timestamp": "2026-06-05T22:41:30.628737",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+3d9h27m50s683ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216802213298243",
+      "account": "masonhaggerley@gmail.com",
+      "timestamp": "2026-06-05T22:44:11.920766",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+2d10h8m32s44ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216798086103107",
+      "account": "jacobsiesta38@gmail.com",
+      "timestamp": "2026-06-05T22:46:32.585841",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+5d11h42m28s628ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216794093125699",
+      "account": "billyhavenstock@gmail.com",
+      "timestamp": "2026-06-05T22:48:36.951320",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+3d9h19m3s971ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216790150480242",
+      "account": "andrewjocobyte@gmail.com",
+      "timestamp": "2026-06-05T22:51:11.472572",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+5d0h31m41s468ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method3: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216786023284803",
+      "account": "bradyjazeel@gmail.com",
+      "timestamp": "2026-06-05T22:53:19.215329",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+5d10h38m16s96ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216782181302642",
+      "account": "dennislambartt@gmail.com",
+      "timestamp": "2026-06-05T22:55:23.688162",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216777836003395",
+      "account": "danniharbourne@gmail.com",
+      "timestamp": "2026-06-05T22:57:49.712819",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216773910135154",
+      "account": "williambrown314809@gmail.com",
+      "timestamp": "2026-06-05T22:59:54.428044",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+5d11h13m59s853ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216769833271363",
+      "account": "oliverjohnsondrains@gmail.com",
+      "timestamp": "2026-06-05T23:02:56.520955",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+4d13h5m3s150ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "614216763072053315",
+      "account": "jamessmithplumber1984@gmail.com",
+      "timestamp": "2026-06-05T23:04:10.184235",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": false,
+          "detail": "enabled (0)"
+        },
+        "gate7_stay_awake": {
+          "passed": true,
+          "detail": "enabled (1)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "LOCKED (enabled (0))"
+      ]
+    },
+    {
+      "phone_id": "613438578466226595",
+      "account": "paulshaw9211@gmail.com",
+      "timestamp": "2026-06-05T23:05:53.407737",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+2d18h38m43s734ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "613354607392850339",
+      "account": "lisalucy9211@gmail.com",
+      "timestamp": "2026-06-05T23:07:59.462362",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "613286814907629987",
+      "account": "sylviazimmer921@gmail.com",
+      "timestamp": "2026-06-05T23:10:31.194475",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow; time=+4d0h9m56s188ms ago"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": true,
+          "detail": "disabled"
+        },
+        "gate7_stay_awake": {
+          "passed": false,
+          "detail": "disabled (0)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "MaySleep (disabled (0))"
+      ]
+    },
+    {
+      "phone_id": "613135440043573595",
+      "account": "catherinewallis921@gmail.com",
+      "timestamp": "2026-06-05T23:12:30.571718",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": false,
+          "detail": "enabled (0)"
+        },
+        "gate7_stay_awake": {
+          "passed": true,
+          "detail": "enabled (1)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "LOCKED (enabled (0))"
+      ]
+    },
+    {
+      "phone_id": "613135434842636540",
+      "account": "lornawilliamson921@gmail.com",
+      "timestamp": "2026-06-05T23:14:13.701794",
+      "attempt": 1,
+      "started_ok": true,
+      "unreachable": false,
+      "gates": {
+        "gate1_dev_options": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate2_usb_debug": {
+          "passed": true,
+          "detail": "1"
+        },
+        "gate3_mock_installed": {
+          "passed": true,
+          "detail": "package:com.theappninjas.fakegpsjoystick"
+        },
+        "gate4_mock_set": {
+          "passed": true,
+          "detail": "MOCK_LOCATION: allow"
+        },
+        "gate5_google_account": {
+          "passed": true,
+          "detail": "method1: found"
+        },
+        "gate6_screen_lock": {
+          "passed": false,
+          "detail": "enabled (0)"
+        },
+        "gate7_stay_awake": {
+          "passed": true,
+          "detail": "enabled (1)"
+        }
+      },
+      "ip_leak": {
+        "proxy_setting": "NONE",
+        "public_ip": "31.94.74.77",
+        "leak_status": "NO_PROXY_SET",
+        "notes": "Phone public IP 31.94.74.77 (no proxy configured)."
+      },
+      "overall_status": "FULLY_PROVISIONED",
+      "missing_gates": [],
+      "warnings": [
+        "LOCKED (enabled (0))"
+      ]
+    }
+  ]
+}

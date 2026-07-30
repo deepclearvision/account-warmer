@@ -1,0 +1,432 @@
+[
+  {
+    "phone_id": "614216915744719218",
+    "name": "makaylacrane9987@gmail.com",
+    "model": "8",
+    "android": "Android 13",
+    "status": 0,
+    "app_path_ip": "31.94.16.132",
+    "verdict": "CLEAN",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216911852404803",
+    "name": "tannerchambers9987@gmail.com",
+    "model": "Pixel 7",
+    "android": "Android 13",
+    "status": 0,
+    "app_path_ip": "(known clean)",
+    "verdict": "KNOWN_CLEAN",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216908010422642",
+    "name": "eddievilla9987@gmail.com",
+    "model": "Reno7",
+    "android": "Android 13",
+    "status": 0,
+    "app_path_ip": "31.94.16.132",
+    "verdict": "CLEAN",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216903581237315",
+    "name": "oakleighoneal9987@gmail.com",
+    "model": "FIND X",
+    "android": "Android 10.0",
+    "status": 0,
+    "app_path_ip": "(known clean)",
+    "verdict": "KNOWN_CLEAN",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216899286270322",
+    "name": "huxleymcmillan9912@gmail.com",
+    "model": "A72",
+    "android": "Android 10.0",
+    "status": 0,
+    "app_path_ip": "(known clean)",
+    "verdict": "KNOWN_CLEAN",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216895242960963",
+    "name": "gracelynvillanueva9987@gmail.com",
+    "model": "X70",
+    "android": "Android 13",
+    "status": 0,
+    "app_path_ip": "(known clean)",
+    "verdict": "KNOWN_CLEAN",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216890796998723",
+    "name": "gustavostanley92327@gmail.com",
+    "model": "X27",
+    "android": "Android 10.0",
+    "status": 0,
+    "app_path_ip": "(known clean)",
+    "verdict": "KNOWN_CLEAN",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216886971793475",
+    "name": "luisamathis93437@gmail.com",
+    "model": "Y31",
+    "android": "Android 13",
+    "status": 0,
+    "app_path_ip": "(known clean)",
+    "verdict": "KNOWN_CLEAN",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216883146588530",
+    "name": "jakobebranch9987@gmail.com",
+    "model": "Galaxy S20 Ultra",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216879120056690",
+    "name": "valerieparrish94387@gmail.com",
+    "model": "Y31",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216875076747634",
+    "name": "ellieallison9987@gmail.com",
+    "model": "Pixel 7",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216871117324355",
+    "name": "priscillagiles9987@gmail.com",
+    "model": "Galaxy A22",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216867258564675",
+    "name": "azariahtrevino9987@gmail.com",
+    "model": "S17 Pro",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216863500468594",
+    "name": "crystalwiggins9533@gmail.com",
+    "model": "Y77",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216858970620274",
+    "name": "leopeck9987@gmail.com",
+    "model": "Galaxy A9",
+    "android": "Android 10.0",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216854994420082",
+    "name": "helenscott9987@gmail.com",
+    "model": "X50",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216851202768963",
+    "name": "waylonswanson92387@gmail.com",
+    "model": "8i",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216847293677635",
+    "name": "cleoperry9987@gmail.com",
+    "model": "9i",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216843351031875",
+    "name": "marcinbagerman@gmail.com",
+    "model": "Galaxy A51",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216838938624067",
+    "name": "bramblejustice@gmail.com",
+    "model": "R17",
+    "android": "Android 10.0",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216835079864690",
+    "name": "sandeephassamatta@gmail.com",
+    "model": "Galaxy S23 Ultra",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216831053332547",
+    "name": "jacobbareethe@gmail.com",
+    "model": "Galaxy S20+",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216826674479171",
+    "name": "jasonbabora@gmail.com",
+    "model": "R15X",
+    "android": "Android 10.0",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216822245294147",
+    "name": "hamptonmcfinn@gmail.com",
+    "model": "X27",
+    "android": "Android 10.0",
+    "status": 0,
+    "app_path_ip": "(known clean)",
+    "verdict": "KNOWN_CLEAN",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216818470420547",
+    "name": "sweeneyjanus@gmail.com",
+    "model": "iQOO 8",
+    "android": "Android 13",
+    "status": 0,
+    "app_path_ip": "(known clean)",
+    "verdict": "KNOWN_CLEAN",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216814192230770",
+    "name": "shilamagnus@gmail.com",
+    "model": "Galaxy S9+",
+    "android": "Android 10.0",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216810182475843",
+    "name": "bensonmacrite@gmail.com",
+    "model": "A78",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216806256607602",
+    "name": "vincehawthorne92@gmail.com",
+    "model": "S15e",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216802213298243",
+    "name": "masonhaggerley@gmail.com",
+    "model": "iQOO Neo7",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216798086103107",
+    "name": "jacobsiesta38@gmail.com",
+    "model": "Galaxy S22 Ultra",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216794093125699",
+    "name": "billyhavenstock@gmail.com",
+    "model": "Q5",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216790150480242",
+    "name": "andrewjocobyte@gmail.com",
+    "model": "edge 40 Neo",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216786023284803",
+    "name": "bradyjazeel@gmail.com",
+    "model": "Galaxy S23 Ultra",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216782181302642",
+    "name": "dennislambartt@gmail.com",
+    "model": "Galaxy Note20 Ultra",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216777836003395",
+    "name": "danniharbourne@gmail.com",
+    "model": "8i",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216773910135154",
+    "name": "williambrown314809@gmail.com",
+    "model": "Galaxy S20+",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216769833271363",
+    "name": "oliverjohnsondrains@gmail.com",
+    "model": "Y77",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "614216763072053315",
+    "name": "jamessmithplumber1984@gmail.com",
+    "model": "Galaxy S9+",
+    "android": "Android 10.0",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "613438578466226595",
+    "name": "paulshaw9211@gmail.com",
+    "model": "Galaxy A22",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "613354607392850339",
+    "name": "lisalucy9211@gmail.com",
+    "model": "Reno5",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "613286814907629987",
+    "name": "sylviazimmer921@gmail.com",
+    "model": "Y77",
+    "android": "Android 13",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "613135440043573595",
+    "name": "catherinewallis921@gmail.com",
+    "model": "S7",
+    "android": "Android 10.0",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  },
+  {
+    "phone_id": "613135434842636540",
+    "name": "lornawilliamson921@gmail.com",
+    "model": "Galaxy S9+",
+    "android": "Android 10.0",
+    "status": 2,
+    "app_path_ip": null,
+    "verdict": "LEAK",
+    "was_running": true
+  }
+]

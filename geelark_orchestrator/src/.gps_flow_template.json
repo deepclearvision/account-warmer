@@ -1,0 +1,1588 @@
+{
+  "title": "Set Up of GPS - Final",
+  "desc": "This is a custom task",
+  "content": {
+    "desc": "This is a custom task",
+    "name": "Set Up of GPS - Final",
+    "isDebug": false,
+    "contents": [
+      {
+        "id": "49982dc8-7b7d-427f-bd6a-73e0567c015f",
+        "name": "Open App",
+        "type": "openApp",
+        "config": {
+          "packgename": "com.theappninjas.fakegpsjoystick"
+        }
+      },
+      {
+        "id": "2362378c-33ff-4a1d-ab62-492c55a123d8",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 5000,
+          "timeoutMin": 3000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "update_dialog_handler_001",
+        "name": "For Loop Times",
+        "type": "forTimes",
+        "config": {
+          "times": "1",
+          "remark": "Dismiss update dialog if present (CANCEL button)",
+          "children": [
+            {
+              "id": "update_dialog_wait_001",
+              "name": "Element appears",
+              "type": "waitEle",
+              "config": {
+                "serial": 1,
+                "variable": "updateCancel",
+                "searchTime": 5000,
+                "serialType": "fixedValue",
+                "hiddenChildren": true,
+                "filterCollection": [
+                  [
+                    {
+                      "type": "text",
+                      "content": "CANCEL",
+                      "filterType": "equal"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "text",
+                      "content": "Cancel",
+                      "filterType": "equal"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "id": "update_dialog_click_001",
+              "name": "Statement if",
+              "type": "ifElse",
+              "config": {
+                "other": [],
+                "children": [
+                  {
+                    "id": "update_dialog_tap_001",
+                    "name": "Click",
+                    "type": "click",
+                    "config": {
+                      "useOffset": false,
+                      "doubleClick": false,
+                      "saveItemName": "updateCancel",
+                      "randomDistance": 0
+                    }
+                  },
+                  {
+                    "id": "update_dialog_break_001",
+                    "name": "Exit Loop",
+                    "type": "breakLoop",
+                    "config": {}
+                  }
+                ],
+                "conditionV3": [
+                  [
+                    {
+                      "relation": "exist",
+                      "useVariable": "updateCancel"
+                    }
+                  ]
+                ]
+              }
+            }
+          ],
+          "serialType": "fixedValue"
+        }
+      },
+      {
+        "id": "update_dialog_wait_after_001",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeout": 2000,
+          "timeoutType": "fixedValue"
+        }
+      },
+      {
+        "id": "f1b64a28-9a7c-4bc5-b93d-9cb42631ace8",
+        "name": "Click",
+        "type": "click",
+        "config": {
+          "remark": "Screen 1: Accept privacy/terms",
+          "serial": 1,
+          "useOffset": false,
+          "searchTime": 4000,
+          "serialType": "fixedValue",
+          "doubleClick": false,
+          "hiddenChildren": false,
+          "randomDistance": 0,
+          "filterCollection": [
+            [
+              {
+                "type": "text",
+                "content": "ACCEPT",
+                "filterType": "equal"
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "content": "Accept",
+                "filterType": "equal"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": "63cd38fe-5b0c-45f7-83af-07d14a1d6cc7",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 3000,
+          "timeoutMin": 2000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "35bff60c-dd8f-4db5-95db-da21f5293256",
+        "name": "Click",
+        "type": "click",
+        "config": {
+          "remark": "Screen 2: First Let's Go",
+          "serial": 1,
+          "useOffset": false,
+          "searchTime": 4000,
+          "serialType": "fixedValue",
+          "doubleClick": false,
+          "hiddenChildren": false,
+          "randomDistance": 0,
+          "filterCollection": [
+            [
+              {
+                "type": "text",
+                "content": "Let's Go",
+                "filterType": "equal"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": "c964c4ac-28a0-4fa8-a0e8-ca8b4493b4dd",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 3000,
+          "timeoutMin": 2000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "b612f289-9bdb-4d7b-ba6e-cb643dca76ce",
+        "name": "Click",
+        "type": "click",
+        "config": {
+          "remark": "Screen 3: Second Let's Go on Welcome checklist screen",
+          "serial": 1,
+          "useOffset": false,
+          "searchTime": 4000,
+          "serialType": "fixedValue",
+          "doubleClick": false,
+          "hiddenChildren": false,
+          "randomDistance": 0,
+          "filterCollection": [
+            [
+              {
+                "type": "text",
+                "content": "Let's Go",
+                "filterType": "equal"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": "d28ea114-e201-49b8-b9f8-a72bb164ca1d",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 4000,
+          "timeoutMin": 3000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "5ccccf83-2cec-4b11-9dce-0f25b4737bec",
+        "name": "Back from tutorial",
+        "type": "keyOption",
+        "config": {
+          "remark": "Back to trigger Exit setup dialog",
+          "keyType": "back"
+        }
+      },
+      {
+        "id": "316d6432-062c-4751-9ce0-2cfea4515dae",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 3000,
+          "timeoutMin": 2000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "4016bed4-06a7-4764-b6ea-feea97027b45",
+        "name": "Click",
+        "type": "click",
+        "config": {
+          "remark": "Exit setup dialog: click Exit",
+          "serial": 1,
+          "useOffset": false,
+          "searchTime": 4000,
+          "serialType": "fixedValue",
+          "doubleClick": false,
+          "hiddenChildren": false,
+          "randomDistance": 0,
+          "filterCollection": [
+            [
+              {
+                "type": "text",
+                "content": "Exit",
+                "filterType": "equal"
+              }
+            ],
+            [
+              {
+                "type": "desc",
+                "content": "Exit",
+                "filterType": "equal"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": "d338fae7-7b91-4ab0-9972-d2530196dacb",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 4000,
+          "timeoutMin": 3000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "6a36f2f6-07df-4db6-a916-af474f018443",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 4000,
+          "timeoutMin": 3000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "tut_close_001",
+        "name": "Click",
+        "type": "click",
+        "config": {
+          "remark": "Tutorial screen: click X to close",
+          "serial": 1,
+          "useOffset": false,
+          "searchTime": 4000,
+          "serialType": "fixedValue",
+          "doubleClick": false,
+          "hiddenChildren": false,
+          "randomDistance": 0,
+          "filterCollection": [
+            [
+              {
+                "type": "desc",
+                "content": "Close",
+                "filterType": "equal"
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "content": "×",
+                "filterType": "equal"
+              }
+            ],
+            [
+              {
+                "type": "desc",
+                "content": "Navigate up",
+                "filterType": "equal"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": "tut_wait_002",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 3000,
+          "timeoutMin": 2000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "tut_exit_001",
+        "name": "Click",
+        "type": "click",
+        "config": {
+          "remark": "Exit setup dialog: click Exit",
+          "serial": 1,
+          "useOffset": false,
+          "searchTime": 4000,
+          "serialType": "fixedValue",
+          "doubleClick": false,
+          "hiddenChildren": false,
+          "randomDistance": 0,
+          "filterCollection": [
+            [
+              {
+                "type": "text",
+                "content": "Exit",
+                "filterType": "equal"
+              }
+            ],
+            [
+              {
+                "type": "desc",
+                "content": "Exit",
+                "filterType": "equal"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": "tut_wait_003",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 3000,
+          "timeoutMin": 2000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "dbb62716-3b35-47b3-9655-4cc147b3b6cc",
+        "name": "Scroll",
+        "type": "scrollPage",
+        "config": {
+          "_a": 600,
+          "_b": 900,
+          "remark": "Scroll down to push instruction text off screen, reveal Grant Location Access button",
+          "position": [
+            260,
+            "1200"
+          ],
+          "direction": "top",
+          "distanceMax": "600",
+          "distanceMin": "500",
+          "randomDistance": 0,
+          "randomWheelSleepTime": [
+            600,
+            900
+          ]
+        }
+      },
+      {
+        "id": "6546bda7-3602-4b7b-8a85-129fe9257806",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeout": 1000,
+          "timeoutType": "fixedValue"
+        }
+      },
+      {
+        "id": "224b958c-6a88-4eb3-a026-bfc30ca536eb",
+        "name": "Click",
+        "type": "click",
+        "config": {
+          "remark": "Screen 4: Grant Location Access BUTTON (hidden=False, after scroll instruction text is off screen)",
+          "serial": 1,
+          "useOffset": false,
+          "searchTime": 5000,
+          "serialType": "fixedValue",
+          "doubleClick": false,
+          "hiddenChildren": false,
+          "randomDistance": 0,
+          "filterCollection": [
+            [
+              {
+                "type": "text",
+                "content": "Grant Location Access",
+                "filterType": "equal"
+              }
+            ],
+            [
+              {
+                "type": "desc",
+                "content": "Grant Location Access",
+                "filterType": "equal"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": "2ae9f005-9aed-4279-903d-95d23ea32079",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 4000,
+          "timeoutMin": 3000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "3d5b062b-0d1a-4c19-94e9-bf7db55cb471",
+        "name": "For Loop Times",
+        "type": "forTimes",
+        "config": {
+          "times": "8",
+          "remark": "Screen 5: System location permission dialog",
+          "children": [
+            {
+              "id": "d5d585a8-9484-4391-aef8-2f0202fc909e",
+              "name": "Element appears",
+              "type": "waitEle",
+              "config": {
+                "serial": 1,
+                "variable": "locPermBtn",
+                "searchTime": 5000,
+                "serialType": "fixedValue",
+                "hiddenChildren": false,
+                "filterCollection": [
+                  [
+                    {
+                      "type": "text",
+                      "content": "While using the app",
+                      "filterType": "contain"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "text",
+                      "content": "WHILE USING THE APP",
+                      "filterType": "contain"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "text",
+                      "content": "Allow only while using",
+                      "filterType": "contain"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "text",
+                      "content": "ALLOW ONLY WHILE USING",
+                      "filterType": "contain"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "text",
+                      "content": "Only while using the app",
+                      "filterType": "contain"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "text",
+                      "content": "Allow while using",
+                      "filterType": "contain"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "text",
+                      "content": "While using",
+                      "filterType": "contain"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "id": "d27f61f0-c64f-45eb-b375-c35d2d99f43f",
+              "name": "Statement if",
+              "type": "ifElse",
+              "config": {
+                "other": [
+                  {
+                    "id": "d0c8832b-be22-423e-84bd-501af703eb0b",
+                    "name": "Scroll",
+                    "type": "scrollPage",
+                    "config": {
+                      "_a": 500,
+                      "_b": 800,
+                      "position": [
+                        260,
+                        "1200"
+                      ],
+                      "direction": "top",
+                      "distanceMax": "400",
+                      "distanceMin": "300",
+                      "randomDistance": 0,
+                      "randomWheelSleepTime": [
+                        500,
+                        800
+                      ]
+                    }
+                  },
+                  {
+                    "id": "f544ff3d-744e-495a-a01e-a377a1264d13",
+                    "name": "Time",
+                    "type": "waitTime",
+                    "config": {
+                      "timeout": 500,
+                      "timeoutType": "fixedValue"
+                    }
+                  }
+                ],
+                "children": [
+                  {
+                    "id": "b2acf780-378c-4349-82fc-1e88617c179d",
+                    "name": "Click",
+                    "type": "click",
+                    "config": {
+                      "useOffset": false,
+                      "doubleClick": false,
+                      "saveItemName": "locPermBtn",
+                      "randomDistance": 0
+                    }
+                  },
+                  {
+                    "id": "b86582bc-a5c6-4d32-bdc5-35b8124683de",
+                    "name": "Exit Loop",
+                    "type": "breakLoop",
+                    "config": {}
+                  }
+                ],
+                "conditionV3": [
+                  [
+                    {
+                      "relation": "exist",
+                      "useVariable": "locPermBtn"
+                    }
+                  ]
+                ]
+              }
+            }
+          ],
+          "serialType": "fixedValue"
+        }
+      },
+      {
+        "id": "8eb4c72a-e889-45cd-b000-5396ea07a07d",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 3000,
+          "timeoutMin": 2000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "43529bd3-6ac1-4865-ae46-48703fa5e12d",
+        "name": "Scroll",
+        "type": "scrollPage",
+        "config": {
+          "_a": 500,
+          "_b": 700,
+          "remark": "Scroll to reveal Start Using GPS JoyStick button on You're All Set screen",
+          "position": [
+            260,
+            "1200"
+          ],
+          "direction": "top",
+          "distanceMax": "400",
+          "distanceMin": "300",
+          "randomDistance": 0,
+          "randomWheelSleepTime": [
+            500,
+            700
+          ]
+        }
+      },
+      {
+        "id": "7932435d-044e-40bd-83fc-d836a7d97eb2",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeout": 1000,
+          "timeoutType": "fixedValue"
+        }
+      },
+      {
+        "id": "ca8d705c-9560-4e98-9849-c54c1a5a366b",
+        "name": "Click",
+        "type": "click",
+        "config": {
+          "remark": "Screen 6: Start Using GPS JoyStick on You're All Set screen",
+          "serial": 1,
+          "useOffset": false,
+          "searchTime": 6000,
+          "serialType": "fixedValue",
+          "doubleClick": false,
+          "hiddenChildren": false,
+          "randomDistance": 0,
+          "filterCollection": [
+            [
+              {
+                "type": "text",
+                "content": "Start Using GPS JoyStick",
+                "filterType": "contain"
+              }
+            ],
+            [
+              {
+                "type": "desc",
+                "content": "Start Using GPS JoyStick",
+                "filterType": "contain"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": "edb7aeba-f090-4ee6-9e55-0daffbd40004",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 5000,
+          "timeoutMin": 3000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "4d2bf42f-9a95-429f-80bc-efc610c7ea2a",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 6000,
+          "timeoutMin": 4000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "99678022-418c-4e61-8600-e7cf1c1bb1cc",
+        "name": "For Loop Times",
+        "type": "forTimes",
+        "config": {
+          "times": "1",
+          "remark": "Dismiss \"What's New\" popup that appears after Start Using GPS JoyStick. hiddenChildren:false — button is visible. Skips cleanly if dialog absent.",
+          "children": [
+            {
+              "id": "46d84654-d4f0-46bf-b368-0765c9b07c28",
+              "name": "Element appears",
+              "type": "waitEle",
+              "config": {
+                "serial": 1,
+                "variable": "whatsNewDone",
+                "searchTime": 10000,
+                "serialType": "fixedValue",
+                "hiddenChildren": true,
+                "filterCollection": [
+                  [
+                    {
+                      "type": "text",
+                      "content": "Done",
+                      "filterType": "equal"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "desc",
+                      "content": "Done",
+                      "filterType": "equal"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "text",
+                      "content": "×",
+                      "filterType": "equal"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "desc",
+                      "content": "Close",
+                      "filterType": "equal"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "id": "7c30f828-9f5c-4c20-ac6b-a797492adb31",
+              "name": "Statement if",
+              "type": "ifElse",
+              "config": {
+                "other": [],
+                "children": [
+                  {
+                    "id": "ebca3b2a-2cef-4978-ad64-0061af20ea2f",
+                    "name": "Click",
+                    "type": "click",
+                    "config": {
+                      "useOffset": false,
+                      "doubleClick": false,
+                      "saveItemName": "whatsNewDone",
+                      "randomDistance": 0
+                    }
+                  },
+                  {
+                    "id": "d06d9008-bc6e-43f9-a92b-3e557380aebf",
+                    "name": "Exit Loop",
+                    "type": "breakLoop",
+                    "config": {}
+                  }
+                ],
+                "conditionV3": [
+                  [
+                    {
+                      "relation": "exist",
+                      "useVariable": "whatsNewDone"
+                    }
+                  ]
+                ]
+              }
+            }
+          ],
+          "serialType": "fixedValue"
+        }
+      },
+      {
+        "id": "b25c72be-308f-4f8f-b123-d4b1a427891c",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeout": 1000,
+          "timeoutType": "fixedValue"
+        }
+      },
+      {
+        "id": "b71d95d1-2436-41f9-99a9-f8dfdaf5af2e",
+        "name": "Scroll",
+        "type": "scrollPage",
+        "config": {
+          "_a": 600,
+          "_b": 900,
+          "remark": "Orientation scroll 480-530px — clears Quick Options+Ad, lands Set Location in middle of screen (not near bottom edge)",
+          "position": [
+            260,
+            "1200"
+          ],
+          "direction": "top",
+          "distanceMax": "530",
+          "distanceMin": "480",
+          "randomDistance": 0,
+          "randomWheelSleepTime": [
+            600,
+            900
+          ]
+        }
+      },
+      {
+        "id": "4eb03ea6-264b-494d-b7bc-e13520770b2d",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 2000,
+          "timeoutMin": 1500,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "a204a953-720d-462a-808e-66b988cd5a93",
+        "name": "For Loop Times",
+        "type": "forTimes",
+        "config": {
+          "times": "8",
+          "remark": "Click Set Location to confirm coordinates",
+          "children": [
+            {
+              "id": "332729fe-b1d5-4432-a64b-6e24ca72dd62",
+              "name": "Element appears",
+              "type": "waitEle",
+              "config": {
+                "remark": "Set Location radio button — class+text selector prevents clicking adjacent Set Route. Wait before this is 1500-2000ms to let scroll animation complete.",
+                "serial": 1,
+                "variable": "setLocBtn",
+                "searchTime": 2000,
+                "serialType": "fixedValue",
+                "hiddenChildren": false,
+                "filterCollection": [
+                  [
+                    {
+                      "type": "class",
+                      "content": "android.widget.RadioButton",
+                      "filterType": "equal"
+                    },
+                    {
+                      "type": "text",
+                      "content": "Set Location",
+                      "filterType": "equal"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "text",
+                      "content": "Set Location",
+                      "filterType": "equal"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "desc",
+                      "content": "Set Location",
+                      "filterType": "equal"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "id": "0d6ad8d4-17b2-4924-91db-aedb6330381a",
+              "name": "Statement if",
+              "type": "ifElse",
+              "config": {
+                "other": [
+                  {
+                    "id": "02d9d37e-0b3a-4e10-8f13-3a0bbb6edfa2",
+                    "name": "Scroll",
+                    "type": "scrollPage",
+                    "config": {
+                      "_a": 400,
+                      "_b": 600,
+                      "position": [
+                        260,
+                        "1200"
+                      ],
+                      "direction": "top",
+                      "distanceMax": "500",
+                      "distanceMin": "300",
+                      "randomDistance": 10,
+                      "randomWheelSleepTime": [
+                        400,
+                        600
+                      ]
+                    }
+                  },
+                  {
+                    "id": "8d0aa4a1-bfa0-4844-9794-1491eecdafdc",
+                    "name": "Time",
+                    "type": "waitTime",
+                    "config": {
+                      "timeout": 1000,
+                      "timeoutType": "fixedValue"
+                    }
+                  }
+                ],
+                "children": [
+                  {
+                    "id": "cce629a0-e106-49af-9625-2035b5ebab58",
+                    "name": "Click",
+                    "type": "click",
+                    "config": {
+                      "useOffset": false,
+                      "doubleClick": false,
+                      "saveItemName": "setLocBtn",
+                      "randomDistance": 0
+                    }
+                  },
+                  {
+                    "id": "674142f8-7552-4c47-88a8-c3bbcb96750e",
+                    "name": "Exit Loop",
+                    "type": "breakLoop",
+                    "config": {}
+                  }
+                ],
+                "conditionV3": [
+                  [
+                    {
+                      "relation": "exist",
+                      "useVariable": "setLocBtn"
+                    }
+                  ]
+                ]
+              }
+            }
+          ],
+          "serialType": "fixedValue"
+        }
+      },
+      {
+        "id": "13389ed2-91e4-446b-9755-7e10a0c22a13",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeout": 1000,
+          "timeoutType": "fixedValue"
+        }
+      },
+      {
+        "id": "8885d7f5-9b86-4763-8b93-aba8a697959b",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 2000,
+          "timeoutMin": 1000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "c9ba44c0-0481-4d66-95e7-75b2f3babbd5",
+        "name": "Scroll",
+        "type": "scrollPage",
+        "config": {
+          "_a": 600,
+          "_b": 900,
+          "remark": "Reveal inputs scroll — after clicking Set Location radio, scroll 350-450px to bring Lat/Lng and Altitude fields into view",
+          "position": [
+            260,
+            "1200"
+          ],
+          "direction": "top",
+          "distanceMax": "450",
+          "distanceMin": "350",
+          "randomDistance": 0,
+          "randomWheelSleepTime": [
+            600,
+            900
+          ]
+        }
+      },
+      {
+        "id": "c7fe85dc-9865-4d79-a86f-e324968c6fe0",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeout": 1000,
+          "timeoutType": "fixedValue"
+        }
+      },
+      {
+        "id": "5ce581e3-6b3f-4ac4-99a6-6aa2d6ddf33b",
+        "name": "Input",
+        "type": "inputContent",
+        "config": {
+          "clear": true,
+          "remark": "TEST hardcoded coords — for production use Import Flow Data block with variables",
+          "serial": 1,
+          "content": [
+            "51.504782, -0.086934"
+          ],
+          "simulate": true,
+          "waitTime": 300,
+          "inputType": "taskOrder",
+          "searchTime": 4000,
+          "serialType": "fixedValue",
+          "hiddenChildren": true,
+          "filterCollection": [
+            [
+              {
+                "type": "desc",
+                "content": "Latitude, Longitude",
+                "filterType": "equal"
+              }
+            ],
+            [
+              {
+                "type": "desc",
+                "content": "Latitude, Longitude",
+                "filterType": "contain"
+              }
+            ],
+            [
+              {
+                "type": "id",
+                "content": "com.theappninjas.fakegpsjoystick:id/control",
+                "filterType": "equal"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": "dd502c56-5b66-4631-82b8-8de5feb0f8ee",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 2000,
+          "timeoutMin": 1000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "6473044a-3dcd-45b3-a2d1-4597170f8632",
+        "name": "Scroll",
+        "type": "scrollPage",
+        "config": {
+          "_a": 200,
+          "_b": 300,
+          "remark": "Keyboard dismiss — slightly larger swipe to ensure keyboard collapses",
+          "position": [
+            260,
+            400
+          ],
+          "direction": "top",
+          "distanceMax": 300,
+          "distanceMin": 200,
+          "randomDistance": 0,
+          "randomWheelSleepTime": [
+            200,
+            300
+          ]
+        }
+      },
+      {
+        "id": "39b38a7b-61b7-4f58-87a7-f9904726f3f6",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeout": 1000,
+          "timeoutType": "fixedValue"
+        }
+      },
+      {
+        "id": "53ea08c3-bf61-4acc-a7aa-5ed1a35fa33f",
+        "name": "Input",
+        "type": "inputContent",
+        "config": {
+          "clear": true,
+          "remark": "TEST hardcoded altitude — for production use Import Flow Data block with variables",
+          "serial": 1,
+          "content": [
+            "12"
+          ],
+          "simulate": true,
+          "waitTime": 300,
+          "inputType": "taskOrder",
+          "searchTime": 4000,
+          "serialType": "fixedValue",
+          "hiddenChildren": true,
+          "filterCollection": [
+            [
+              {
+                "type": "desc",
+                "content": "Altitude",
+                "filterType": "equal"
+              }
+            ],
+            [
+              {
+                "type": "desc",
+                "content": "Altitude",
+                "filterType": "contain"
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "content": "Altitude",
+                "filterType": "equal"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": "2b3624ed-29cc-4f83-88e3-1e2e37303b05",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 2000,
+          "timeoutMin": 1000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "00e2d914-81e3-4d01-a5bc-7bcda37c76dd",
+        "name": "For Loop Times",
+        "type": "forTimes",
+        "config": {
+          "times": "1",
+          "remark": "Dismiss Woops dialog if coordinates were invalid — skips if not present",
+          "children": [
+            {
+              "id": "f334b7cd-e035-41d5-afc1-67ed927045ea",
+              "name": "Element appears",
+              "type": "waitEle",
+              "config": {
+                "serial": 1,
+                "variable": "woopsOK",
+                "searchTime": 2000,
+                "serialType": "fixedValue",
+                "hiddenChildren": true,
+                "filterCollection": [
+                  [
+                    {
+                      "type": "text",
+                      "content": "OK",
+                      "filterType": "equal"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "id": "70a85575-7ca1-4261-a49e-87b2435766e6",
+              "name": "Statement if",
+              "type": "ifElse",
+              "config": {
+                "other": [],
+                "children": [
+                  {
+                    "id": "62472ad9-88b3-447a-a5fe-0692ebc158a8",
+                    "name": "Click",
+                    "type": "click",
+                    "config": {
+                      "useOffset": false,
+                      "doubleClick": false,
+                      "saveItemName": "woopsOK",
+                      "randomDistance": 0
+                    }
+                  },
+                  {
+                    "id": "253e6b5d-a422-4317-8b81-d77bf10f8f4f",
+                    "name": "Exit Loop",
+                    "type": "breakLoop",
+                    "config": {}
+                  }
+                ],
+                "conditionV3": [
+                  [
+                    {
+                      "relation": "exist",
+                      "useVariable": "woopsOK"
+                    }
+                  ]
+                ]
+              }
+            }
+          ],
+          "serialType": "fixedValue"
+        }
+      },
+      {
+        "id": "5fc5ae24-f255-4618-996a-102d00ad3ac4",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeout": 1000,
+          "timeoutType": "fixedValue"
+        }
+      },
+      {
+        "id": "7352be39-6626-4377-b65c-59ce84813516",
+        "name": "Keys",
+        "type": "keyOption",
+        "config": {
+          "remark": "Dismiss keyboard after altitude input before searching for START",
+          "keyType": "enter"
+        }
+      },
+      {
+        "id": "afac8936-0caf-4774-9041-dbf48c6dfbb0",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeout": 500,
+          "timeoutType": "fixedValue"
+        }
+      },
+      {
+        "id": "4b965e5c-d835-49f8-9f10-38f334fb31cb",
+        "name": "Click",
+        "type": "click",
+        "config": {
+          "remark": "Tick Hide JoyStick checkbox — keeps spoofing running without visible overlay",
+          "serial": 1,
+          "useOffset": false,
+          "searchTime": 3000,
+          "serialType": "fixedValue",
+          "doubleClick": false,
+          "hiddenChildren": false,
+          "randomDistance": 0,
+          "filterCollection": [
+            [
+              {
+                "type": "text",
+                "content": "Hide JoyStick",
+                "filterType": "equal"
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "content": "Hide JoyStick",
+                "filterType": "contain"
+              }
+            ],
+            [
+              {
+                "type": "desc",
+                "content": "Hide JoyStick",
+                "filterType": "equal"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": "281d5938-f7b7-4988-a71c-654051f40145",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeout": 500,
+          "timeoutType": "fixedValue"
+        }
+      },
+      {
+        "id": "897fe423-c374-48f2-8538-9a3a3fb7fe9f",
+        "name": "Click",
+        "type": "click",
+        "config": {
+          "remark": "Tick Hide Overlay checkbox",
+          "serial": 1,
+          "useOffset": false,
+          "searchTime": 3000,
+          "serialType": "fixedValue",
+          "doubleClick": false,
+          "hiddenChildren": false,
+          "randomDistance": 0,
+          "filterCollection": [
+            [
+              {
+                "type": "text",
+                "content": "Hide Overlay",
+                "filterType": "equal"
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "content": "Hide Overlay",
+                "filterType": "contain"
+              }
+            ],
+            [
+              {
+                "type": "desc",
+                "content": "Hide Overlay",
+                "filterType": "equal"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": "b60e264c-e8fb-4dc4-b07a-f6f7d716761b",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeout": 500,
+          "timeoutType": "fixedValue"
+        }
+      },
+      {
+        "id": "6d464e45-33db-4eab-838f-37a6e3f31a17",
+        "name": "For Loop Times",
+        "type": "forTimes",
+        "config": {
+          "times": "10",
+          "remark": "Click START to begin GPS spoofing",
+          "children": [
+            {
+              "id": "7fedf472-acef-4c4d-9eda-c92ad7f68825",
+              "name": "Element appears",
+              "type": "waitEle",
+              "config": {
+                "remark": "hiddenChildren:true — finds START even if keyboard partially present",
+                "serial": 1,
+                "variable": "startBtn",
+                "searchTime": 2000,
+                "serialType": "fixedValue",
+                "hiddenChildren": true,
+                "filterCollection": [
+                  [
+                    {
+                      "type": "id",
+                      "content": "com.theappninjas.fakegpsjoystick:id/start_button",
+                      "filterType": "contain"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "text",
+                      "content": "START",
+                      "filterType": "contain"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "id": "21227c2e-acf5-4d25-a996-ebbc96fc9895",
+              "name": "Statement if",
+              "type": "ifElse",
+              "config": {
+                "other": [
+                  {
+                    "id": "09cf389f-d11b-447a-8119-c0e6f565a61c",
+                    "name": "Scroll",
+                    "type": "scrollPage",
+                    "config": {
+                      "_a": 400,
+                      "_b": 600,
+                      "remark": "Scroll to find START — position y=700 (ABOVE Watch Video banner). Small distance — START is close after reveal-inputs scroll.",
+                      "position": [
+                        260,
+                        "700"
+                      ],
+                      "direction": "top",
+                      "distanceMax": "250",
+                      "distanceMin": "150",
+                      "randomDistance": 10,
+                      "randomWheelSleepTime": [
+                        400,
+                        600
+                      ]
+                    }
+                  },
+                  {
+                    "id": "ebcd2b49-fb67-443c-8342-55b94315b686",
+                    "name": "Time",
+                    "type": "waitTime",
+                    "config": {
+                      "timeout": 1000,
+                      "timeoutType": "fixedValue"
+                    }
+                  }
+                ],
+                "children": [
+                  {
+                    "id": "09633b4d-ae19-492b-8ee4-a69cce71a2eb",
+                    "name": "Click",
+                    "type": "click",
+                    "config": {
+                      "useOffset": false,
+                      "doubleClick": false,
+                      "saveItemName": "startBtn",
+                      "randomDistance": 0
+                    }
+                  },
+                  {
+                    "id": "673aa5ea-ba4a-4400-889e-3cfc3005e52b",
+                    "name": "Exit Loop",
+                    "type": "breakLoop",
+                    "config": {}
+                  }
+                ],
+                "conditionV3": [
+                  [
+                    {
+                      "relation": "exist",
+                      "useVariable": "startBtn"
+                    }
+                  ]
+                ]
+              }
+            }
+          ],
+          "serialType": "fixedValue"
+        }
+      },
+      {
+        "id": "6eb7e443-c08b-4539-9a86-15680e1e0a68",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 3000,
+          "timeoutMin": 2000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "26f72e79-4edf-40ba-98c8-1e02214668dc",
+        "name": "Click",
+        "type": "click",
+        "config": {
+          "remark": "Starting JoyStick dialog — click CONTINUE WITH ADS to skip the watch video offer",
+          "serial": 1,
+          "useOffset": false,
+          "searchTime": 5000,
+          "serialType": "fixedValue",
+          "doubleClick": false,
+          "hiddenChildren": false,
+          "randomDistance": 0,
+          "filterCollection": [
+            [
+              {
+                "type": "text",
+                "content": "CONTINUE WITH ADS",
+                "filterType": "contain"
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "content": "Continue with Ads",
+                "filterType": "contain"
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "content": "CONTINUE",
+                "filterType": "equal"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": "3013a1fd-3a9c-4ff6-9bee-7b133e09b805",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 3000,
+          "timeoutMin": 2000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "6c9c3654-b786-480b-83f7-6f0e192595b4",
+        "name": "For Loop Times",
+        "type": "forTimes",
+        "config": {
+          "times": "5",
+          "remark": "Consent/GDPR screen loop — 5×3s = 15s window. Exits when found, skips if never appears.",
+          "children": [
+            {
+              "id": "22f1889f-57cb-4225-b274-4e3ea2e2e293",
+              "name": "Element appears",
+              "type": "waitEle",
+              "config": {
+                "serial": 1,
+                "variable": "consentBtn",
+                "searchTime": 3000,
+                "serialType": "fixedValue",
+                "hiddenChildren": false,
+                "filterCollection": [
+                  [
+                    {
+                      "type": "text",
+                      "content": "Consent",
+                      "filterType": "equal"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "text",
+                      "content": "CONSENT",
+                      "filterType": "equal"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "desc",
+                      "content": "Consent",
+                      "filterType": "equal"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "id": "b83b6a41-9727-4520-ac35-c59d5a3bce79",
+              "name": "Statement if",
+              "type": "ifElse",
+              "config": {
+                "other": [],
+                "children": [
+                  {
+                    "id": "aac17c7b-6412-40d9-86b1-2ff97bf898aa",
+                    "name": "Click",
+                    "type": "click",
+                    "config": {
+                      "useOffset": false,
+                      "doubleClick": false,
+                      "saveItemName": "consentBtn",
+                      "randomDistance": 0
+                    }
+                  },
+                  {
+                    "id": "45b54879-52ad-435a-bbc5-efdac8730b8d",
+                    "name": "Time",
+                    "type": "waitTime",
+                    "config": {
+                      "timeout": 1000,
+                      "timeoutType": "fixedValue"
+                    }
+                  },
+                  {
+                    "id": "2b19646b-0036-46e4-a449-783ae39636f0",
+                    "name": "Exit Loop",
+                    "type": "breakLoop",
+                    "config": {}
+                  }
+                ],
+                "conditionV3": [
+                  [
+                    {
+                      "relation": "exist",
+                      "useVariable": "consentBtn"
+                    }
+                  ]
+                ]
+              }
+            }
+          ],
+          "serialType": "fixedValue"
+        }
+      },
+      {
+        "id": "f2001e56-d163-4b3a-8e34-849eba8b5a00",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 2000,
+          "timeoutMin": 1000,
+          "timeoutType": "randomInterval"
+        }
+      },
+      {
+        "id": "8aede937-05a3-4d96-a31c-f9580b8a00b1",
+        "name": "Time",
+        "type": "waitTime",
+        "config": {
+          "timeoutMax": 8000,
+          "timeoutMin": 6000,
+          "timeoutType": "randomInterval"
+        }
+      }
+    ],
+    "errorType": "skip",
+    "startParamMap": []
+  }
+}

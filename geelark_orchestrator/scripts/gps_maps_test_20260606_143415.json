@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-06-06T14:37:54.029872",
+  "phone_id": "614216851202768963",
+  "account_email": "waylonswanson92387@gmail.com",
+  "business_name": "Taylor Plumbing of Chichester Specialists",
+  "business_lat": "47.73855",
+  "business_lng": "12.5088275",
+  "target_nearby_lat": "47.739983",
+  "target_nearby_lng": "12.511713",
+  "mock_set_success": false,
+  "mock_verification_detail": "0.000000,0.000001",
+  "maps_search_result": "FOUND",
+  "business_found_text": "Taylor Plumbing of Chichester Specialists",
+  "screenshot_path": "C:/Users/Administrator/Desktop/AccountWarmer-Deploy-Enhanced/geelark_orchestrator/scripts/screenshots_20260606_143415/614216851202768963_maps_screen.png",
+  "ui_dump_path": "C:/Users/Administrator/Desktop/AccountWarmer-Deploy-Enhanced/geelark_orchestrator/scripts/screenshots_20260606_143415/614216851202768963_maps_ui.xml",
+  "error": null
+}

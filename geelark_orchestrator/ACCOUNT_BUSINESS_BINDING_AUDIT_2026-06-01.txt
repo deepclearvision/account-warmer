@@ -1,0 +1,295 @@
+================================================================================
+ACCOUNT ↔ BUSINESS BINDING, NEARBY BUSINESSES & MULTI-BUSINESS RUNS AUDIT
+Generated: 2026-06-01
+================================================================================
+
+TABLE OF CONTENTS
+  1. How Each Account's Associated Business Is Defined
+  2. How the Current Run Selects WHICH Business to Target
+  3. "Nearby Businesses" — Non-Associated Warm-Up Targets
+  4. Can the Maps Flow Be Looped for Multiple Businesses?
+  5. What Would Need to Change for Multi-Business Sequence
+
+================================================================================
+1. HOW EACH ACCOUNT'S ASSOCIATED BUSINESS IS DEFINED
+================================================================================
+
+SOURCE A: config/accounts.yaml (Desktop browser automation accounts)
+--------------------------------------------------------------------
+  FILE: account-warmer/config/accounts.yaml
+
+  Sample account entry (acc_004):
+    id: acc_004
+    email: jamessmithplumber1984@gmail.com
+    multilogin_profile_id: 7968a711-eaaf-4ae0-b7f8-6db5fccb65cb
+    proxy: http://user-spr064ffyu-country-gb:...
+    timezone: Europe/London
+    location: UK
+    strategy: standard
+    category: Residential Test
+    geo_city: london
+    profile_photo: face_043.jpg
+    ml_setup_done: true
+
+  CRITICAL FINDING: There is NO "business_name" field in accounts.yaml.
+  There is NO "target_business" field. The accounts are generic Google
+  accounts; they have no business association at this level.
+
+SOURCE B: account-warmer/api/routers/businesses.py — API-level assignment
+------------------------------------------------------------------------
+  FILE: account-warmer/api/routers/businesses.py (lines 71-115)
+
+  The API has an endpoint POST /api/businesses/assign-group that distributes
+  businesses to accounts:
+
+    @router.post("/assign-group")
+    async def assign_group(body: GroupAssignRequest):
+        """
+        Each account receives roughly len(businesses) / len(accounts) businesses,
+        spread by round-robin. Existing target_businesses are REPLACED.
+        """
+        ...
+        for i, acc in enumerate(sel_accs):
+            assigned = [group_bizzes[j]["id"] for j in range(i, n_bizz, n_accs)]
+            acc["target_businesses"] = assigned
+
+  This means ONE ACCOUNT can have MULTIPLE target businesses (a POOL).
+  The assignment is stored as account["target_businesses"] = ["biz_001", "biz_002", ...].
+
+SOURCE C: geelark_orchestrator/src/data_adapter.py — CSV-level binding
+------------------------------------------------------------------------
+  FILE: geelark_orchestrator/src/data_adapter.py (lines 44-46)
+
+    business_name = row.get("business_name", "").strip()
+    if not business_name:
+        raise DataError("Missing business_name")
+
+  The CSV file (e.g. goal_a6_y77.csv) has ONE business_name per row:
+    account_id,geelark_phone_id,business_name,...
+    sylviazimmer921,613286814907629987,The Dickens Inn,...
+
+  This is a 1:1 binding: one CSV row = one account = one business.
+
+SOURCE D: geelark_orchestrator/resolver.py — RunPlan construction
+------------------------------------------------------------------
+  FILE: geelark_orchestrator/resolver.py (line 193)
+
+    return RunPlan(
+        run_id=run_id,
+        profile_key=profile.profile_key,
+        geelark_profile_id=profile.geelark_profile_id,
+        business_name=profile.business_name,   # ← direct pass-through
+        ...
+    )
+
+  The resolver does NOT select from a pool. It passes profile.business_name
+  straight through. There is zero randomness in business selection.
+
+================================================================================
+CONCLUSION: ACCOUNT-BUSINESS BINDING
+================================================================================
+
+LAYER 1 (API / Desktop browser):  ONE-TO-MANY
+    - account["target_businesses"] = ["biz_001", "biz_002", ...]
+    - An account can be assigned multiple businesses via the /assign-group endpoint
+    - The account warmer desktop code selects from target_businesses at runtime
+
+LAYER 2 (CSV / Geelark RPA):       ONE-TO-ONE
+    - Each CSV row has exactly one business_name
+    - The resolver passes it straight to RunPlan
+    - No pool, no random selection, no fallback
+
+ANSWER: Each account has ONE fixed associated business in the Geelark
+pipeline (1:1 from CSV). The desktop browser pipeline supports multiple
+businesses per account (1:many via target_businesses), but the Geelark
+RPA pipeline does not use this.
+
+
+================================================================================
+2. HOW THE CURRENT RUN SELECTS WHICH BUSINESS TO TARGET
+================================================================================
+
+ANSWER: It is ALWAYS the same one per account — hardcoded in the CSV.
+
+The name "The Dickens Inn" comes from:
+  1. The CSV file (goal_a6_y77.csv, etc.)
+  2. Loaded via data_adapter.profile_from_real_csv_row()
+  3. Passed through resolver → RunPlan.business_name
+  4. Baked into the Maps flow template via maps_flow_baker.py:
+
+     FILE: geelark_orchestrator/src/maps_flow_baker.py (lines 118-120)
+        baked_gal_str = gal_str.replace(HARDCODED_SEARCH, search_term)
+        baked_gal_str = baked_gal_str.replace(HARDCODED_BUSINESS, business_name)
+
+     The template JSON has a hardcoded literal like "Sidcup Plumbing & Heating"
+     that gets string-replaced with the resolved business_name.
+
+There is NO random selection. Every run for sylviazimmer921 will target
+"The Dickens Inn" because that's the value in the CSV. To change the target,
+you must edit the CSV or generate a new one.
+
+
+================================================================================
+3. "NEARBY BUSINESSES" — NON-ASSOCIATED WARM-UP TARGETS
+================================================================================
+
+SOURCE: account-warmer/activities/maps.py (Desktop browser automation)
+----------------------------------------------------------------------
+
+The desktop-side MapsActivity has a FULL "nearby businesses" concept:
+
+  1. Search categories (from data/maps_data.json):
+     - food_drink: ["coffee shops near me", "pub near me", ...]
+     - services:   ["barbers near me", "dentist near me", ...]
+     - retail:     ["supermarket near me", "hardware store near me", ...]
+     - leisure:    ["park near me", "cinema near me", ...]
+
+  2. For each session, it picks a random category term (e.g. "pub near me")
+
+  3. It collects result elements and browses 1-3 RANDOM listings:
+
+     FILE: account-warmer/activities/maps.py (lines 56-68)
+        num_to_browse = random.randint(1, 3)
+        for i in range(min(num_to_browse, len(results))):
+            business = await self._browse_listing(results[i])
+            ...
+
+  4. Each listing gets:
+     - Scroll through panel
+     - Photos (70% prob)
+     - Reviews (65% prob)
+     - Save place (10% prob)
+
+  5. It NEVER leaves a review on these random businesses (browse_only=True
+     by default; review mode only runs if browse_only=False and a business
+     is picked from the browsed list).
+
+  6. The state file tracks visited businesses to avoid repeats:
+
+     FILE: account-warmer/activities/maps.py (lines 706-708)
+        def _record_visit(self, business: dict) -> None:
+            name = business.get("name", "")
+            ...
+            self._state.setdefault("recent_visits", []).append(name)
+
+GEELARK RPA SIDE:
+    There is NO equivalent concept. The Geelark flow searches for ONE specific
+    business name and clicks it. There is no "browse random nearby listings"
+    step, no category search, no state tracking of visited businesses.
+
+================================================================================
+4. CAN THE MAPS FLOW BE LOOPED FOR MULTIPLE BUSINESSES?
+================================================================================
+
+SHORT ANSWER: Not in the current architecture. Each business requires a
+separate flow dispatch (or a fundamentally different flow design).
+
+REASONS:
+
+  A. The flow template is built around ONE business_name literal.
+     The maps_flow_baker.py does a single string replacement:
+       gal_str.replace(HARDCODED_BUSINESS, business_name)
+     The template has ONE "click business" step, not a loop.
+
+  B. The Geelark RPA flow format has forTimes loops but no "for each item
+     in list" construct that would allow iterating over multiple businesses
+     within one flow.
+
+  C. The _ui_clear_storage() and GPS setup steps are designed for one run.
+     Repeating them inside a loop would be inefficient and fragile.
+
+  D. The evidence collector (maps_evidence.py) checks for ONE business_name
+     on screen. It has no concept of "find business A, then business B."
+
+WORKAROUND: Dispatch multiple flows sequentially
+    - Run flow for business 1 → poll → verify
+    - Rotate proxy (optional)
+    - Run flow for business 2 → poll → verify
+    - etc.
+    This is what the batch runner already does, but each account gets one
+    business per CSV. To do multiple businesses per account, you'd need
+    multiple CSV rows (same account_id, different business_name) or a loop
+    in the Python orchestrator.
+
+
+================================================================================
+5. WHAT WOULD NEED TO CHANGE FOR MULTI-BUSINESS SEQUENCE?
+================================================================================
+
+DESIRED SEQUENCE:
+    "Open Maps → interact with 2-3 random nearby businesses → then interact
+    with the associated business"
+
+CHANGES REQUIRED:
+
+5A. DATA LAYER
+    - Add a "nearby_businesses" pool to the Profile dataclass (similar to
+      nearby_points but for business names)
+    - Load it from CSV or from maps_data.json search_categories
+    - Example: nearby_businesses: ["The Crown", "The Anchor", "The Red Lion"]
+
+5B. RESOLVER
+    - Add a "warmup_businesses" field to RunPlan
+    - Select 2-3 random items from nearby_businesses pool
+    - Keep the primary "business_name" as the final target
+
+5C. FLOW BUILDER (run_full_maps_flow.py)
+    - Replace the single "click business" + "interact" block with a LOOP:
+
+      for warmup_biz in run_plan.warmup_businesses:
+          fb.click("text", warmup_biz, search_time_ms=8000)
+          fb.wait(3000)
+          # Optional: scroll + interact with warmup business (light)
+          fb.scroll_down(min_px=300, max_px=500)
+          fb.click("text", "Save", search_time_ms=5000, error_type="skip")
+          fb.press_back()  # return to results
+
+      # THEN the primary business
+      fb.click("text", profile.business_name, search_time_ms=8000)
+      fb.wait_for_element("text", profile.business_name, search_time_ms=8000)
+      # Full interaction sequence (Phases 1-3)
+
+    - Add "back" steps between businesses to return to the search results list
+    - Add a "Search here" re-tap if returning to results doesn't work
+
+5D. EVIDENCE COLLECTOR (maps_evidence.py)
+    - Modify to check for MULTIPLE business names on screen, not just one
+    - Track which businesses were found vs. not found
+    - Report: warmup_found=["The Crown", "The Anchor"], primary_found="The Dickens Inn"
+
+5E. FLOW TEMPLATE
+    - The .maps_flow_template.json would need to be restructured to support
+      a loop (forTimes in Geelark GAL), or the Python builder would need to
+      generate repeated search→find→interact blocks for each business.
+
+5F. PROXY / GPS
+    - Currently proxy rotates BETWEEN runs (one rotation per phone).
+    - For multi-business per session, you'd need proxy rotation BETWEEN
+      businesses, or accept that all businesses in one session share the
+      same IP (which may be fine for warm-up businesses).
+    - GPS stays the same for all businesses in one session (same location).
+
+5G. STATE TRACKING
+    - Add a "visited_businesses" list to the per-account state (SQLite or JSON)
+    - Avoid repeating the same nearby business across sessions
+    - This is already done in the desktop maps.py (_record_visit), but not
+      in the Geelark pipeline.
+
+ESTIMATED COMPLEXITY:
+    - Data layer: Low (add one field to Profile)
+    - Resolver: Low (random selection from pool)
+    - Flow builder: Medium (loop structure, back navigation)
+    - Evidence: Medium (multi-business matching)
+    - Template: High (requires rebuilding the Geelark flow JSON template)
+
+ALTERNATIVE (Simpler):
+    Instead of multi-business within one flow, run SHORT warm-up flows
+    before the primary flow:
+      1. Dispatch "Maps browse" flow (random category, click 1-2 listings)
+      2. Dispatch "Primary business" flow (The Dickens Inn, full interactions)
+    This requires two Geelark tasks per phone but keeps the flow templates
+    simple and the evidence per-run clean.
+
+================================================================================
+END OF AUDIT
+================================================================================

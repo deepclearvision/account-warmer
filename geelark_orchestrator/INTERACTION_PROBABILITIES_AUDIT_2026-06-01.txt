@@ -1,0 +1,386 @@
+================================================================================
+INTERACTION PROBABILITIES, BUSINESS SELECTION & VERIFICATION AUDIT
+Generated: 2026-06-01
+Source files read: maps_data.json, maps.py, run_full_maps_flow.py,
+                   .maps_flow_template.json, maps_evidence.py,
+                   Geelark_Master_Reference Section 6, dumpsys account output
+================================================================================
+
+TABLE OF CONTENTS
+  1. Where Interaction Probabilities Are Defined
+  2. Per-Interaction Detail (Probability, UI Element, Verification, Evidence)
+  3. Production RPA Flow vs. Reference Probabilities — Conflict Found
+  4. How the Maps RPA Flow Selects WHICH Business to Interact With
+  5. Runtime Google Account Verification (dumpsys account test)
+
+================================================================================
+1. WHERE INTERACTION PROBABILITIES ARE DEFINED
+================================================================================
+
+SOURCE A: account-warmer/data/maps_data.json (lines 121-127)
+-------------------------------------------------------------
+    "listing_interactions": {
+        "view_photos_probability": 0.70,
+        "read_reviews_probability": 0.65,
+        "get_directions_probability": 0.25,
+        "click_website_probability": 0.15,
+        "save_place_probability": 0.10
+    }
+
+USED BY: account-warmer/activities/maps.py (Desktop/browser automation)
+NOTE: This is for the DESKTOP-side Multilogin browser automation,
+      NOT the Geelark Android RPA flow.
+
+SOURCE B: geelark_orchestrator/scripts/run_full_maps_flow.py (lines 48-57)
+---------------------------------------------------------------------------
+    INTERACTION_CFG = {
+        "scroll_card": 0.80,
+        "photos": 0.60,
+        "reviews": 0.50,
+        "directions": 0.40,
+        "website": 0.35,
+        "call": 0.30,
+        "save": 0.25,
+    }
+
+USED BY: The Python flow builder that CONSTRUCTS Geelark RPA JSON.
+         These probabilities are consumed at FLOW BUILD TIME (Python),
+         NOT at run time on the phone.
+
+SOURCE C: geelark_orchestrator/Geelark_Master_Reference - Main.md (lines 378-387)
+--------------------------------------------------------------------------------
+    | Interaction      | Probability | Notes                        |
+    |------------------|-------------|------------------------------|
+    | Scroll full panel| 80%         | Most natural passive behaviour|
+    | View photos      | 60%         | Common behaviour             |
+    | Read reviews     | 50%         | Common behaviour             |
+    | Tap directions   | 40%         | Moderate frequency           |
+    | Tap call         | 30%         | Less frequent                |
+    | Visit website    | 35%         | Moderate frequency           |
+    | Tap save         | 25%         | Least frequent               |
+
+This is DOCUMENTATION. It matches SOURCE B (run_full_maps_flow.py).
+
+SOURCE D: geelark_orchestrator/src/.maps_flow_template.json (PRODUCTION FLOW)
+-----------------------------------------------------------------------------
+The ACTUAL production RPA flow that runs on the phones.
+
+FINDING: The production flow template has ZERO probability blocks.
+It hardcodes a FIXED interaction sequence:
+    1. Scroll card (unconditional)
+    2. Click "Save" (unconditional)
+    3. Click "Save" again (dialog confirm, unconditional)
+    4. Click "Share" (unconditional)
+    5. Press BACK (unconditional)
+
+There are NO "probability" or "random" conditionV3 blocks in the
+production template. Every interaction step is unconditional.
+
+================================================================================
+2. PER-INTERACTION DETAIL
+================================================================================
+
+INTERACTION: Save
+-----------------
+  Probability (run_full_maps_flow.py builder):   25%
+  Probability (maps_data.json desktop):            10%
+  Probability (production RPA template):            100% (hardcoded)
+
+  UI Element Clicked (production template):
+      Type: "click"
+      Filter: text="Save"
+      search_time_ms: 5000
+      Location in flow: After scroll card, before Share
+
+  UI Element Clicked (run_full_maps_flow.py builder):
+      fb.click("text", "Save", search_time_ms=5000)
+
+  How Verified:
+      Post-run uiautomator dump scans for "saved" text on screen
+      (maps_evidence.py line 171: if "saved" in all_text_lower: found.add("Save"))
+      Also: Geelark execution logs scanned for "Save" keyword
+      (run_one_phone.py line 560: if kw.lower() in lower: found.add(kw))
+
+  Evidence Collected:
+      - screen_package (which app was foreground)
+      - interactions_present list (from screen text + log scan)
+      - card_opened boolean (≥2 indicators required)
+
+INTERACTION: Share
+------------------
+  Probability (run_full_maps_flow.py builder):   NOT DEFINED (absent from INTERACTION_CFG)
+  Probability (maps_data.json desktop):          NOT DEFINED
+  Probability (production RPA template):          100% (hardcoded)
+
+  UI Element Clicked (production template):
+      Type: "click"
+      Filter: text="Share"
+      search_time_ms: 5000
+
+  How Verified:
+      Post-run uiautomator dump looks for "share" + "via" in text
+      (maps_evidence.py line 175: if "share" in t.lower() and "via" in t.lower())
+      Note: Share sheet opens then is dismissed with BACK key, so the final
+      screen usually does NOT show Share text. Log-derived interactions
+      supplement this (maps_evidence.py line 183: if log_interactions: found.update(log_interactions))
+
+  Evidence Collected:
+      - Same as Save (screen text + log scan)
+
+INTERACTION: Reviews
+--------------------
+  Probability (run_full_maps_flow.py builder):   50%
+  Probability (maps_data.json desktop):          65%
+  Probability (production RPA template):          NOT PRESENT
+
+  UI Element Clicked (run_full_maps_flow.py builder):
+      fb.click("text", "Reviews", search_time_ms=5000)
+
+  How Verified:
+      Post-run screen text checked for "Write a review"
+      (maps_evidence.py line 153: if "write a review" in all_text_lower: found.add("Reviews"))
+
+  Evidence Collected:
+      - interactions_present list
+      - business_found boolean (from _matches_business_name)
+
+INTERACTION: Photos
+-------------------
+  Probability (run_full_maps_flow.py builder):   60%
+  Probability (maps_data.json desktop):          70%
+  Probability (production RPA template):          NOT PRESENT
+
+  UI Element Clicked (run_full_maps_flow.py builder):
+      fb.click("text", "Photos", search_time_ms=5000)
+
+  How Verified:
+      Post-run screen text checked for "image result", "view photo map", or "posted by"
+      (maps_evidence.py line 149)
+
+INTERACTION: Directions
+-----------------------
+  Probability (run_full_maps_flow.py builder):   40%
+  Probability (maps_data.json desktop):          25%
+  Probability (production RPA template):          NOT PRESENT
+
+  UI Element Clicked (run_full_maps_flow.py builder):
+      fb.click("text", "Directions", search_time_ms=5000)
+
+  How Verified:
+      Requires BOTH a "Start" button AND route detail ("min", "best route", "km", "mi")
+      (maps_evidence.py lines 157-168)
+
+INTERACTION: Call
+-----------------
+  Probability (run_full_maps_flow.py builder):   30%
+  Probability (maps_data.json desktop):          NOT DEFINED
+  Probability (production RPA template):          NOT PRESENT
+
+  UI Element Clicked (run_full_maps_flow.py builder):
+      fb.click("text", "Call", search_time_ms=5000)
+
+  How Verified:
+      Post-run screen text checked for "dial" or "call"
+      (maps_evidence.py line 179)
+
+INTERACTION: Website
+--------------------
+  Probability (run_full_maps_flow.py builder):   35%
+  Probability (maps_data.json desktop):          15%
+  Probability (production RPA template):          NOT PRESENT
+
+  UI Element Clicked (run_full_maps_flow.py builder):
+      fb.click("text", "Website", search_time_ms=5000)
+
+  How Verified:
+      Website click navigates away from Maps; weak indicator.
+      Only counts if "dial" or "call" text present (this is a bug — it checks for Call, not Website)
+      (maps_evidence.py line 179: if any(t.lower() in ("dial", "call") for t in texts))
+
+INTERACTION: Scroll Card
+------------------------
+  Probability (run_full_maps_flow.py builder):   80%
+  Probability (production RPA template):          100% (unconditional scrollPage step)
+
+  UI Action:
+      scrollPage with direction="bottom", distanceMin=300, distanceMax=500
+
+  How Verified:
+      Scroll is NOT individually verified. It is implicit in the
+      "card_opened" check which requires ≥2 indicators (action buttons + metadata).
+
+================================================================================
+3. PRODUCTION RPA FLOW vs. REFERENCE PROBABILITIES — CONFLICT FOUND
+================================================================================
+
+The production flow template (.maps_flow_template.json) and the
+production pipeline (run_one_phone.py) use a DIFFERENT interaction model
+than what's documented in the Master Reference and built in run_full_maps_flow.py.
+
+PRODUCTION REALITY:
+    Every phone gets: Save + Share (both unconditional, 100%)
+    No photos, no reviews, no directions, no call, no website.
+    The flow is hardcoded; probabilities are not applied.
+
+REFERENCE / DOCUMENTATION:
+    Master Reference shows a rich probabilistic interaction set:
+        Scroll 80%, Photos 60%, Reviews 50%, Directions 40%, etc.
+    run_full_maps_flow.py builds flows with these probabilities.
+
+VERIFICATION REALITY:
+    The post-run evidence collector (maps_evidence.py) is DESIGNED to detect
+    Photos, Reviews, Directions, Call, Website — but these interactions
+    never actually happen in the production flow.
+
+    What the production flow ACTUALLY produces:
+        - interactions_present: ['Save', 'Share'] (or ['Reviews', 'Save', 'Share'])
+        - The "Reviews" detection is a FALSE POSITIVE in many cases because
+          the business card already shows "Reviews" as a button label,
+          and the uiautomator dump captures it before any click happens.
+
+    What the evidence code EXPECTS but never sees:
+        - "image result" / "view photo map" (Photos click evidence)
+        - "write a review" (Reviews click evidence)
+        - "start" + "min"/"km" (Directions click evidence)
+        - "share via" (Share sheet evidence — usually missed because Back dismisses it)
+
+================================================================================
+4. HOW THE MAPS RPA FLOW SELECTS WHICH BUSINESS TO INTERACT WITH
+================================================================================
+
+METHOD A: Production Pipeline (run_one_phone.py + .maps_flow_template.json)
+---------------------------------------------------------------------------
+
+Step 1: The resolver picks a search term and GPS coordinates
+    - Example: search_term="pub near me", gps_lat=51.5187, gps_lng=-0.0991
+    - These are passed to the Maps flow baker.
+
+Step 2: The Maps flow baker bakes a JSON flow with the search term as a LITERAL
+    - In .maps_flow_template.json, the search term is a literal string in
+      the inputContent step (e.g. "plumber sidcup" in the template,
+      replaced at bake time with the resolved search_term).
+
+Step 3: The flow types the search term into Maps search box and presses Enter
+    - Step type: inputContent + keyOption("enter")
+
+Step 4: The flow attempts to click the business name
+    - First attempt: click("text", profile.business_name) immediately
+      (assumes business is at top of results)
+    - If not found: scrollPage (up to 15 attempts) then click("text", business_name)
+    - The business_name comes from profile.business_name (e.g. "The Dickens Inn")
+
+Step 5: If the business name text is found, the flow clicks it
+    - This opens the business knowledge panel / card.
+
+IMPORTANT LIMITATION:
+    The flow does NOT verify that the clicked result is actually the correct
+    business. It matches by TEXT LABEL only. If another business has a similar
+    name, or if the text match fails, the flow may click the wrong result
+    or fail to find any result.
+
+    The post-run evidence (maps_evidence.py) checks if the business name
+    appears on screen AFTER the flow completes, but this is not a real-time
+    gate — it is retrospective.
+
+METHOD B: Desktop Browser Automation (account-warmer/activities/maps.py)
+------------------------------------------------------------------------
+
+Step 1: Search for a random category term
+    - Picks from search_categories in maps_data.json
+    - Example: "pub near me", "coffee shops near me"
+
+Step 2: Collect result elements
+    - Waits for div[role="feed"] div.Nv2PK or div[role="feed"] a[href*="maps"]
+
+Step 3: Browse 1-3 listings
+    - For each result: clicks it, records name, scrolls listing panel
+    - Skips recently visited (self._state["recent_visits"])
+
+Step 4: Detect business type
+    - Reads button[jsaction*="category"] or span.DkEaL text
+    - Maps to "cafe", "restaurant", "barber", "gym", "pub", or "generic"
+
+Step 5: Probabilistic interactions (desktop only)
+    - view_photos_probability: 0.70
+    - read_reviews_probability: 0.65
+    - save_place_probability: 0.10
+    - get_directions_probability: 0.25 (separate, after browse loop)
+
+    These are REAL runtime probabilities using Python random.random().
+
+================================================================================
+5. RUNTIME GOOGLE ACCOUNT VERIFICATION (dumpsys account test)
+================================================================================
+
+PHONE TESTED: Y77 (sylviazimmer921 / 613286814907629987)
+
+COMMAND: dumpsys account | grep "Account {"
+RESULT:
+    Account {name=sylviazimmer921@gmail.com, type=com.google}
+
+COMMAND: dumpsys account | head -30
+RESULT:
+    User UserInfo{0:Owner:c13}:
+      Accounts: 1
+        Account {name=sylviazimmer921@gmail.com, type=com.google}
+
+      AccountId, Action_Type, timestamp, UID, TableName, Key
+      Accounts History
+      -1,action_called_account_add,2026-04-02 07:51:56,10054,accounts,0
+      -1,action_called_account_add,2026-04-02 07:56:56,10054,accounts,1
+      1,action_account_add,2026-04-02 08:01:08,10049,accounts,2
+
+      Active Sessions: 0
+
+      RegisteredServicesCache: 1 services
+        ServiceInfo: AuthenticatorDescription {type=com.google}, ComponentInfo{com.google.android.gms/com.google.android.gms.auth.account.authenticator.GoogleAccountAuthenticatorService}, uid 10049
+
+      Account visibility:
+        sylviazimmer921@gmail.com
+          com.google.android.apps.maps, 2
+
+COMMAND: pm list users
+RESULT:
+    Users:
+        UserInfo{0:Owner:c13} running
+
+CONCLUSION:
+    dumpsys account DOES work at runtime and reveals:
+      1. The Google account email (sylviazimmer921@gmail.com)
+      2. The account type (com.google)
+      3. Which apps can see the account (com.google.android.apps.maps visibility=2)
+      4. Account add history (timestamps)
+
+    This command could be added as a runtime provisioning gate to verify:
+      a) A Google account exists on the phone
+      b) The account matches the expected profile account
+      c) Maps has visibility to the account (visibility=2)
+
+    Currently NO production code runs this check.
+
+================================================================================
+SUMMARY OF FINDINGS
+================================================================================
+
+1. INTERACTION PROBABILITIES EXIST IN THREE PLACES:
+   - Desktop browser automation (maps_data.json): real runtime probabilities
+   - Flow builder (run_full_maps_flow.py): build-time probabilities
+   - Master Reference: documentation only
+
+2. PRODUCTION RPA FLOW IGNORES ALL PROBABILITIES:
+   - The actual .maps_flow_template.json has unconditional Save + Share only
+   - No Photos, Reviews, Directions, Call, or Website in production
+   - The evidence code is prepared for them but never sees them
+
+3. BUSINESS SELECTION IS BY TEXT MATCH:
+   - The flow types a search term, then clicks by text=profile.business_name
+   - Up to 15 scroll attempts if not found at top
+   - No verification that the clicked result is actually the target business
+
+4. GOOGLE ACCOUNT CAN BE VERIFIED AT RUNTIME:
+   - dumpsys account | grep "Account {" returns the account email and type
+   - Currently unused in production; could be a valuable provisioning gate
+
+================================================================================
+END OF AUDIT
+================================================================================

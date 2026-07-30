@@ -1,0 +1,620 @@
+======================================================================
+FULL FLEET PROVISIONING CHECK — 20260605_213146
+======================================================================
+=== Pre-run global cleanup ===
+  No phones running. Clean slate.
+
+Total phones to check: 43
+
+=== Attempt 1/3 for makaylacrane9987@gmail.com (614216915744719218) ===
+    Starting phone 614216915744719218...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216915744719218 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for tannerchambers9987@gmail.com (614216911852404803) ===
+    Starting phone 614216911852404803...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  *** POTENTIAL LEAK: Could not verify proxy match (missing IP data). ***
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216911852404803 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for eddievilla9987@gmail.com (614216908010422642) ===
+    Starting phone 614216908010422642...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216908010422642 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for oakleighoneal9987@gmail.com (614216903581237315) ===
+    Starting phone 614216903581237315...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=False StayAwake=True
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216903581237315 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for huxleymcmillan9912@gmail.com (614216899286270322) ===
+    Starting phone 614216899286270322...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=False StayAwake=True
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216899286270322 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for gracelynvillanueva9987@gmail.com (614216895242960963) ===
+    Starting phone 614216895242960963...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216895242960963 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for gustavostanley92327@gmail.com (614216890796998723) ===
+    Starting phone 614216890796998723...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=False StayAwake=True
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216890796998723 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for luisamathis93437@gmail.com (614216886971793475) ===
+    Starting phone 614216886971793475...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216886971793475 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for jakobebranch9987@gmail.com (614216883146588530) ===
+    Starting phone 614216883146588530...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216883146588530 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for valerieparrish94387@gmail.com (614216879120056690) ===
+    Starting phone 614216879120056690...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216879120056690 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for ellieallison9987@gmail.com (614216875076747634) ===
+    Starting phone 614216875076747634...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216875076747634 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for priscillagiles9987@gmail.com (614216871117324355) ===
+    Starting phone 614216871117324355...
+    ERROR: phone did not start within 360s.
+    Phone 614216871117324355 confirmed stopped (attempt 1).
+  -> Retrying priscillagiles9987@gmail.com (attempt 2)
+
+=== Attempt 2/3 for priscillagiles9987@gmail.com (614216871117324355) ===
+    Starting phone 614216871117324355...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216871117324355 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for azariahtrevino9987@gmail.com (614216867258564675) ===
+    Starting phone 614216867258564675...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216867258564675 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for crystalwiggins9533@gmail.com (614216863500468594) ===
+    Starting phone 614216863500468594...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216863500468594 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for leopeck9987@gmail.com (614216858970620274) ===
+    Starting phone 614216858970620274...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing Developer Options...
+      DevOps after fix: (True, '1')
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+      Fixing mock location app setting...
+      Mock set after fix: (True, 'MOCK_LOCATION: allow')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=False StayAwake=True
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216858970620274 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for helenscott9987@gmail.com (614216854994420082) ===
+    Starting phone 614216854994420082...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216854994420082 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for waylonswanson92387@gmail.com (614216851202768963) ===
+    Starting phone 614216851202768963...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216851202768963 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for cleoperry9987@gmail.com (614216847293677635) ===
+    Starting phone 614216847293677635...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216847293677635 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for marcinbagerman@gmail.com (614216843351031875) ===
+    Starting phone 614216843351031875...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216843351031875 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for bramblejustice@gmail.com (614216838938624067) ===
+    Starting phone 614216838938624067...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing Developer Options...
+      DevOps after fix: (True, '1')
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+      Fixing mock location app setting...
+      Mock set after fix: (True, 'MOCK_LOCATION: allow')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=False StayAwake=True
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216838938624067 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for sandeephassamatta@gmail.com (614216835079864690) ===
+    Starting phone 614216835079864690...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216835079864690 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for jacobbareethe@gmail.com (614216831053332547) ===
+    Starting phone 614216831053332547...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing Developer Options...
+      DevOps after fix: (True, '1')
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+      Fixing mock location app setting...
+      Mock set after fix: (True, 'MOCK_LOCATION: allow')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216831053332547 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for jasonbabora@gmail.com (614216826674479171) ===
+    Starting phone 614216826674479171...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing Developer Options...
+      DevOps after fix: (True, '1')
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+      Fixing mock location app setting...
+      Mock set after fix: (True, 'MOCK_LOCATION: allow')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=False StayAwake=True
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216826674479171 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for hamptonmcfinn@gmail.com (614216822245294147) ===
+    Starting phone 614216822245294147...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=False StayAwake=True
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216822245294147 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for sweeneyjanus@gmail.com (614216818470420547) ===
+    Starting phone 614216818470420547...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216818470420547 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for shilamagnus@gmail.com (614216814192230770) ===
+    Starting phone 614216814192230770...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=False StayAwake=True
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216814192230770 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for bensonmacrite@gmail.com (614216810182475843) ===
+    Starting phone 614216810182475843...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216810182475843 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for vincehawthorne92@gmail.com (614216806256607602) ===
+    Starting phone 614216806256607602...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216806256607602 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for masonhaggerley@gmail.com (614216802213298243) ===
+    Starting phone 614216802213298243...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216802213298243 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for jacobsiesta38@gmail.com (614216798086103107) ===
+    Starting phone 614216798086103107...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216798086103107 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for billyhavenstock@gmail.com (614216794093125699) ===
+    Starting phone 614216794093125699...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216794093125699 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for andrewjocobyte@gmail.com (614216790150480242) ===
+    Starting phone 614216790150480242...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216790150480242 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for bradyjazeel@gmail.com (614216786023284803) ===
+    Starting phone 614216786023284803...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216786023284803 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for dennislambartt@gmail.com (614216782181302642) ===
+    Starting phone 614216782181302642...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216782181302642 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for danniharbourne@gmail.com (614216777836003395) ===
+    Starting phone 614216777836003395...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216777836003395 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for williambrown314809@gmail.com (614216773910135154) ===
+    Starting phone 614216773910135154...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216773910135154 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for oliverjohnsondrains@gmail.com (614216769833271363) ===
+    Starting phone 614216769833271363...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216769833271363 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for jamessmithplumber1984@gmail.com (614216763072053315) ===
+    Starting phone 614216763072053315...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=False StayAwake=True
+  -> Overall: FULLY_PROVISIONED
+    Phone 614216763072053315 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for paulshaw9211@gmail.com (613438578466226595) ===
+    Starting phone 613438578466226595...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 613438578466226595 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for lisalucy9211@gmail.com (613354607392850339) ===
+    Starting phone 613354607392850339...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing Developer Options...
+      DevOps after fix: (True, '1')
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+      Fixing mock location app setting...
+      Mock set after fix: (True, 'MOCK_LOCATION: allow')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 613354607392850339 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for sylviazimmer921@gmail.com (613286814907629987) ===
+    Starting phone 613286814907629987...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=True StayAwake=False
+  -> Overall: FULLY_PROVISIONED
+    Phone 613286814907629987 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for catherinewallis921@gmail.com (613135440043573595) ===
+    Starting phone 613135440043573595...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=False StayAwake=True
+  -> Overall: FULLY_PROVISIONED
+    Phone 613135440043573595 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+=== Attempt 1/3 for lornawilliamson921@gmail.com (613135434842636540) ===
+    Starting phone 613135434842636540...
+    Phone running.
+    Auto-fix: attempting to repair missing gates...
+      Fixing USB Debugging...
+      USB Debug after fix: (True, '1')
+  -> Gates: Dev=True USB=True MockInst=True MockSet=True Google=True Lock=False StayAwake=True
+  -> Overall: FULLY_PROVISIONED
+    Phone 613135434842636540 confirmed stopped (attempt 1).
+  -> FINAL STATUS: FULLY_PROVISIONED
+
+==============================================================================================================
+DELIVERABLE 1: FULL PROVISIONING STATE TABLE
+==============================================================================================================
+phone_id               | account                             | Dev | USB | MInst | MSet | Goog | Lock | Awake | Status
+--------------------------------------------------------------------------------------------------------------
+614216915744719218     | makaylacrane9987@gmail.com          | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216911852404803     | tannerchambers9987@gmail.com        | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216908010422642     | eddievilla9987@gmail.com            | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216903581237315     | oakleighoneal9987@gmail.com         | Y   | Y   | Y     | Y    | Y    | N    | Y     | FULLY_PROVISIONED
+614216899286270322     | huxleymcmillan9912@gmail.com        | Y   | Y   | Y     | Y    | Y    | N    | Y     | FULLY_PROVISIONED
+614216895242960963     | gracelynvillanueva9987@gmail.com    | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216890796998723     | gustavostanley92327@gmail.com       | Y   | Y   | Y     | Y    | Y    | N    | Y     | FULLY_PROVISIONED
+614216886971793475     | luisamathis93437@gmail.com          | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216883146588530     | jakobebranch9987@gmail.com          | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216879120056690     | valerieparrish94387@gmail.com       | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216875076747634     | ellieallison9987@gmail.com          | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216871117324355     | priscillagiles9987@gmail.com        | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216867258564675     | azariahtrevino9987@gmail.com        | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216863500468594     | crystalwiggins9533@gmail.com        | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216858970620274     | leopeck9987@gmail.com               | Y   | Y   | Y     | Y    | Y    | N    | Y     | FULLY_PROVISIONED
+614216854994420082     | helenscott9987@gmail.com            | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216851202768963     | waylonswanson92387@gmail.com        | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216847293677635     | cleoperry9987@gmail.com             | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216843351031875     | marcinbagerman@gmail.com            | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216838938624067     | bramblejustice@gmail.com            | Y   | Y   | Y     | Y    | Y    | N    | Y     | FULLY_PROVISIONED
+614216835079864690     | sandeephassamatta@gmail.com         | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216831053332547     | jacobbareethe@gmail.com             | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216826674479171     | jasonbabora@gmail.com               | Y   | Y   | Y     | Y    | Y    | N    | Y     | FULLY_PROVISIONED
+614216822245294147     | hamptonmcfinn@gmail.com             | Y   | Y   | Y     | Y    | Y    | N    | Y     | FULLY_PROVISIONED
+614216818470420547     | sweeneyjanus@gmail.com              | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216814192230770     | shilamagnus@gmail.com               | Y   | Y   | Y     | Y    | Y    | N    | Y     | FULLY_PROVISIONED
+614216810182475843     | bensonmacrite@gmail.com             | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216806256607602     | vincehawthorne92@gmail.com          | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216802213298243     | masonhaggerley@gmail.com            | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216798086103107     | jacobsiesta38@gmail.com             | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216794093125699     | billyhavenstock@gmail.com           | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216790150480242     | andrewjocobyte@gmail.com            | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216786023284803     | bradyjazeel@gmail.com               | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216782181302642     | dennislambartt@gmail.com            | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216777836003395     | danniharbourne@gmail.com            | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216773910135154     | williambrown314809@gmail.com        | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216769833271363     | oliverjohnsondrains@gmail.com       | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+614216763072053315     | jamessmithplumber1984@gmail.com     | Y   | Y   | Y     | Y    | Y    | N    | Y     | FULLY_PROVISIONED
+613438578466226595     | paulshaw9211@gmail.com              | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+613354607392850339     | lisalucy9211@gmail.com              | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+613286814907629987     | sylviazimmer921@gmail.com           | Y   | Y   | Y     | Y    | Y    | Y    | N     | FULLY_PROVISIONED
+613135440043573595     | catherinewallis921@gmail.com        | Y   | Y   | Y     | Y    | Y    | N    | Y     | FULLY_PROVISIONED
+613135434842636540     | lornawilliamson921@gmail.com        | Y   | Y   | Y     | Y    | Y    | N    | Y     | FULLY_PROVISIONED
+
+======================================================================
+SUMMARY
+======================================================================
+FULLY PROVISIONED:     43
+PARTIALLY PROVISIONED: 0
+FAILED:                0
+UNREACHABLE:           0
+SKIPPED:               0
+
+==========================================================================================
+DELIVERABLE 2: IP LEAK REPORT
+==========================================================================================
+phone_id               | account                             | proxy                     | public_ip        | leak_status
+------------------------------------------------------------------------------------------
+614216915744719218     | makaylacrane9987@gmail.com          | NONE                      | 31.94.74.76      | NO_PROXY_SET
+614216911852404803     | tannerchambers9987@gmail.com        | :0                        | 31.94.74.77      | POTENTIAL_LEAK
+    NOTE: Could not verify proxy match (missing IP data).
+614216908010422642     | eddievilla9987@gmail.com            | NONE                      | 31.94.74.76      | NO_PROXY_SET
+614216903581237315     | oakleighoneal9987@gmail.com         | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216899286270322     | huxleymcmillan9912@gmail.com        | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216895242960963     | gracelynvillanueva9987@gmail.com    | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216890796998723     | gustavostanley92327@gmail.com       | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216886971793475     | luisamathis93437@gmail.com          | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216883146588530     | jakobebranch9987@gmail.com          | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216879120056690     | valerieparrish94387@gmail.com       | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216875076747634     | ellieallison9987@gmail.com          | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216871117324355     | priscillagiles9987@gmail.com        | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216867258564675     | azariahtrevino9987@gmail.com        | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216863500468594     | crystalwiggins9533@gmail.com        | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216858970620274     | leopeck9987@gmail.com               | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216854994420082     | helenscott9987@gmail.com            | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216851202768963     | waylonswanson92387@gmail.com        | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216847293677635     | cleoperry9987@gmail.com             | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216843351031875     | marcinbagerman@gmail.com            | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216838938624067     | bramblejustice@gmail.com            | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216835079864690     | sandeephassamatta@gmail.com         | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216831053332547     | jacobbareethe@gmail.com             | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216826674479171     | jasonbabora@gmail.com               | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216822245294147     | hamptonmcfinn@gmail.com             | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216818470420547     | sweeneyjanus@gmail.com              | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216814192230770     | shilamagnus@gmail.com               | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216810182475843     | bensonmacrite@gmail.com             | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216806256607602     | vincehawthorne92@gmail.com          | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216802213298243     | masonhaggerley@gmail.com            | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216798086103107     | jacobsiesta38@gmail.com             | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216794093125699     | billyhavenstock@gmail.com           | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216790150480242     | andrewjocobyte@gmail.com            | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216786023284803     | bradyjazeel@gmail.com               | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216782181302642     | dennislambartt@gmail.com            | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216777836003395     | danniharbourne@gmail.com            | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216773910135154     | williambrown314809@gmail.com        | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216769833271363     | oliverjohnsondrains@gmail.com       | NONE                      | 31.94.74.77      | NO_PROXY_SET
+614216763072053315     | jamessmithplumber1984@gmail.com     | NONE                      | 31.94.74.77      | NO_PROXY_SET
+613438578466226595     | paulshaw9211@gmail.com              | NONE                      | 31.94.74.77      | NO_PROXY_SET
+613354607392850339     | lisalucy9211@gmail.com              | NONE                      | 31.94.74.77      | NO_PROXY_SET
+613286814907629987     | sylviazimmer921@gmail.com           | NONE                      | 31.94.74.77      | NO_PROXY_SET
+613135440043573595     | catherinewallis921@gmail.com        | NONE                      | 31.94.74.77      | NO_PROXY_SET
+613135434842636540     | lornawilliamson921@gmail.com        | NONE                      | 31.94.74.77      | NO_PROXY_SET
+
+Total potential leaks: 1
+
+JSON state log saved to: C:/Users/Administrator/Desktop/AccountWarmer-Deploy-Enhanced/geelark_orchestrator/scripts/provisioning_full_state_20260605_213146.json
+Text log saved to: C:/Users/Administrator/Desktop/AccountWarmer-Deploy-Enhanced/geelark_orchestrator/scripts/provisioning_run_20260605_213146.txt
