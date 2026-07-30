@@ -33,10 +33,21 @@ log = logging.getLogger("mobile_warmup")
 # ── Import ADB helpers ────────────────────────────────────────────────────────
 from activities.google_login_mobile import (
     _shell, _find_and_tap, _get_window_focus, _rotate_proxy_ip, _CITY_CONFIG,
-    _wait_for_foreground_app,
+    _wait_for_foreground_app, _get_screen_size, _scale,
+)
+
+# ── New shared location + permission helper ───────────────────────────────────
+from activities.mobile_location_setup import (
+    ensure_location_and_permissions,
+    set_gps_near_business,
+    choose_business_location,
 )
 
 LAUNCHER_ACTIVITY = "com.android.launcher3"
+
+# ── Reference screen for scaled taps ──────────────────────────────────────────
+_REF_W = 720
+_REF_H = 1440
 
 # ── Random content pools ──────────────────────────────────────────────────────
 
@@ -73,7 +84,7 @@ _MONEY_KW_POOL = [
 # dest_lat_lon used in saddr/daddr URL so Maps never falls back to IP/network location.
 # Pairs are ~0.5–3 km apart across South/Central/East London.
 _DIRECTIONS_PAIRS = [
-    # (dest_coords,           origin_lat,  origin_lon,  label)
+    # (dest_coords,           origin_lat,  origin_lon,  )
     ("51.5117,-0.1240",       51.5137,    -0.1337,  ),  # Soho → Covent Garden
     ("51.5178,-0.0823",       51.5228,    -0.0782,  ),  # Shoreditch → Liverpool St
     ("51.4613,-0.1156",       51.4618,    -0.1388,  ),  # Clapham → Brixton
@@ -110,21 +121,167 @@ _DIRECTIONS_PAIRS = [
 ]
 
 _YOUTUBE_SEARCHES = [
-    "london street food",
-    "manchester city highlights",
-    "uk news today",
-    "recipe pasta",
-    "funny moments football",
-    "london vlog",
-    "best restaurants london",
-    "morning workout routine",
-    "travel uk",
-    "cooking at home",
-    "premier league goals",
-    "london weather forecast",
-    "how to make sourdough",
-    "british sitcom clips",
-    "chelsea fc highlights",
+    # ── Food & Cooking ──────────────────────────────────────────────────────
+    "easy dinner recipes uk", "how to make sourdough bread",
+    "best pasta carbonara recipe", "how to cook a perfect steak",
+    "meal prep ideas for the week", "air fryer recipes uk",
+    "best fish and chips london", "afternoon tea at the ritz",
+    "how to make yorkshire pudding", "best roast dinner recipe",
+    "vegan recipes for beginners uk", "jamie oliver 30 minute meals",
+    "best curry house near me", "how to make homemade pizza",
+    "sunday roast at home", "british bake off recipes",
+    "how to make scones", "easy chicken tikka masala",
+    "student budget meals uk", "best brunch spots london",
+    "how to cook lamb roast", "baking for beginners",
+    "slow cooker recipes uk", "best street food london",
+    "how to make crumpets", "quick and healthy dinners",
+    # ── Football / Premier League ────────────────────────────────────────────
+    "premier league highlights today", "manchester united highlights",
+    "arsenal highlights today", "chelsea fc latest goals",
+    "liverpool fc post match", "tottenham hotspur highlights",
+    "man city goals 2024", "premier league table analysis",
+    "best premier league goals ever", "champions league highlights",
+    "england football highlights", "fantasy premier league tips",
+    "match of the day full show", "sky sports premier league",
+    "football transfer news uk", "fa cup highlights",
+    "championship playoff final", "women's super league highlights",
+    "best football skills and tricks", "gary neville analysis",
+    "premier league predictions", "england world cup highlights",
+    "premier league skills of the week",
+    # ── UK News ──────────────────────────────────────────────────────────────
+    "uk news today", "bbc news headlines",
+    "sky news latest", "prime minister's questions",
+    "general election results uk", "cost of living crisis uk",
+    "uk weather forecast", "house prices uk 2024",
+    "nhs waiting times latest", "uk interest rates explained",
+    "london tube strike news", "energy price cap explained",
+    "budget 2024 uk analysis", "uk immigration rules change",
+    "council tax rise explained",
+    # ── Music ────────────────────────────────────────────────────────────────
+    "uk top 40 this week", "glastonbury highlights",
+    "adele live performance", "ed sheeran new song",
+    "radio 1 live lounge", "brits 2024 highlights",
+    "best uk grime tracks", "reading festival highlights",
+    "classic britpop playlist", "uk garage classics",
+    "sam fender live", "arctic monkeys glastonbury",
+    "best uk drill 2024", "bbc radio 1 big weekend",
+    # ── Gaming ───────────────────────────────────────────────────────────────
+    "fifa 24 ultimate team tips", "best ps5 games 2024",
+    "call of duty warzone gameplay", "fortnite new season",
+    "minecraft build ideas", "gta 6 trailer reaction",
+    "best gaming pc build 2024 uk", "xbox game pass best games",
+    "elden ring boss guide", "football manager 2024 tips",
+    "nintendo switch games 2024", "best mobile games 2024",
+    # ── Travel UK ────────────────────────────────────────────────────────────
+    "best walking routes near me", "london vlog walking tour",
+    "best day trips from london", "lake district travel guide",
+    "cornwall road trip uk", "edinburgh travel guide",
+    "cotswolds villages tour", "scotland nc500 road trip",
+    "best beaches uk", "hidden gems london",
+    "things to do in london this weekend", "cheap flights from uk",
+    "best holiday destinations 2024", "york travel guide",
+    "peak district walks", "brighton day trip",
+    # ── How-To / DIY ─────────────────────────────────────────────────────────
+    "how to fix a leaking tap uk", "how to bleed a radiator",
+    "how to paint a room properly", "how to change a car tyre",
+    "how to tile a bathroom", "how to fix a toilet flush",
+    "how to unblock a sink drain", "how to put up shelves",
+    "how to grout tiles", "diy garden makeover uk",
+    "how to wallpaper a room", "how to replace a light switch",
+    "how to fix creaking floorboards", "how to insulate a loft uk",
+    # ── Comedy ───────────────────────────────────────────────────────────────
+    "michael mcintyre full show", "jimmy carr best jokes",
+    "british panel shows full episodes", "would i lie to you best bits",
+    "taskmaster full episodes", "peter kay stand up",
+    "ricky gervais comedy", "8 out of 10 cats best moments",
+    "lee mack stand up", "james acaster comedy",
+    "funniest british sitcom moments", "derry girls best scenes",
+    # ── TV Shows ─────────────────────────────────────────────────────────────
+    "peaky blinders best scenes", "the crown season 6",
+    "doctor who new episodes", "strictly come dancing highlights",
+    "britain's got talent best auditions", "top gear best moments",
+    "the great british bake off", "eastenders best moments",
+    "coronation street highlights", "love island uk best bits",
+    "masterchef uk full episodes", "the apprentice uk boardroom",
+    "doctor who best moments",
+    # ── Films ────────────────────────────────────────────────────────────────
+    "best movies to watch 2024", "james bond best moments",
+    "harry potter behind the scenes", "top 10 british films",
+    "barbie movie review", "oppenheimer explained",
+    "marvel movies ranked", "best netflix series uk",
+    "best films on amazon prime uk", "cinema releases this week",
+    "classic british comedy films",
+    # ── Tech Reviews ─────────────────────────────────────────────────────────
+    "iphone 15 pro review uk", "samsung galaxy s24 vs iphone",
+    "best laptop for students uk", "best budget phone 2024",
+    "best vpn uk 2024", "best broadband deals uk",
+    "smart home setup uk", "apple watch review 2024",
+    "best wireless earbuds uk", "ps5 vs xbox series x 2024",
+    "best 4k tv for gaming", "amazon echo vs google nest",
+    "best tablet for drawing uk",
+    # ── Finance ──────────────────────────────────────────────────────────────
+    "how to save money uk", "best savings account uk 2024",
+    "how to invest in stocks uk", "isa explained uk",
+    "how to buy your first house uk", "mortgage calculator explained",
+    "credit score tips uk", "best credit cards uk",
+    "side hustles uk 2024", "how to budget money",
+    "state pension explained uk", "self assessment tax tips",
+    # ── Fitness ──────────────────────────────────────────────────────────────
+    "morning workout routine at home", "5k training plan for beginners",
+    "yoga for beginners uk", "hiit workout 20 minutes",
+    "best running shoes 2024 uk", "gym workout plan for beginners",
+    "how to lose belly fat", "pilates for beginners",
+    "stretching routine after running", "strength training at home",
+    "park run tips for beginners", "best protein powder uk review",
+    # ── Parenting ────────────────────────────────────────────────────────────
+    "baby sleep training tips uk", "best baby products 2024 uk",
+    "family days out london", "free things to do with kids",
+    "parenting tips for toddlers", "child benefit changes uk",
+    "best pushchair 2024 uk", "weaning baby first foods uk",
+    "school holiday activities", "maternity leave rights uk",
+    # ── Cars ─────────────────────────────────────────────────────────────────
+    "best used cars 2024 uk", "electric cars 2024 uk",
+    "how to pass driving test uk", "car insurance tips uk",
+    "mot checklist uk", "best small suv 2024",
+    "tesla model 3 review uk", "car cleaning and detailing uk",
+    "best first cars for new drivers", "how to check car history uk",
+    # ── Shopping Hauls ───────────────────────────────────────────────────────
+    "primark haul 2024 uk", "ikea home tour uk",
+    "b&m bargains haul", "home bargains shop with me",
+    "tk maxx haul uk", "charity shop haul uk",
+    "zara haul try on uk", "amazon must haves uk",
+    "aldi middle aisle finds", "lidl weekly deals uk",
+    # ── Home / Garden ────────────────────────────────────────────────────────
+    "garden makeover ideas uk", "best indoor plants uk",
+    "home organization ideas", "small bedroom makeover",
+    "renovation budget tips uk", "best paint colours for living room",
+    "how to grow vegetables uk", "home office setup ideas",
+    "cleaning motivation uk", "kitchen organization hacks",
+    # ── True Crime ───────────────────────────────────────────────────────────
+    "uk true crime documentary", "unsolved uk mysteries",
+    "crimewatch uk best moments", "serial killer documentary uk",
+    "police bodycam footage uk", "real crime podcast uk",
+    "london gangland documentary", "criminal psychology explained",
+    "most notorious uk criminals", "disappearance mysteries uk",
+    # ── Weather ──────────────────────────────────────────────────────────────
+    "uk weather forecast this week", "met office weather warning",
+    "london weather today", "snow forecast uk",
+    "storm update uk", "heatwave uk 2024",
+    "bbc weather 10 day forecast", "best weather app uk",
+    # ── Long-tail / UK-specific ──────────────────────────────────────────────
+    "how to fix a leaking tap uk", "best walking routes near me",
+    "manchester united highlights today",
+    "how to get from heathrow to central london",
+    "best fish and chips near me uk",
+    "how to apply for universal credit uk",
+    "passport renewal how long uk 2024",
+    "london property market 2024",
+    "how to make perfect tea british style",
+    "how to complain to ofcom uk",
+    "right to buy scheme explained uk",
+    "free school meals eligibility uk",
+    "how to register with a gp nhs",
+    "congestion charge zone map london",
 ]
 
 _GOOGLE_SEARCHES = [
@@ -436,6 +593,15 @@ def _batch_local_discovery(phone_id: str, acc_id: str, account: dict,
     """
     log.info("[%s] Local Discovery batch …", acc_id)
     try:
+        # Roll for add-on timing BEFORE opening Maps
+        #   25% YouTube before  |  35% YouTube after  |  10% Chrome after  |  30% nothing
+        roll = random.random()
+
+        # 25% chance: YouTube BEFORE Maps
+        if roll < 0.25:
+            _warmup_youtube(phone_id, acc_id, account, log_acc_id)
+            _press_home(phone_id)
+
         _open_app(phone_id, "com.google.android.apps.maps", acc_id)
 
         # Tap My Location (40% chance)
@@ -477,12 +643,16 @@ def _batch_local_discovery(phone_id: str, acc_id: str, account: dict,
         else:
             time.sleep(random.randint(15, 25))
 
-        # Extra activity for variety (50% Chrome, 30% YouTube, 20% nothing)
-        roll = random.random()
-        if roll < 0.5:
+        # Exit Maps before any after-addon
+        _press_home(phone_id)
+
+        # 35% chance: YouTube AFTER Maps
+        if roll >= 0.25 and roll < 0.60:
+            _warmup_youtube(phone_id, acc_id, account, log_acc_id)
+        # 10% chance: Chrome search AFTER Maps
+        elif roll >= 0.60 and roll < 0.70:
             _do_quick_chrome_search(phone_id, acc_id, log_acc_id)
-        elif roll < 0.8:
-            _warmup_youtube(phone_id, acc_id, log_acc_id)
+        # else (roll >= 0.70): no extra activity
 
         _press_home(phone_id)
         log.info("[%s] Local Discovery done.", acc_id)
@@ -562,6 +732,16 @@ def _batch_money_kw(phone_id: str, acc_id: str, account: dict,
                           {"keywords": keywords_used})
             except Exception:
                 pass
+
+        # Randomised follow-up after money-keyword searches:
+        #   50% YouTube  |  20% Chrome  |  30% nothing
+        follow_up = random.random()
+        _press_home(phone_id)
+        if follow_up < 0.50:
+            _warmup_youtube(phone_id, acc_id, account, log_acc_id)
+        elif follow_up < 0.70:
+            _do_quick_chrome_search(phone_id, acc_id, log_acc_id)
+
         _press_home(phone_id)
         log.info("[%s] Money KW done.", acc_id)
         return True
@@ -581,6 +761,40 @@ def _batch_brand_1km(phone_id: str, acc_id: str, account: dict,
     log.info("[%s] Brand 1km batch …", acc_id)
     from core.activity_log import log_event
     try:
+        # ── YouTube roll BEFORE Maps ──────────────────────────────────────
+        yt_roll = random.random()   # 30% before, 40% after, 30% none
+
+        if yt_roll < 0.30:
+            _warmup_youtube(phone_id, acc_id, account, log_acc_id)
+            _press_home(phone_id)
+
+        # ── GPS variation: vary the GPS base each brand_1km run ────────────
+        gps_roll = random.random()
+        from set_phone_area import set_phone_gps
+        if gps_roll < 0.40 and account.get("home_lat") and account.get("home_lng"):
+            # 40%: set GPS to home with jitter
+            lat = account["home_lat"] + random.uniform(-0.0005, 0.0005)
+            lon = account["home_lng"] + random.uniform(-0.0007, 0.0007)
+            set_phone_gps(phone_id, lat, lon)
+            log.info("[%s] Brand 1km GPS: home (%.4f, %.4f)", acc_id, lat, lon)
+        elif gps_roll < 0.65 and account.get("work_lat") and account.get("work_lng"):
+            # 25%: set GPS to work with jitter
+            lat = account["work_lat"] + random.uniform(-0.0005, 0.0005)
+            lon = account["work_lng"] + random.uniform(-0.0007, 0.0007)
+            set_phone_gps(phone_id, lat, lon)
+            log.info("[%s] Brand 1km GPS: work (%.4f, %.4f)", acc_id, lat, lon)
+        elif gps_roll < 0.90:
+            # 25%: set GPS near target business
+            biz = choose_business_location(account)
+            if biz:
+                set_gps_near_business(phone_id, account, biz, acc_id, jitter_meters=200)
+            else:
+                ensure_location_and_permissions(phone_id, account, acc_id)
+        else:
+            # 10%: keep area/city fallback
+            ensure_location_and_permissions(phone_id, account, acc_id)
+            log.info("[%s] Brand 1km GPS: area/city fallback", acc_id)
+
         _open_app(phone_id, "com.google.android.apps.maps", acc_id)
 
         # Resolve target business — priority: account's target_businesses,
@@ -633,6 +847,12 @@ def _batch_brand_1km(phone_id: str, acc_id: str, account: dict,
                           {"business_name": biz_name})
             except Exception:
                 pass
+
+        # 40% chance: YouTube AFTER Maps
+        _press_home(phone_id)
+        if yt_roll >= 0.30 and yt_roll < 0.70:
+            _warmup_youtube(phone_id, acc_id, account, log_acc_id)
+
         _press_home(phone_id)
         log.info("[%s] Brand 1km done.", acc_id)
         return True
@@ -886,16 +1106,18 @@ def _animate_gps_drive(
 
 # ── Warm-up activities ────────────────────────────────────────────────────────
 
-def _warmup_maps(phone_id: str, acc_id: str, log_acc_id: str = "") -> bool:
+def _warmup_maps(phone_id: str, acc_id: str, account: dict,
+                 log_acc_id: str = "") -> bool:
     """Open Maps, search a nearby place, open its detail card, scroll reviews/photos."""
     log.info("[%s] Maps warm-up …", acc_id)
     try:
+        # ── Shared location + permissions setup ────────────────────────────
+        ensure_location_and_permissions(phone_id, account, acc_id)
+
         _open_app(phone_id, "com.google.android.apps.maps", acc_id)
 
-        # 40% chance: tap the My Location button (bottom-right blue dot) to centre
-        # the map on the device GPS.  Mirrors natural user behaviour and ensures
-        # Google sees the location pin is active for this session.
-        if random.random() < 0.4:
+        # Vary "tap My Location" probability (30–50%)
+        if random.random() < random.uniform(0.30, 0.50):
             time.sleep(random.uniform(1.5, 3.0))  # brief pause before tapping
             _shell(phone_id, "input tap 1010 1650")
             log.info("[%s] Maps: tapped My Location button", acc_id)
@@ -907,7 +1129,7 @@ def _warmup_maps(phone_id: str, acc_id: str, log_acc_id: str = "") -> bool:
             log.warning("[%s] Maps: search bar not found", acc_id)
             _press_home(phone_id)
             return False
-        time.sleep(2)
+        time.sleep(random.uniform(1.5, 3.0))
 
         # Type a random search
         query = random.choice(_MAP_SEARCHES)
@@ -919,22 +1141,13 @@ def _warmup_maps(phone_id: str, acc_id: str, log_acc_id: str = "") -> bool:
             except Exception:
                 pass
         _type_and_search(phone_id, query)
-        time.sleep(4)
+        time.sleep(random.uniform(3.0, 5.0))
 
         # Swipe up to reveal results bottom sheet
         _swipe_down(phone_id)
-        time.sleep(2)
+        time.sleep(random.uniform(1.5, 3.0))
 
         # ── STEP 1: Tap the first search result ────────────────────────────
-        # After a Maps search, the results page shows business cards with text
-        # like "Open"/"Closed", distances ("km"/"m away"), or "·" separators.
-        # Detail-card buttons ("Directions", "Website", "Call") only appear
-        # AFTER a listing is opened — we must tap a result card first.
-        #
-        # Try in priority order:
-        #   a) "Open"/"Closed" — every result card has one of these
-        #   b) distance units — "km", "m away", "mi away", "·"
-        #   c) the "filter" or "sort" & nearby result text as last resort
         opened_listing = _find_and_tap(phone_id, [
             "Open", "Closed",
             "km", "m away", "mi away",
@@ -942,44 +1155,45 @@ def _warmup_maps(phone_id: str, acc_id: str, log_acc_id: str = "") -> bool:
         ])
         time.sleep(3)
         if not opened_listing:
-            # No text node matched — fall back to a coordinate tap near where
-            # the first result card renders on most Android screen sizes.
-            # Maps places results ~35% down from the top of the viewport.
             log.info("[%s] Maps: no text match for result — trying coordinate fallback", acc_id)
             _shell(phone_id, "input tap 540 850")
             time.sleep(3)
 
         # ── STEP 2: Verify we're on a listing detail card ──────────────────
-        # These labels confirm the place detail is open.
         detail_opened = _find_and_tap(phone_id, [
             "Directions", "Call", "Website", "Save", "Share",
         ])
         if not detail_opened:
-            # Maybe we opened the result card but the detail labels haven't
-            # rendered yet, or we're on a photo carousel. Do a short dwell
-            # so there's still *some* interaction (the result card itself).
             log.info("[%s] Maps: listing opened but detail labels not visible — short dwell", acc_id)
-            time.sleep(random.randint(15, 25))
+            time.sleep(random.randint(10, 25))
 
-        # ── STEP 3: Browse the listing ─────────────────────────────────────
+        # ── STEP 3: Browse the listing with variable behaviour ─────────────
         if detail_opened:
-            dwell = random.randint(20, 45)
-            log.info("[%s] Browsing place detail for %ds", acc_id, dwell)
-            scrolls = dwell // 8
-            for _ in range(scrolls):
-                _swipe_down(phone_id)
-                time.sleep(random.uniform(2.5, 5.0))
-            # Scroll back up naturally
-            _shell(phone_id, "input swipe 540 400 540 1200 500")
-            time.sleep(2)
+            # Randomly choose browse mode: full scroll (70%) or quick peek (30%)
+            if random.random() < 0.70:
+                dwell = random.randint(18, 50)
+                log.info("[%s] Browsing place detail for %ds", acc_id, dwell)
+                scrolls = random.randint(max(1, dwell // 10), max(2, dwell // 6))
+                for _ in range(scrolls):
+                    _swipe_down(phone_id)
+                    time.sleep(random.uniform(2.0, 5.5))
+                # Scroll back up naturally (or skip 20% of the time)
+                if random.random() < 0.80:
+                    _shell(phone_id, "input swipe 540 400 540 1200 500")
+                    time.sleep(2)
+            else:
+                # Quick peek — just scroll once or twice
+                quick_scrolls = random.randint(0, 2)
+                for _ in range(quick_scrolls):
+                    _swipe_down(phone_id)
+                    time.sleep(random.uniform(2.0, 4.0))
+                time.sleep(random.randint(5, 12))
 
         # ── STEP 4: Guaranteed interaction check ───────────────────────────
-        # If we neither opened a listing nor a detail card, tap blindly at a
-        # second coordinate and dwell — some interaction > none at all.
         if not opened_listing and not detail_opened:
             log.warning("[%s] Maps: no listing interaction after all attempts — forced dwell", acc_id)
             _shell(phone_id, "input tap 540 650")
-            time.sleep(random.randint(15, 25))
+            time.sleep(random.randint(10, 25))
 
         _press_home(phone_id)
         log.info("[%s] Maps warm-up done.", acc_id)
@@ -1022,11 +1236,15 @@ def _warmup_maps_directions(phone_id: str, acc_id: str, account: dict | None = N
     Open a ~1-min driving route in Google Maps navigation.
 
     Route selection priority:
-      1. home/work → associated business (if account has target_businesses with lat/lng) — 50% chance
+      1. home/work → associated business (if account has target_businesses with lat/lng)
       2. Random London pair from _DIRECTIONS_PAIRS fallback
     """
     log.info("[%s] Maps directions warm-up ...", acc_id)
     try:
+        # ── Shared location + permissions setup ────────────────────────────
+        if account:
+            ensure_location_and_permissions(phone_id, account, acc_id)
+
         if not _wait_for_phone_ready(phone_id, acc_id, timeout=60):
             log.warning("[%s] Phone not ready — skipping directions", acc_id)
             return False
@@ -1036,39 +1254,35 @@ def _warmup_maps_directions(phone_id: str, acc_id: str, account: dict | None = N
         route_label = "random"
         dest_biz_name = None  # set when routing to a named business
 
-        # Try to route from home/work to an associated business
-        if account and random.random() < 0.5:
-            target_ids = account.get("target_businesses") or []
-            if target_ids:
-                try:
-                    import yaml
-                    from core.paths import DATA_DIR
-                    biz_file = DATA_DIR / "businesses.yaml"
-                    biz_data = yaml.safe_load(biz_file.read_text(encoding="utf-8")) if biz_file.exists() else {}
-                    businesses = (biz_data or {}).get("businesses", [])
-                    biz_map = {b["id"]: b for b in businesses}
-                    routable = [
-                        b for bid in target_ids
-                        if (b := biz_map.get(bid)) and b.get("lat") and b.get("lng")
-                    ]
-                    if routable:
-                        biz = random.choice(routable)
-                        dest_coords = f"{biz['lat']},{biz['lng']}"
-                        dest_biz_name = biz.get("name")
+        # Try business routing via shared helper
+        if account:
+            biz = choose_business_location(account)
+            if biz and random.random() < 0.60:
+                set_gps_near_business(phone_id, account, biz, acc_id, jitter_meters=200)
+                dest_lat = biz["lat"]
+                dest_lon = biz["lng"]
+                dest_coords = f"{dest_lat},{dest_lon}"
+                dest_biz_name = biz.get("name")
 
-                        # Origin: work (35%) or home (65%)
-                        use_work = (account.get("work_lat") and account.get("work_lng")
-                                    and random.random() < 0.35)
-                        if use_work:
-                            origin_lat = account["work_lat"] + random.uniform(-0.0003, 0.0003)
-                            origin_lon = account["work_lng"] + random.uniform(-0.0005, 0.0005)
-                            route_label = f"work → {biz.get('name', dest_coords)}"
-                        elif account.get("home_lat") and account.get("home_lng"):
-                            origin_lat = account["home_lat"] + random.uniform(-0.0003, 0.0003)
-                            origin_lon = account["home_lng"] + random.uniform(-0.0005, 0.0005)
-                            route_label = f"home → {biz.get('name', dest_coords)}"
-                except Exception as exc:
-                    log.debug("[%s] Business routing lookup failed: %s", acc_id, exc)
+                # Origin: work (35%) or home (65%)
+                use_work = (account.get("work_lat") and account.get("work_lng")
+                            and random.random() < 0.35)
+                if use_work:
+                    origin_lat = account["work_lat"] + random.uniform(-0.0003, 0.0003)
+                    origin_lon = account["work_lng"] + random.uniform(-0.0005, 0.0005)
+                    route_label = f"work → {dest_biz_name or dest_coords}"
+                elif account.get("home_lat") and account.get("home_lng"):
+                    origin_lat = account["home_lat"] + random.uniform(-0.0003, 0.0003)
+                    origin_lon = account["home_lng"] + random.uniform(-0.0005, 0.0005)
+                    route_label = f"home → {dest_biz_name or dest_coords}"
+                else:
+                    # Fall back to area coords for origin
+                    from set_phone_area import AREAS, area_coords as _area_coords
+                    area_key = account.get("geo_area")
+                    if area_key and area_key in AREAS:
+                        origin_lat, origin_lon = _area_coords(area_key, jitter=True)
+                    else:
+                        origin_lat, origin_lon = 51.5074, -0.1278  # London centre
 
         # Fallback to random London pair
         if not dest_coords:
@@ -1119,7 +1333,7 @@ def _warmup_maps_directions(phone_id: str, acc_id: str, account: dict | None = N
         )
         anim_thread.start()
 
-        dwell = random.randint(45, 90)
+        dwell = random.randint(40, 95)
         log.info("[%s] Viewing route (%s) for %ds ...", acc_id, route_label, dwell)
         time.sleep(dwell)
 
@@ -1128,7 +1342,7 @@ def _warmup_maps_directions(phone_id: str, acc_id: str, account: dict | None = N
 
         # Hold GPS at destination and actively browse Maps — stacks Location History
         # visit with real app engagement at those coordinates.
-        dest_dwell = random.randint(60, 90)
+        dest_dwell = random.randint(50, 100)
         log.info("[%s] GPS at destination — opening Maps to browse for %ds", acc_id, dest_dwell)
         try:
             _shell(phone_id, "am force-stop com.google.android.apps.maps")
@@ -1150,13 +1364,22 @@ def _warmup_maps_directions(phone_id: str, acc_id: str, account: dict | None = N
             _wait_for_foreground_app(phone_id, "com.google.android.apps.maps", timeout=10, acc_id=acc_id)
             time.sleep(3)
 
-            # Scroll/browse for the dwell period
+            # Variable scroll/browse behaviour for the dwell period
             elapsed = 4
-            while elapsed < dest_dwell:
-                _swipe_down(phone_id)
-                pause = random.uniform(4.0, 8.0)
-                time.sleep(pause)
-                elapsed += pause + 0.5
+            if random.random() < 0.65:
+                # Active browsing: regular scrolls
+                while elapsed < dest_dwell:
+                    _swipe_down(phone_id)
+                    pause = random.uniform(3.0, 9.0)
+                    time.sleep(pause)
+                    elapsed += pause + 0.5
+            else:
+                # Passive browsing: fewer scrolls, mostly dwell
+                scrolls = random.randint(1, 3)
+                for _ in range(scrolls):
+                    _swipe_down(phone_id)
+                    time.sleep(random.uniform(4.0, 8.0))
+                time.sleep(max(0, dest_dwell - elapsed - scrolls * 5))
         except Exception as e:
             log.warning("[%s] Destination Maps browse failed: %s — falling back to sleep", acc_id, e)
             time.sleep(max(0, dest_dwell - 5))
@@ -1174,17 +1397,41 @@ def _warmup_maps_directions(phone_id: str, acc_id: str, account: dict | None = N
         return False
 
 
-def _warmup_youtube(phone_id: str, acc_id: str, log_acc_id: str = "") -> bool:
-    """Open YouTube, search for a topic, open a video, watch with randomised dwell and interactions."""
+def _warmup_youtube(phone_id: str, acc_id: str, account: dict,
+                    log_acc_id: str = "") -> bool:
+    """
+    Open YouTube, search or browse, watch a video with human-like behaviour.
+
+    Flow:
+      1. Ensure GPS / location permissions
+      2. Open YouTube and wait for foreground
+      3. 60% search, 40% browse home/Shorts feed
+      4. Watch with realistic mid-watch interactions (taps, pause, comments, like)
+      5. Return to home screen
+    """
     log.info("[%s] YouTube warm-up …", acc_id)
     try:
+        # ── Shared location + permissions setup ────────────────────────────
+        ensure_location_and_permissions(phone_id, account, acc_id)
+
         _open_app(phone_id, "com.google.android.youtube", acc_id)
 
-        # Tap search icon
-        tapped = _find_and_tap(phone_id, ["Search", "Search YouTube"])
-        time.sleep(2)
+        # Get screen size for scaled taps
+        try:
+            screen_w, screen_h = _get_screen_size(phone_id)
+        except Exception:
+            screen_w, screen_h = _REF_W, _REF_H
 
-        if tapped:
+        # ── Choose mode: search (60%) or browse home feed (40%) ────────────
+        if random.random() < 0.60:
+            # ── SEARCH MODE ────────────────────────────────────────────────
+            tapped = _find_and_tap(phone_id, ["Search", "Search YouTube"])
+            if not tapped:
+                # Fallback: tap top-centre where search icon lives
+                tx, ty = _scale(0.75, 0.125, screen_w, screen_h)
+                _shell(phone_id, f"input tap {tx} {ty}")
+            time.sleep(random.uniform(1.5, 3.0))
+
             query = random.choice(_YOUTUBE_SEARCHES)
             log.info("[%s] YouTube search: %s", acc_id, query)
             if log_acc_id:
@@ -1194,46 +1441,111 @@ def _warmup_youtube(phone_id: str, acc_id: str, log_acc_id: str = "") -> bool:
                 except Exception:
                     pass
             _type_and_search(phone_id, query)
-            time.sleep(4)
+            time.sleep(random.uniform(3.0, 5.0))
 
-            # Tap the first video result (not Shorts — prefer regular videos)
-            tapped_video = _find_and_tap(phone_id, ["Watch", "Play"])
+            # Tap a video result — prefer regular videos over Shorts
+            tapped_video = _find_and_tap(phone_id, ["views", "ago", "Watch"])
             if not tapped_video:
-                # Fall back to tapping anything in results
-                _find_and_tap(phone_id, ["Shorts", "views", "ago"])
-            time.sleep(4)
+                # Fallback: tap a random vertical position in the results area
+                ref_y = random.randint(480, 1100)
+                fy = ref_y / _REF_H
+                ty = _scale(0.50, fy, screen_w, screen_h)[1]
+                _shell(phone_id, f"input tap {screen_w // 2} {ty}")
+            time.sleep(random.uniform(3.0, 5.0))
         else:
-            # Already on home feed — scroll down once then tap something
-            _swipe_down(phone_id)
-            time.sleep(2)
-            _find_and_tap(phone_id, ["Watch", "views", "ago", "Shorts"])
+            # ── BROWSE MODE — scroll home feed or Shorts ───────────────────
+            scrolls = random.randint(1, 3)
+            for _ in range(scrolls):
+                _swipe_down(phone_id)
+                time.sleep(random.uniform(2.0, 4.0))
+
+            # Tap a thumbnail at a random vertical position
+            ref_y = random.randint(500, 1100)
+            fy = ref_y / _REF_H
+            ty = _scale(0.50, fy, screen_w, screen_h)[1]
+            _shell(phone_id, f"input tap {screen_w // 2} {ty}")
+            log.info("[%s] YouTube: tapped video at y≈%d (browse mode)", acc_id, ty)
             time.sleep(3)
 
-        # Watch for a randomised duration (30–90s) with mid-watch interactions
-        watch_time = random.randint(30, 90)
-        log.info("[%s] Watching for %ds", acc_id, watch_time)
+        # ── WATCH BEHAVIOUR (the key humanization) ─────────────────────────
+        watch_time = random.uniform(25, 120)
+        log.info("[%s] YouTube: watching for ~%ds", acc_id, int(watch_time))
+        elapsed = 0.0
+        third = watch_time / 3.0
+        two_thirds = 2.0 * watch_time / 3.0
 
-        # Pause partway through and interact (tap progress bar, scroll comments briefly)
-        first_segment = watch_time // 3
-        time.sleep(first_segment)
+        # First segment (0 → ~1/3)
+        seg1 = third + random.uniform(-5, 5)
+        seg1 = max(5, seg1)
+        time.sleep(seg1)
+        elapsed += seg1
 
-        # Tap screen once (shows playback controls) — natural viewer behaviour
+        # Mid-watch interaction 1: tap screen to show controls (~always)
         _shell(phone_id, "input tap 540 960")
         time.sleep(random.uniform(1.5, 3.0))
+        elapsed += 2.0
 
-        # Continue watching
-        time.sleep(watch_time - first_segment)
+        # 30% chance: pause → wait → resume
+        if random.random() < 0.30:
+            _shell(phone_id, "input tap 540 960")  # tap centre → pause button appears
+            time.sleep(0.8)
+            # Pause button area on 720×1440: roughly (270, 960) for 1080-wide its centre-ish
+            pause_x, pause_y = _scale(0.50, 0.667, screen_w, screen_h)
+            _shell(phone_id, f"input tap {pause_x} {pause_y}")
+            pause_dur = random.uniform(3, 8)
+            log.info("[%s] YouTube: paused for %.0fs", acc_id, pause_dur)
+            time.sleep(pause_dur)
+            elapsed += pause_dur + 1.0
+            # Resume — same tap position
+            _shell(phone_id, f"input tap {pause_x} {pause_y}")
+            time.sleep(1.0)
+            elapsed += 1.0
 
-        # Optionally scroll down to peek at comments (50% chance)
-        if random.random() < 0.5:
+        # 20% chance: scroll down to peek at comments
+        if random.random() < 0.20:
+            comment_dur = random.uniform(3, 6)
+            log.info("[%s] YouTube: peeking at comments for %.0fs", acc_id, comment_dur)
             _swipe_down(phone_id)
-            time.sleep(random.uniform(3.0, 6.0))
+            time.sleep(comment_dur)
             # Scroll back up
             _shell(phone_id, "input swipe 540 400 540 1200 500")
             time.sleep(2)
+            elapsed += comment_dur + 3.0
+
+        # Second segment (to ~2/3) — account for mid-watch time already spent
+        remaining = two_thirds - elapsed
+        if remaining > 5:
+            time.sleep(remaining)
+            elapsed += remaining
+
+        # Mid-watch interaction 2: tap screen again
+        _shell(phone_id, "input tap 540 960")
+        time.sleep(random.uniform(1.5, 3.0))
+        elapsed += 2.0
+
+        # 10% chance: tap like button area
+        if random.random() < 0.10:
+            lx, ly = _scale(1010 / _REF_W, 1340 / _REF_H, screen_w, screen_h)
+            _shell(phone_id, f"input tap {lx} {ly}")
+            log.info("[%s] YouTube: tapped like button area", acc_id)
+            time.sleep(1.0)
+            elapsed += 1.0
+
+        # 5% chance: tap subscribe button area (only if visible, below video)
+        if random.random() < 0.05:
+            sx, sy = _scale(620 / _REF_W, 1340 / _REF_H, screen_w, screen_h)
+            _shell(phone_id, f"input tap {sx} {sy}")
+            log.info("[%s] YouTube: tapped subscribe button area", acc_id)
+            time.sleep(1.0)
+            elapsed += 1.0
+
+        # Final segment: remaining watch time
+        remaining = watch_time - elapsed
+        if remaining > 3:
+            time.sleep(remaining)
 
         _press_home(phone_id)
-        log.info("[%s] YouTube warm-up done.", acc_id)
+        log.info("[%s] YouTube warm-up done (watched ~%ds).", acc_id, int(watch_time))
         return True
     except Exception as e:
         log.warning("[%s] YouTube warm-up failed: %s", acc_id, e)
@@ -1348,6 +1660,114 @@ def _warmup_google_search(phone_id: str, acc_id: str, log_acc_id: str = "") -> b
         return False
 
 
+# ── Combined activities ──────────────────────────────────────────────────────
+
+def _warmup_maps_then_youtube(phone_id: str, acc_id: str, account: dict,
+                               log_acc_id: str = "") -> bool:
+    """
+    Run a Maps activity then a YouTube activity back-to-back.
+    Randomly chooses between Maps browse and Maps directions for the first part.
+    Returns True if at least one activity succeeded.
+    """
+    log.info("[%s] Maps+YouTube combined warm-up …", acc_id)
+    maps_ok = False
+    yt_ok = False
+
+    # Randomly choose Maps browse or directions (60/40 split)
+    if random.random() < 0.60:
+        maps_ok = _warmup_maps(phone_id, acc_id, account, log_acc_id)
+    else:
+        maps_ok = _warmup_maps_directions(phone_id, acc_id, account, log_acc_id)
+
+    # Always run YouTube after Maps (short gap between apps)
+    time.sleep(random.uniform(2.0, 5.0))
+    yt_ok = _warmup_youtube(phone_id, acc_id, account, log_acc_id)
+
+    ok = maps_ok or yt_ok
+    log.info("[%s] Maps+YouTube done (maps=%s, youtube=%s → overall=%s)",
+             acc_id, maps_ok, yt_ok, ok)
+    return ok
+
+
+# ── Public activity selector ─────────────────────────────────────────────────
+
+def run_selected_warmup(phone_id: str, acc_id: str, account: dict,
+                        activity: str | None = None,
+                        log_acc_id: str = "") -> tuple[bool, str, list]:
+    """
+    Run exactly one warm-up activity (or a combined routine).
+
+    Args:
+        phone_id:   GeelarK phone ID.
+        acc_id:     Account ID (gl_xxx).
+        account:    Account dict with geo/home/work data.
+        activity:   One of "maps_browse", "maps_directions", "youtube",
+                    "maps+youtube", "gmail", "google_search",
+                    or None (None = weighted random choice from
+                    maps_browse, maps_directions, youtube, maps+youtube).
+        log_acc_id: Desktop account ID for activity logging (acc_xxx).
+
+    Returns:
+        (success: bool, activity_name: str, steps_done: list)
+    """
+    _ACTIVITY_MAP = {
+        "maps_browse":     ("maps_browse",     _warmup_maps),
+        "maps_directions": ("maps_directions", _warmup_maps_directions),
+        "youtube":         ("youtube",         _warmup_youtube),
+        "maps+youtube":    ("maps+youtube",    _warmup_maps_then_youtube),
+        "gmail":           ("gmail",           _warmup_gmail),
+        "google_search":   ("google_search",   _warmup_google_search),
+    }
+
+    # If no activity specified, randomly choose with weighted probabilities
+    if not activity:
+        choice = random.choices(
+            ["maps_browse", "maps_directions", "youtube", "maps+youtube"],
+            weights=[0.30, 0.25, 0.35, 0.10],
+            k=1,
+        )[0]
+        activity = choice
+
+    if activity not in _ACTIVITY_MAP:
+        log.warning("[%s] Unknown activity %r — falling back to maps_browse", acc_id, activity)
+        activity = "maps_browse"
+
+    label, func = _ACTIVITY_MAP[activity]
+
+    # Dispatch — gmail/google_search don't take account param
+    if activity in ("gmail", "google_search"):
+        ok = func(phone_id, acc_id, log_acc_id)
+    else:
+        ok = func(phone_id, acc_id, account, log_acc_id)
+
+    steps = [label] if ok else []
+    if ok:
+        log.info("[%s] %s succeeded.", acc_id, label)
+    else:
+        log.warning("[%s] %s failed.", acc_id, label)
+
+    return ok, label, steps
+
+
+def run_warmup_activity(phone_id: str, account: dict,
+                        activity: str | None = None,
+                        log_acc_id: str = "") -> dict:
+    """
+    Thin wrapper around run_selected_warmup for the daily batch runner.
+
+    Returns a dict: {"success": bool, "activity": str, "steps_done": [...]}
+    """
+    acc_id = account.get("id", "unknown")
+    ok, label, steps = run_selected_warmup(
+        phone_id, acc_id, account, activity=activity, log_acc_id=log_acc_id,
+    )
+    return {
+        "success": ok,
+        "activity": label,
+        "steps_done": steps,
+    }
+
+
 # ── Session logger ────────────────────────────────────────────────────────────
 
 def _log_session(log_file: Path, acc_id: str, steps: list, duration_s: float,
@@ -1376,20 +1796,26 @@ def _log_session(log_file: Path, acc_id: str, steps: list, duration_s: float,
 
 def run_mobile_schedule_session(account: dict, log_file: Path,
                                 progress_callback=None,
-                                schedule_state: dict | None = None) -> dict:
+                                schedule_state: dict | None = None,
+                                activity: str | None = None) -> dict:
     """
-    Run ONE batch-mode session for one GeelarK account. The script is
-    determined by the account's schedule_day count using _day_to_script().
+    Run ONE warm-up session for one GeelarK account.
+
+    If ``activity`` is provided, runs exactly that activity.
+    Otherwise the script is determined by the account's schedule_day count
+    using _day_to_script() (the legacy batch-mode system).
 
     Keeps all the existing session infrastructure — proxy rotation, GPS,
-    health check, phone start/stop, screenshot, session logging — but
-    replaces the 5 random activities with exactly one batch-mode call.
+    health check, phone start/stop, screenshot, session logging.
 
     Args:
         account:   dict from geelark_accounts.yaml
         log_file:  Path to mobile_sessions.json
         schedule_state:  MobileScheduler's raw state dict (or None if
                          running standalone / manual warmup)
+        activity:  Optional activity name ("maps_browse", "maps_directions",
+                   "youtube", "maps+youtube", "gmail", "google_search").
+                   If None, uses the legacy schedule-driven batch selection.
 
     Returns:
         dict with keys: success, script, steps_done, duration_s, ip, error
@@ -1429,21 +1855,35 @@ def run_mobile_schedule_session(account: dict, log_file: Path,
         except Exception:
             pass
 
-    # 0. Pre-flight health check — skip broken phones immediately
+    # 0. Pre-flight health check — skip broken or occupied phones
     health = client.check_phone_health(phone_id)
     if not health["healthy"]:
         result["error"] = f"Phone health check failed: {health['reason']}"
         log.warning("[%s] Skipping warmup — phone unhealthy: %s", acc_id, health["reason"])
         return result
 
+    # 0b. If phone is already running or occupied, skip safely (user may be
+    # manually using another Geelark phone for social-media account creation)
+    try:
+        statuses = client.get_phone_status([phone_id])
+        st = statuses[0].get("status") if statuses else -1
+        if st in (0, 1):  # 0=Running, 1=Starting
+            reason = f"Phone already in use (status={st}) — skipping to avoid conflict"
+            result["error"] = reason
+            log.warning("[%s] %s", acc_id, reason)
+            return result
+    except Exception as e:
+        # If we cannot query status, continue but log it
+        log.debug("[%s] Could not query phone status before start: %s", acc_id, e)
+
     # 1. Rotate proxy IP (cooldown is handled inside _rotate_proxy_ip)
     log.info("[%s] Rotating proxy IP …", acc_id)
-    ip = _rotate_proxy_ip(acc_id)
+    ip = _rotate_proxy_ip()
     result["ip"] = ip
     if ip:
-        # 60s settling buffer — let the proxy connection stabilise
-        log.info("[%s] Waiting 60s (IP settling before phone start) …", acc_id)
-        time.sleep(60)
+        settle = random.uniform(5, 15)
+        log.info("[%s] Waiting %.0fs (IP settling before phone start) …", acc_id, settle)
+        time.sleep(settle)
     else:
         log.warning("[%s] Proxy rotation failed — proceeding with current IP", acc_id)
 
@@ -1463,40 +1903,53 @@ def run_mobile_schedule_session(account: dict, log_file: Path,
     if not _wait_for_phone_ready(phone_id, acc_id, timeout=90):
         log.warning("[%s] Phone did not boot in 90s — proceeding anyway", acc_id)
 
-    # 4. Refresh GPS
-    try:
-        _refresh_gps(phone_id, account, acc_id)
-        result["steps_done"].append("gps_refresh")
-    except Exception as e:
-        log.warning("[%s] GPS refresh failed: %s", acc_id, e)
+    # 4. Refresh GPS (only if running legacy batch scripts; the new activity
+    #    functions call ensure_location_and_permissions themselves)
+    if activity is None:
+        try:
+            _refresh_gps(phone_id, account, acc_id)
+            result["steps_done"].append("gps_refresh")
+        except Exception as e:
+            log.warning("[%s] GPS refresh failed: %s", acc_id, e)
 
-    # 5. Determine today's script from schedule
-    schedule_day = 1
-    if schedule_state and acc_id in schedule_state:
-        schedule_day = schedule_state[acc_id].get("schedule_day", 1)
-    script = _day_to_script(schedule_day)
-    log.info("[%s] Schedule day %d → script: %s", acc_id, schedule_day, script)
-
-    # Run exactly ONE batch-mode script
+    # 5. Run warm-up
     ok = False
-    if script == "brand_1km":
-        ok = _batch_brand_1km(phone_id, acc_id, account, log_acc_id)
-    elif script == "money_kw":
-        ok = _batch_money_kw(phone_id, acc_id, account, log_acc_id)
+    if activity:
+        # ── Explicit activity mode ─────────────────────────────────────────
+        ok, label, steps = run_selected_warmup(
+            phone_id, acc_id, account, activity=activity, log_acc_id=log_acc_id,
+        )
+        result["steps_done"].extend(steps)
+        result["script"] = label
+        if ok and label not in result["steps_done"]:
+            result["steps_done"].append(label)
     else:
-        ok = _batch_local_discovery(phone_id, acc_id, account, log_acc_id)
+        # ── Legacy schedule-driven batch mode ──────────────────────────────
+        schedule_day = 1
+        if schedule_state and acc_id in schedule_state:
+            schedule_day = schedule_state[acc_id].get("schedule_day", 1)
+        script = _day_to_script(schedule_day)
+        log.info("[%s] Schedule day %d → script: %s", acc_id, schedule_day, script)
 
-    if ok:
-        result["steps_done"].append(script)
-        result["script"] = script
-    else:
-        result["script"] = script
-        log.warning("[%s] %s returned False", acc_id, script)
+        if script == "brand_1km":
+            ok = _batch_brand_1km(phone_id, acc_id, account, log_acc_id)
+        elif script == "money_kw":
+            ok = _batch_money_kw(phone_id, acc_id, account, log_acc_id)
+        else:
+            ok = _batch_local_discovery(phone_id, acc_id, account, log_acc_id)
+
+        if ok:
+            result["steps_done"].append(script)
+            result["script"] = script
+        else:
+            result["script"] = script
+            log.warning("[%s] %s returned False", acc_id, script)
 
     # 6. Proof screenshot — capture current screen before stopping
     try:
         from core.paths import LOGS_DIR
-        ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        from datetime import datetime as dt_module
+        ts = dt_module.utcnow().strftime("%Y%m%d_%H%M%S")
         shot_name = f"{log_acc_id}_mobile_{ts}.png"
         shot_path = LOGS_DIR / "screenshots" / shot_name
         shot_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1542,7 +1995,7 @@ def run_mobile_schedule_session(account: dict, log_file: Path,
                   acc_id, phone_id)
 
     result["duration_s"] = round(time.time() - t_start, 1)
-    result["success"]    = len(result["steps_done"]) >= 2
+    result["success"]    = len(result["steps_done"]) >= 1
 
     # 8. Log session
     try:
@@ -1555,7 +2008,12 @@ def run_mobile_schedule_session(account: dict, log_file: Path,
     return result
 
 
-def run_all_warmup_sessions(accounts: list, log_file: Path, progress_callback=None) -> list:
+# Backward-compatible alias for existing callers (e.g. mobile_warmup_run.py)
+run_warmup_session = run_mobile_schedule_session
+
+
+def run_all_warmup_sessions(accounts: list, log_file: Path, progress_callback=None,
+                            activity: str | None = None) -> list:
     """
     Run warm-up sessions for all enabled accounts, strictly sequentially.
     Never starts two phones at the same time — all share one mobile proxy.
@@ -1607,7 +2065,8 @@ def run_all_warmup_sessions(accounts: list, log_file: Path, progress_callback=No
                 "progress":        f"{i + 1}/{len(to_run)}",
             })
         r = run_mobile_schedule_session(acc, log_file,
-                                         progress_callback=progress_callback)
+                                         progress_callback=progress_callback,
+                                         activity=activity)
         results.append({"account_id": acc["id"], **r})
         time.sleep(5)
 

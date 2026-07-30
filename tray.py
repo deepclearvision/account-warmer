@@ -1,19 +1,22 @@
 """
 Account Warmer — System Tray Launcher
 ======================================
-Run this file to get a tray icon that starts / stops the dashboard server.
+Run this file to get a tray icon that starts / stops the dashboard server
+and manages the daily mobile warm-up batch runner.
 
   python tray.py
 
 Double-click the tray icon  → open dashboard in browser
 Right-click → Start Server  → starts api/main.py (uvicorn, port from SERVER_PORT env or 8000)
 Right-click → Stop Server   → kills the server process
-Right-click → Exit          → stops server (if running) and quits the tray app
+Right-click → Start Daily Mobile Batch  → launches daily_mobile_batch_runner.py --daemon
+Right-click → Stop Daily Mobile Batch   → terminates the batch runner
+Right-click → Exit          → stops server + batch (if running) and quits the tray app
 
 Icon colour:
   Green  — server is running
   Grey   — server is stopped / not yet started
-  Amber  — server is starting up
+  Amber  — daily mobile batch is running
 
 Requirements (install once):
   pip install pystray pillow
@@ -72,14 +75,16 @@ if _env_file.exists():
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 
-ROOT       = Path(__file__).parent
-MAIN_PY    = ROOT / "api" / "main.py"
-_port      = os.environ.get("SERVER_PORT", "8000")
-DASHBOARD  = f"http://localhost:{_port}"
+ROOT            = Path(__file__).parent
+MAIN_PY         = ROOT / "api" / "main.py"
+BATCH_RUNNER    = ROOT / "daily_mobile_batch_runner.py"
+_port           = os.environ.get("SERVER_PORT", "8000")
+DASHBOARD       = f"http://localhost:{_port}"
 
 # ── State ──────────────────────────────────────────────────────────────────────
 
-_proc: subprocess.Popen | None = None
+_proc: subprocess.Popen | None = None       # dashboard server process
+_batch_proc: subprocess.Popen | None = None  # daily mobile batch process
 _lock = threading.Lock()
 _user_stopped = False   # True only when the user deliberately stopped the server
                         # Prevents the watchdog from restarting after a manual stop
@@ -256,20 +261,78 @@ def _refresh(icon: pystray.Icon) -> None:
     if _is_running():
         icon.icon  = ICON_GREEN
         icon.title = f"Account Warmer — Running  ●  http://localhost:{SERVER_PORT}"
+    elif _is_batch_running():
+        icon.icon  = ICON_AMBER
+        icon.title = "Account Warmer — Daily Mobile Batch Running"
     else:
         icon.icon  = ICON_GREY
         icon.title = "Account Warmer — Stopped"
     icon.update_menu()
 
 
+# ── Daily mobile batch control ──────────────────────────────────────────────────
+
+def _is_batch_running() -> bool:
+    with _lock:
+        return _batch_proc is not None and _batch_proc.poll() is None
+
+
+def _start_batch(icon: pystray.Icon) -> None:
+    global _batch_proc
+    if _is_batch_running():
+        log.info("_start_batch: already running, skipping")
+        return
+    if not BATCH_RUNNER.exists():
+        log.error("_start_batch: %s not found", BATCH_RUNNER)
+        return
+
+    log.info("_start_batch: launching daily_mobile_batch_runner.py --daemon")
+    with _lock:
+        _batch_proc = subprocess.Popen(
+            [sys.executable, str(BATCH_RUNNER), "--daemon"],
+            cwd=str(ROOT),
+            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP,
+        )
+        log.info("_start_batch: spawned PID %d", _batch_proc.pid)
+
+    _refresh(icon)
+
+
+def _stop_batch(icon: pystray.Icon) -> None:
+    global _batch_proc
+    log.info("_stop_batch: terminating daily mobile batch runner")
+    with _lock:
+        if _batch_proc is not None:
+            pid = _batch_proc.pid
+            if _batch_proc.poll() is None:
+                log.info("_stop_batch: killing process tree PID %d", pid)
+                try:
+                    subprocess.run(
+                        ["taskkill", "/F", "/T", "/PID", str(pid)],
+                        capture_output=True, text=True, timeout=10,
+                    )
+                except Exception as e:
+                    log.warning("_stop_batch: taskkill error: %s", e)
+                try:
+                    _batch_proc.wait(timeout=3)
+                except subprocess.TimeoutExpired:
+                    _batch_proc.kill()
+            else:
+                log.info("_stop_batch: process already exited (rc=%s)", _batch_proc.poll())
+        _batch_proc = None
+
+    _refresh(icon)
+
+
 # ── Menu ───────────────────────────────────────────────────────────────────────
 
 def _menu(icon: pystray.Icon) -> pystray.Menu:
     running = _is_running()
-    log.info("_menu: built, running=%s", running)
+    batch_running = _is_batch_running()
+    log.info("_menu: built, running=%s, batch_running=%s", running, batch_running)
     return pystray.Menu(
         pystray.MenuItem(
-            "● Running" if running else "○ Stopped",
+            "● Running" if running else ("● Batch Running" if batch_running else "○ Stopped"),
             None,
             enabled=False,
         ),
@@ -298,11 +361,38 @@ def _menu(icon: pystray.Icon) -> pystray.Menu:
         ),
         pystray.Menu.SEPARATOR,
         pystray.MenuItem(
+            "Start Daily Mobile Batch",
+            lambda icon, item: threading.Thread(
+                target=_start_batch, args=(icon,), daemon=True
+            ).start(),
+            enabled=not batch_running,
+        ),
+        pystray.MenuItem(
+            "Stop Daily Mobile Batch",
+            lambda icon, item: threading.Thread(
+                target=_stop_batch, args=(icon,), daemon=True
+            ).start(),
+            enabled=batch_running,
+        ),
+        pystray.Menu.SEPARATOR,
+        pystray.MenuItem(
+            "Safe to create social accounts manually —",
+            None,
+            enabled=False,
+        ),
+        pystray.MenuItem(
+            "    occupied phones are skipped automatically.",
+            None,
+            enabled=False,
+        ),
+        pystray.Menu.SEPARATOR,
+        pystray.MenuItem(
             "Exit",
-            # Run _stop in a thread so pystray's event loop doesn't block
+            # Run _stop + _stop_batch in threads so pystray's event loop doesn't block
             lambda icon, item: (
                 threading.Thread(target=_stop, args=(icon,), daemon=True).start(),
-                # Give _stop a moment, then stop the icon
+                threading.Thread(target=_stop_batch, args=(icon,), daemon=True).start(),
+                # Give them a moment, then stop the icon
                 threading.Thread(target=lambda: (time.sleep(2), icon.stop()), daemon=True).start(),
             ),
         ),
@@ -311,6 +401,7 @@ def _menu(icon: pystray.Icon) -> pystray.Menu:
 
 def _exit(icon: pystray.Icon, item=None) -> None:
     _stop(icon)
+    _stop_batch(icon)
     icon.stop()
 
 
