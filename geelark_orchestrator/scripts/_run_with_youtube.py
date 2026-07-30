@@ -229,7 +229,7 @@ else:
 
 # ── Imports that need PHONE defined ────────────────────────────────────────
 ORCH = Path(r"C:\Users\Administrator\Desktop\AccountWarmer-Deploy-Enhanced\geelark_orchestrator")
-sys.path.insert(0, str(Path(r"C:\Users\Administrator\Desktop\AccountWarmer-Deploy-Enhanced\account-warmer")))
+sys.path.insert(0, str(Path(r"C:\Users\Administrator\Desktop\AccountWarmer-Deploy-Enhanced")))
 from core.geelark_client import GeelarKClient, _post
 
 client = GeelarKClient()
