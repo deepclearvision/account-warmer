@@ -45,45 +45,44 @@ All commands are run from the project root:
 C:\Users\Administrator\Desktop\AccountWarmer-Deploy-Enhanced
 ```
 
-### Test a single account with the monthly schedule (default)
+### Test a single account with brand-1km + YouTube before and after
 
 ```
-python daily_mobile_batch_runner.py --account gl_001
+python daily_mobile_batch_runner.py --account acc_042 --once --script brand-1km --youtube both
 ```
 
-Runs whatever the `_day_to_script` schedule prescribes for today.
-
-### Test a single account with a forced activity
+### Test a single account with money-kw + random YouTube
 
 ```
-python daily_mobile_batch_runner.py --account gl_001 --activity youtube
-python daily_mobile_batch_runner.py --account gl_001 --activity maps_directions
-python daily_mobile_batch_runner.py --account gl_001 --activity maps_browse
-python daily_mobile_batch_runner.py --account gl_001 --activity maps+youtube
+python daily_mobile_batch_runner.py --account acc_042 --once --script money-kw --youtube random
 ```
 
-The `--activity` flag overrides the schedule — use it for testing specific
-activity types.  Valid choices: `maps_browse`, `maps_directions`, `youtube`,
-`maps+youtube`, `gmail`, `google_search`.
+### Test a single account with local-discovery + no YouTube
 
-### Run one full batch cycle (schedule mode)
+```
+python daily_mobile_batch_runner.py --account acc_042 --once --script local-discovery --youtube none
+```
+
+### Run one full batch cycle (schedule mode, random YouTube)
 
 ```
 python daily_mobile_batch_runner.py --once
-```
-
-Runs every enabled account through the monthly schedule, sequentially.
-
-### Run one full batch cycle (testing mode — forced activity)
-
-```
-python daily_mobile_batch_runner.py --once --activity youtube
 ```
 
 ### Show last session per account
 
 ```
 python daily_mobile_batch_runner.py --status
+```
+
+### YouTube timing reference
+
+```
+--youtube before    YouTube before Maps
+--youtube after     YouTube after Maps
+--youtube both      YouTube before AND after Maps
+--youtube none      no YouTube
+--youtube random    randomly choose (25% before / 35% after / 10% both / 30% none)
 ```
 
 ### Filter accounts by PC category (multi-machine setups)

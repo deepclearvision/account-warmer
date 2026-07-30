@@ -1,86 +1,64 @@
 """
 daily_mobile_batch_runner.py — Standalone Daily Mobile Warm-Up Batch Runner
 
-Runs one warm-up session per account, per day, on GeelarK cloud phones.
-All sessions are strictly sequential (one phone at a time) because all
-phones share a single StreamVia mobile proxy.
+Runs one warm-up session per account, per day, on GeelarK cloud phones
+via the geelark_orchestrator/scripts/_run_with_youtube.py subprocess.
 
-Default behaviour (no --activity flag):
-  Follows the monthly schedule from mobile_warmup._day_to_script():
-    • Most days: local_discovery (Maps "near me" search + optional YouTube)
-    • Day 3: money_kw (commercial keyword searches + optional YouTube)
-    • Days 11, 21: brand_1km (named business navigation + GPS variation)
+Default behaviour (no --script flag):
+  Follows the monthly schedule (_day_to_script):
+    • Most days: local-discovery (Maps "near me" search)
+    • Day 3: money-kw (commercial keyword searches)
+    • Days 11, 21: brand-1km (named business navigation)
 
-Testing behaviour (--activity flag):
-  Runs the specified activity on every account instead of the schedule.
+YouTube is mixed into every run via _run_with_youtube.py:
+  Default --youtube random: 25% before, 35% after, 10% both, 30% none
 
 After all accounts complete, the runner computes the next run time (random
-minute within 08:00–18:00 tomorrow) and sleeps until then.  Designed to
-run as a background daemon or a one-shot tester.
+minute within 08:00–18:00 tomorrow) and sleeps until then.
 
 Usage:
-  python daily_mobile_batch_runner.py                # daemon mode (runs daily schedule)
-  python daily_mobile_batch_runner.py --once         # one schedule cycle, then exit
-  python daily_mobile_batch_runner.py --status       # show last session per account
-  python daily_mobile_batch_runner.py --account gl_001            # single account, then exit
-  python daily_mobile_batch_runner.py --account gl_001 --activity youtube  # test single activity
+  python daily_mobile_batch_runner.py                              # daemon mode
+  python daily_mobile_batch_runner.py --once                       # one cycle
+  python daily_mobile_batch_runner.py --status                     # show status
+  python daily_mobile_batch_runner.py --account acc_042 --once     # single account
+  python daily_mobile_batch_runner.py --account acc_042 --once --script brand-1km --youtube both
 """
 
 import argparse
+import csv
 import json
 import logging
 import os
 import random
 import signal
+import subprocess
 import sys
 import time
-import traceback
 from datetime import datetime, timedelta
 from pathlib import Path
 
-import yaml
-
-# ── Project imports ───────────────────────────────────────────────────────────
-from activities.google_login_mobile import _rotate_proxy_ip
-from activities.mobile_warmup import (
-    _wait_for_phone_ready,
-    run_selected_warmup,
-    run_warmup_session,       # schedule-driven session runner (alias for run_mobile_schedule_session)
-)
-from activities.mobile_location_setup import (
-    ensure_location_and_permissions,
-    set_gps_near_business,
-    choose_business_location,
-)
-from core.geelark_client import GeelarKClient
-from core.paths import DATA_DIR
-
 # ── Constants ─────────────────────────────────────────────────────────────────
-ACCOUNTS_FILE      = DATA_DIR / "geelark_accounts.yaml"
-SESSION_LOG        = DATA_DIR / "logs" / "mobile_sessions.json"
-BATCH_LOG          = DATA_DIR / "logs" / "daily_mobile_batch.log"
-ACTIVE_HOUR_START  = 8    # 08:00
-ACTIVE_HOUR_END    = 18   # 18:00
-SESSION_TIMEOUT_S  = 20 * 60   # 20 minutes per account
-ACCOUNT_GAP_S      = 5         # seconds between accounts
+PROJECT_ROOT       = Path(r"C:\Users\Administrator\Desktop\AccountWarmer-Deploy-Enhanced")
+RUNNER_SCRIPT      = PROJECT_ROOT / "geelark_orchestrator" / "scripts" / "_run_with_youtube.py"
+CSV_PATH           = PROJECT_ROOT / "data" / "accounts_business_mapping.csv"
+GEELARK_ACCOUNTS   = Path(os.environ.get("WARMER_DATA_DIR", r"C:\WarmingData")) / "geelark_accounts.yaml"
+SESSION_LOG        = Path(os.environ.get("WARMER_DATA_DIR", r"C:\WarmingData")) / "logs" / "mobile_sessions.json"
+BATCH_LOG          = Path(os.environ.get("WARMER_DATA_DIR", r"C:\WarmingData")) / "logs" / "daily_mobile_batch.log"
+ACTIVE_HOUR_START  = 8
+ACTIVE_HOUR_END    = 18
+SUBPROCESS_TIMEOUT = 1200  # 20 minutes per account
 
 
 # ── Logging setup ─────────────────────────────────────────────────────────────
 
 def _setup_logging() -> None:
-    """Configure logging to both console and the daily batch log file."""
     BATCH_LOG.parent.mkdir(parents=True, exist_ok=True)
-
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
-
-    # Console handler
     ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(logging.INFO)
     ch.setFormatter(logging.Formatter("%(asctime)s  %(levelname)-7s  %(message)s", datefmt="%H:%M:%S"))
     logger.addHandler(ch)
-
-    # File handler
     fh = logging.FileHandler(str(BATCH_LOG), encoding="utf-8")
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(logging.Formatter("%(asctime)s  %(levelname)-7s  %(name)-22s  %(message)s"))
@@ -92,316 +70,154 @@ log = logging.getLogger("daily_batch")
 # ── Account loading ───────────────────────────────────────────────────────────
 
 def load_accounts(pc_filter: str = "") -> list[dict]:
-    """
-    Load GeelarK accounts from DATA_DIR / geelark_accounts.yaml.
-
-    Returns only accounts that have a ``geelark_phone_id`` and
-    ``mobile_warming_enabled`` is not explicitly False.
-    """
-    if not ACCOUNTS_FILE.exists():
-        log.error("geelark_accounts.yaml not found at %s", ACCOUNTS_FILE)
+    """Load enabled accounts from the CSV mapping file."""
+    if not CSV_PATH.exists():
+        log.error("CSV mapping not found at %s", CSV_PATH)
         return []
-
-    try:
-        data = yaml.safe_load(ACCOUNTS_FILE.read_text(encoding="utf-8")) or {}
-    except Exception as e:
-        log.error("Failed to parse geelark_accounts.yaml: %s", e)
-        return []
-
-    accounts = data.get("accounts", [])
-    if pc_filter:
-        accounts = [a for a in accounts if a.get("category", "") == pc_filter]
-
-    enabled = [
-        a for a in accounts
-        if a.get("geelark_phone_id") and a.get("mobile_warming_enabled", True)
-    ]
-    log.info("Loaded %d account(s) (%d enabled with phone_id).",
-             len(accounts), len(enabled))
-    return enabled
-
-
-# ── Phone helpers ─────────────────────────────────────────────────────────────
-
-def _is_phone_occupied(client: GeelarKClient, phone_id: str) -> bool:
-    """
-    Check if the phone is already running / starting / occupied.
-
-    Returns True if the phone is busy and should be skipped.
-
-    Reasons a phone is considered occupied:
-      - GeelarK status 0 (Running) or 1 (Starting)
-      - API error containing code 43021 (phone in use by another operation)
-    """
-    try:
-        statuses = client.get_phone_status([phone_id])
-        st = statuses[0].get("status") if statuses else -1
-        if st in (0, 1):
-            return True
-    except Exception as e:
-        msg = str(e)
-        if "43021" in msg:
-            log.debug("Phone %s: API reports in use (43021).", phone_id)
-            return True
-        # If we can't query status at all, err on the safe side and don't block
-        log.debug("Could not query phone status: %s", e)
-    return False
-
-
-def _stop_phone_verified(client: GeelarKClient, phone_id: str, acc_id: str) -> bool:
-    """
-    Stop a GeelarK phone and verify it actually stopped (up to 3 attempts).
-
-    Returns True if confirmed stopped, False otherwise.
-    """
-    for attempt in range(1, 4):
+    accounts = []
+    with open(CSV_PATH, newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            acc_id = row.get("account_id", "")
+            phone  = row.get("geelark_phone_id", "")
+            if not phone:
+                continue
+            # Check geelark_accounts.yaml for warming-enabled flag
+            accounts.append({
+                "id": acc_id,
+                "phone_id": phone,
+                "business_name": row.get("business_name", ""),
+                "business_lat":  row.get("business_lat", ""),
+                "business_lng":  row.get("business_lng", ""),
+                "email": row.get("email", ""),
+            })
+    # Filter by PC category if provided
+    if pc_filter and GEELARK_ACCOUNTS.exists():
+        import yaml
         try:
-            client.stop_phone(phone_id)
-        except Exception as e:
-            log.warning("[%s] stop_phone attempt %d failed: %s", acc_id, attempt, e)
-
-        time.sleep(5)
-
-        try:
-            statuses = client.get_phone_status([phone_id])
-            st = statuses[0].get("status") if statuses else -1
-            if st in (2, 3):  # 2=Stopped, 3=Stopping/Expired
-                log.info("[%s] Phone stopped (attempt %d, status=%d).", acc_id, attempt, st)
-                return True
-            log.warning("[%s] Phone still running after stop attempt %d (status=%d) — retrying",
-                        acc_id, attempt, st)
-        except Exception as e:
-            log.warning("[%s] Could not verify phone status after stop: %s", acc_id, e)
-            break
-
-    log.error("[%s] Phone %s could NOT be confirmed stopped after 3 attempts.", acc_id, phone_id)
-    return False
-
-
-# ── Testing-only: single-activity runner ──────────────────────────────────────
-# Used when --activity is specified.  For normal operation, the schedule-driven
-# run_warmup_session() handles the full lifecycle (proxy, phone, GPS, activity).
-
-def run_one_account_activity(account: dict, activity: str) -> dict:
-    """
-    Run a single specified activity for one GeelarK account (testing only).
-
-    Handles the full phone lifecycle: proxy rotation, start, boot, GPS,
-    activity, stop, log.  Uses a random GPS location near the account's
-    business or fallback.
-
-    Args:
-        account:  Account dict from geelark_accounts.yaml.
-        activity: Activity name (maps_browse, maps_directions, youtube, etc.).
-
-    Returns:
-        dict with keys: account_id, success, activity, steps_done, duration_s,
-                        ip, location_label, error
-    """
-    acc_id   = account.get("id", "unknown")
-    phone_id = account.get("geelark_phone_id")
-    result   = {
-        "account_id": acc_id, "success": False, "activity": activity,
-        "steps_done": [], "duration_s": 0.0, "ip": "",
-        "location_label": "", "error": "",
-    }
-
-    if not phone_id:
-        result["error"] = "No phone_id"
-        return result
-
-    t_start  = time.time()
-    client   = GeelarKClient()
-    deadline = t_start + SESSION_TIMEOUT_S
-
-    # Resolve desktop account ID for logging
-    log_acc_id = acc_id
-    email = account.get("email", "").lower()
-    if email:
-        try:
-            from core.paths import ACCOUNTS_FILE as DESKTOP_ACCOUNTS_FILE
-            if DESKTOP_ACCOUNTS_FILE.exists():
-                data = yaml.safe_load(DESKTOP_ACCOUNTS_FILE.read_text(encoding="utf-8")) or {}
-                for a in data.get("accounts", []):
-                    if a.get("email", "").lower() == email:
-                        log_acc_id = a["id"]
-                        break
+            data = yaml.safe_load(GEELARK_ACCOUNTS.read_text(encoding="utf-8")) or {}
+            cat_map = {}
+            for a in data.get("accounts", []):
+                cat_map[a["id"]] = a.get("category", "")
+            accounts = [a for a in accounts if cat_map.get(a["id"], "") == pc_filter]
+            log.info("PC filter %r: %d account(s)", pc_filter, len(accounts))
         except Exception:
             pass
 
-    # 0. Skip if phone is occupied
-    if _is_phone_occupied(client, phone_id):
-        result["error"] = "Phone already occupied (running/starting)"
-        log.warning("[%s] Skipping — phone %s is already in use.", acc_id, phone_id)
-        return result
+    # Filter out accounts with mobile_warming_enabled=False
+    if GEELARK_ACCOUNTS.exists():
+        import yaml
+        try:
+            data = yaml.safe_load(GEELARK_ACCOUNTS.read_text(encoding="utf-8")) or {}
+            disabled = set()
+            for a in data.get("accounts", []):
+                if a.get("mobile_warming_enabled") is False:
+                    disabled.add(a["id"])
+            accounts = [a for a in accounts if a["id"] not in disabled]
+        except Exception:
+            pass
 
-    # 1. Rotate proxy IP
-    log.info("[%s] Rotating proxy IP …", acc_id)
-    try:
-        ip = _rotate_proxy_ip()
-    except Exception as e:
-        log.warning("[%s] Proxy rotation failed: %s — proceeding anyway", acc_id, e)
-        ip = ""
-    result["ip"] = ip
+    log.info("Loaded %d account(s) with phone_id and warming enabled.", len(accounts))
+    return accounts
 
-    if ip:
-        settle = random.uniform(5, 15)
-        log.info("[%s] IP %s — waiting %.0fs before phone start.", acc_id, ip, settle)
-        time.sleep(settle)
 
-    if time.time() > deadline:
-        result["error"] = "Session timed out before phone start"
-        result["duration_s"] = round(time.time() - t_start, 1)
-        return result
+# ── Schedule ──────────────────────────────────────────────────────────────────
 
-    # 2. Start phone
-    log.info("[%s] Starting phone %s …", acc_id, phone_id)
-    try:
-        viewer_url = client.start_phone(phone_id) or ""
-        if viewer_url:
-            log.info("[%s] Opening viewer: %s", acc_id, viewer_url)
-            import webbrowser
-            webbrowser.open(viewer_url)
-    except Exception as e:
-        result["error"] = f"Failed to start phone: {e}"
-        log.error("[%s] Phone start failed: %s", acc_id, e)
-        return result
-
-    # 3. Wait for boot
-    log.info("[%s] Waiting for phone to boot …", acc_id)
-    if not _wait_for_phone_ready(phone_id, acc_id, timeout=90):
-        log.warning("[%s] Phone did not boot in 90s — proceeding anyway", acc_id)
-
-    if time.time() > deadline:
-        log.warning("[%s] Session timeout after boot — stopping phone.", acc_id)
-        _stop_phone_verified(client, phone_id, acc_id)
-        result["error"] = "Session timed out after boot"
-        result["duration_s"] = round(time.time() - t_start, 1)
-        return result
-
-    # 4. Set GPS location
-    location_label = "unknown"
-    try:
-        biz = choose_business_location(account)
-        if biz:
-            set_gps_near_business(phone_id, account, biz, acc_id, jitter_meters=200)
-            location_label = f"business: {biz.get('name', biz.get('id', '?'))}"
-        else:
-            ensure_location_and_permissions(phone_id, account, acc_id)
-            if account.get("home_lat"):
-                location_label = "home"
-            elif account.get("geo_area"):
-                location_label = f"area: {account['geo_area']}"
-            else:
-                location_label = account.get("geo_city", "london")
-    except Exception as e:
-        log.warning("[%s] GPS setup failed: %s — continuing without GPS", acc_id, e)
-        location_label = "gps_failed"
-    result["location_label"] = location_label
-    log.info("[%s] Location: %s", acc_id, location_label)
-
-    # 5. Run activity
-    log.info("[%s] Running activity: %s", acc_id, activity)
-    try:
-        ok, label, steps = run_selected_warmup(
-            phone_id, acc_id, account, activity=activity, log_acc_id=log_acc_id,
-        )
-        result["success"]    = ok
-        result["activity"]   = label
-        result["steps_done"] = steps
-    except Exception as e:
-        log.error("[%s] Activity %s crashed: %s", acc_id, activity, e)
-        traceback.print_exc()
-        result["success"]  = False
-        result["activity"] = activity
-        result["error"]    = str(e)
-
-    # 6. Stop phone
-    log.info("[%s] Stopping phone …", acc_id)
-    _stop_phone_verified(client, phone_id, acc_id)
-
-    # 7. Log session
-    result["duration_s"] = round(time.time() - t_start, 1)
-    try:
-        _log_session(
-            acc_id=acc_id,
-            ip=result["ip"],
-            activity=result["activity"],
-            duration_s=result["duration_s"],
-            steps_done=result["steps_done"],
-            success=result["success"],
-            location_label=result["location_label"],
-        )
-    except Exception as e:
-        log.warning("[%s] Session log write failed: %s", acc_id, e)
-
-    log.info("[%s] Session complete.  %s  duration=%.0fs  ip=%s  location=%s",
-             acc_id,
-             "OK" if result["success"] else "FAILED",
-             result["duration_s"],
-             result["ip"] or "?",
-             result["location_label"])
-    return result
+def _day_to_script(day: int) -> str:
+    """Monthly schedule — same as mobile_warmup._day_to_script()."""
+    cycle = ((day - 1) % 30) + 1
+    if day <= 30:
+        if cycle == 3:
+            return "money-kw"
+        if cycle in (11, 21):
+            return "brand-1km"
+        return "local-discovery"
+    if cycle % 10 == 0:
+        return "brand-1km"
+    return "local-discovery"
 
 
 # ── Session logger ────────────────────────────────────────────────────────────
 
-def _log_session(acc_id: str, ip: str, activity: str, duration_s: float,
-                 steps_done: list, success: bool, location_label: str) -> None:
+def _log_session(acc_id: str, mode: str, youtube_timing: str, success: bool,
+                 duration_s: float, stdout: str = "", stderr: str = "") -> None:
     """Append a session record to mobile_sessions.json."""
     SESSION_LOG.parent.mkdir(parents=True, exist_ok=True)
-
     records: list = []
     if SESSION_LOG.exists():
         try:
             records = json.loads(SESSION_LOG.read_text(encoding="utf-8"))
         except Exception:
             records = []
-
     records.append({
-        "account_id":     acc_id,
-        "timestamp":      datetime.utcnow().isoformat(),
-        "ip":             ip,
-        "activity":       activity,
-        "duration_s":     round(duration_s, 1),
-        "steps_done":     steps_done,
-        "success":        success,
-        "location_label": location_label,
+        "account_id":      acc_id,
+        "timestamp":       datetime.utcnow().isoformat(),
+        "mode":            mode,
+        "youtube_timing":  youtube_timing,
+        "success":         success,
+        "duration_s":      round(duration_s, 1),
     })
     SESSION_LOG.write_text(json.dumps(records, indent=2), encoding="utf-8")
 
 
+# ── Subprocess runner ─────────────────────────────────────────────────────────
+
+def run_one_subprocess(acc: dict, mode: str, youtube_timing: str) -> dict:
+    """Run _run_with_youtube.py as a subprocess for one account."""
+    acc_id = acc["id"]
+    cmd = [
+        sys.executable, str(RUNNER_SCRIPT),
+        mode, acc_id,
+        "--youtube", youtube_timing,
+    ]
+    log.info("[%s] Subprocess: %s", acc_id, " ".join(cmd))
+    t_start = time.time()
+    try:
+        result = subprocess.run(
+            cmd, cwd=str(PROJECT_ROOT),
+            capture_output=True, text=True, timeout=SUBPROCESS_TIMEOUT,
+        )
+        duration = time.time() - t_start
+        success = result.returncode == 0
+        # Log stdout/stderr
+        if result.stdout:
+            for line in result.stdout.strip().splitlines():
+                log.debug("[%s] %s", acc_id, line)
+        if result.stderr and not success:
+            for line in result.stderr.strip().splitlines():
+                log.warning("[%s] STDERR: %s", acc_id, line)
+        _log_session(acc_id, mode, youtube_timing, success, duration,
+                     stdout=result.stdout, stderr=result.stderr)
+        status = "OK" if success else "FAILED (rc=%d)" % result.returncode
+        log.info("[%s] %s | mode=%s | youtube=%s | duration=%.0fs",
+                 acc_id, status, mode, youtube_timing, duration)
+        return {"account_id": acc_id, "success": success, "mode": mode,
+                "youtube_timing": youtube_timing, "duration_s": duration}
+    except subprocess.TimeoutExpired:
+        duration = time.time() - t_start
+        log.error("[%s] TIMEOUT after %.0fs", acc_id, duration)
+        _log_session(acc_id, mode, youtube_timing, False, duration)
+        return {"account_id": acc_id, "success": False, "mode": mode,
+                "youtube_timing": youtube_timing, "duration_s": duration,
+                "error": "timeout"}
+    except Exception as e:
+        duration = time.time() - t_start
+        log.error("[%s] Subprocess crashed: %s", acc_id, e)
+        _log_session(acc_id, mode, youtube_timing, False, duration)
+        return {"account_id": acc_id, "success": False, "mode": mode,
+                "youtube_timing": youtube_timing, "duration_s": duration,
+                "error": str(e)}
+
+
 # ── Full batch cycle ──────────────────────────────────────────────────────────
 
-def run_batch_cycle(accounts: list[dict], activity: str | None = None,
-                    force_script: str | None = None) -> list[dict]:
-    """
-    Run one warm-up session for every enabled account, sequentially.
-
-    In schedule mode (activity=None): delegates to run_warmup_session()
-    which follows the monthly _day_to_script() schedule and handles the
-    full phone lifecycle internally.
-
-    In testing mode (activity set): uses run_one_account_activity() to
-    force a single activity on every account.
-
-    Args:
-        accounts:     List of account dicts from geelark_accounts.yaml.
-        activity:     Optional forced activity (testing only).  When None,
-                      the monthly schedule is followed.
-        force_script: Optional forced script name for schedule mode
-                      (local_discovery, money_kw, brand_1km).  Bypasses
-                      _day_to_script().
-
-    Returns:
-        List of per-account result dicts.
-    """
+def run_batch_cycle(accounts: list[dict], force_script: str | None = None,
+                    youtube_timing: str = "random") -> list[dict]:
+    """Run one warm-up session for every enabled account, sequentially."""
     results = []
     if not accounts:
         log.info("No accounts to run.")
         return results
 
-    # Skip accounts already warmed today
     today_str = datetime.utcnow().strftime("%Y-%m-%d")
     done_today: set[str] = set()
     if SESSION_LOG.exists():
@@ -420,59 +236,34 @@ def run_batch_cycle(accounts: list[dict], activity: str | None = None,
         log.info("Skipping %d account(s) already warmed today: %s",
                  len(skipped), [a["id"] for a in skipped])
         for acc in skipped:
-            results.append({
-                "account_id": acc["id"], "success": True, "skipped": True,
-                "reason": "already_done_today", "steps_done": [],
-                "duration_s": 0.0, "activity": "", "ip": "",
-                "location_label": "", "error": "",
-            })
+            results.append({"account_id": acc["id"], "success": True,
+                            "skipped": True, "reason": "already_done_today"})
 
     if not to_run:
         log.info("All accounts already warmed today — nothing to do.")
         return results
 
-    if activity:
-        mode_label = f"testing (forced activity: {activity})"
-    else:
-        mode_label = "schedule (monthly _day_to_script)"
-    log.info("Starting batch cycle for %d account(s) (%d already done today). Mode: %s",
-             len(to_run), len(skipped), mode_label)
+    # Compute schedule day once for this run
+    schedule_day = 1
+    try:
+        warmup_start = datetime(2025, 1, 1)  # fallback
+        schedule_day = max(1, (datetime.now() - warmup_start).days + 1)
+    except Exception:
+        pass
+
+    log.info("Starting batch cycle for %d account(s) (%d done). Schedule day ~%d.",
+             len(to_run), len(skipped), schedule_day)
 
     for i, acc in enumerate(to_run):
         log.info("── Account %d/%d: %s ──", i + 1, len(to_run), acc["id"])
-        try:
-            if activity:
-                # ── Testing mode: force a single activity ───────────────────
-                r = run_one_account_activity(acc, activity)
-            else:
-                # ── Schedule mode: delegate to monthly schedule ─────────────
-                session_result = run_warmup_session(acc, SESSION_LOG, force_script=force_script)
-                r = {
-                    "account_id": acc["id"],
-                    "success":    session_result.get("success", False),
-                    "activity":   session_result.get("script", "schedule"),
-                    "steps_done": session_result.get("steps_done", []),
-                    "duration_s": session_result.get("duration_s", 0.0),
-                    "ip":         session_result.get("ip", ""),
-                    "location_label": "",
-                    "error":      session_result.get("error", ""),
-                }
-        except Exception as e:
-            log.error("[%s] Unhandled exception: %s", acc["id"], e)
-            traceback.print_exc()
-            r = {
-                "account_id": acc["id"], "success": False, "activity": "",
-                "steps_done": [], "duration_s": 0.0, "ip": "",
-                "location_label": "", "error": str(e),
-            }
+        mode = force_script or _day_to_script(schedule_day)
+        r = run_one_subprocess(acc, mode, youtube_timing)
         results.append(r)
+        time.sleep(3)
 
-        # Brief gap between accounts
-        time.sleep(ACCOUNT_GAP_S)
-
-    ok     = sum(1 for r in results if r.get("success") and not r.get("skipped"))
+    ok = sum(1 for r in results if r.get("success") and not r.get("skipped"))
     failed = sum(1 for r in results if not r.get("success") and not r.get("skipped"))
-    log.info("Batch cycle complete.  OK: %d  Failed: %d  Skipped (done today): %d",
+    log.info("Batch cycle complete. OK: %d  Failed: %d  Skipped: %d",
              ok, failed, len(skipped))
     return results
 
@@ -480,83 +271,64 @@ def run_batch_cycle(accounts: list[dict], activity: str | None = None,
 # ── Next-run scheduler ────────────────────────────────────────────────────────
 
 def _compute_next_run() -> float:
-    """
-    Compute the next run time: a random minute within 08:00–18:00 tomorrow
-    (local time).  Returns the Unix timestamp for that moment.
-    """
-    now    = datetime.now()
+    now = datetime.now()
     tomorrow = now.date() + timedelta(days=1)
-
-    # Pick a random minute within the active window
     active_minutes = (ACTIVE_HOUR_END - ACTIVE_HOUR_START) * 60
     offset_minutes = random.randint(0, active_minutes - 1)
-    run_time = datetime(
-        tomorrow.year, tomorrow.month, tomorrow.day,
-        ACTIVE_HOUR_START, 0, 0,
-    ) + timedelta(minutes=offset_minutes)
-
+    run_time = datetime(tomorrow.year, tomorrow.month, tomorrow.day,
+                        ACTIVE_HOUR_START, 0, 0) + timedelta(minutes=offset_minutes)
     return run_time.timestamp()
 
 
 def _sleep_until(target_ts: float) -> None:
-    """Sleep until the given Unix timestamp, logging progress periodically."""
     while True:
         remaining = target_ts - time.time()
         if remaining <= 0:
             break
         if remaining > 3600:
-            log.info("Next run in %.1f hours (%s).",
-                     remaining / 3600,
-                     datetime.fromtimestamp(target_ts).strftime("%Y-%m-%d %H:%M"))
-            sleep_chunk = min(remaining, 3600)
+            log.info("Next run in %.1f hours.", remaining / 3600)
+            time.sleep(min(remaining, 3600))
         elif remaining > 60:
             log.info("Next run in %.0f minutes.", remaining / 60)
-            sleep_chunk = min(remaining, 300)
+            time.sleep(min(remaining, 300))
         else:
-            sleep_chunk = remaining
-        time.sleep(sleep_chunk)
+            time.sleep(remaining)
 
 
 # ── Status reporter ───────────────────────────────────────────────────────────
 
 def show_status() -> None:
-    """Print the last session for each account from mobile_sessions.json."""
     if not SESSION_LOG.exists():
-        print("No session log found — no sessions have run yet.")
+        print("No session log found.")
         return
-
     try:
         records = json.loads(SESSION_LOG.read_text(encoding="utf-8"))
     except Exception as e:
-        print(f"Failed to read session log: {e}")
+        print(f"Failed: {e}")
         return
-
-    last: dict[str, dict] = {}
+    last: dict = {}
     for r in records:
         last[r["account_id"]] = r
-
-    header = f"{'Account':<12} {'Timestamp':<22} {'Activity':<18} {'IP':<16} {'Dur':>6}  {'OK':>5}  Location"
+    header = f"{'Account':<12} {'Timestamp':<22} {'Mode':<16} {'YT':<9} {'Dur':>6}  {'OK':>5}"
     print(f"\n{header}")
     print("-" * len(header))
     for acc_id, r in sorted(last.items()):
-        ts   = r.get("timestamp", "")[:19].replace("T", " ")
-        ip   = r.get("ip", "—")
-        act  = r.get("activity", "?")
-        dur  = f"{r.get('duration_s', 0):.0f}s"
-        ok   = "✓" if r.get("success") else "✗"
-        loc  = r.get("location_label", "—")
-        print(f"{acc_id:<12} {ts:<22} {act:<18} {ip:<16} {dur:>6}  {ok:>5}  {loc}")
+        ts  = r.get("timestamp", "")[:19].replace("T", " ")
+        md  = r.get("mode", "?")
+        yt  = r.get("youtube_timing", "?")
+        dur = f"{r.get('duration_s', 0):.0f}s"
+        ok  = "✓" if r.get("success") else "✗"
+        print(f"{acc_id:<12} {ts:<22} {md:<16} {yt:<9} {dur:>6}  {ok:>5}")
     print()
 
 
-# ── Signal handling for clean daemon shutdown ─────────────────────────────────
+# ── Signal handling ───────────────────────────────────────────────────────────
 
 _shutdown_requested = False
 
-
 def _on_shutdown(signum, frame) -> None:
     global _shutdown_requested
-    log.info("Shutdown signal received (signal %d).  Exiting after current cycle …", signum)
+    log.info("Shutdown signal %d. Exiting after cycle.", signum)
     _shutdown_requested = True
 
 
@@ -566,100 +338,68 @@ def main() -> None:
     _setup_logging()
 
     parser = argparse.ArgumentParser(
-        description="Daily mobile warm-up batch runner for GeelarK cloud phones.",
+        description="Daily mobile warm-up batch runner — subprocess orchestration.",
     )
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--once", action="store_true",
                       help="Run one batch cycle and exit.")
     mode.add_argument("--daemon", action="store_true",
-                      help="Run continuously (default behaviour).")
+                      help="Run continuously (default).")
     parser.add_argument("--account", metavar="ID",
                         help="Run a single account and exit.")
-    parser.add_argument("--activity", type=str,
-                        help="Force a single activity for testing "
-                             "(maps_browse, maps_directions, youtube, maps+youtube, "
-                             "gmail, google_search). Without this flag, the monthly "
-                             "schedule is followed.")
     parser.add_argument("--script", type=str,
-                        choices=["local_discovery", "money_kw", "brand_1km"],
-                        help="Force a specific schedule script for testing "
-                             "(bypasses _day_to_script).")
+                        choices=["local-discovery", "money-kw", "brand-1km"],
+                        help="Force a specific schedule script.")
+    parser.add_argument("--youtube", type=str,
+                        choices=["before", "after", "both", "none", "random"],
+                        default="random",
+                        help="YouTube timing (default: random).")
     parser.add_argument("--status", action="store_true",
                         help="Print last session per account and exit.")
     parser.add_argument("--pc", type=str,
-                        help="Only run accounts whose category matches this PC ID.")
+                        help="Only run accounts matching this PC category.")
     args = parser.parse_args()
 
-    # ── Status mode ────────────────────────────────────────────────────────
     if args.status:
         show_status()
         return
 
-    # ── Load accounts ──────────────────────────────────────────────────────
-    pc_filter = args.pc or os.environ.get("PC_ID", "").strip()
-    all_accounts = load_accounts(pc_filter)
-
-    if not all_accounts:
-        log.error("No enabled accounts with phone_id found.  Exiting.")
-        sys.exit(1)
-
-    # Validate activity argument
-    valid_activities = {"maps_browse", "maps_directions", "youtube",
-                        "maps+youtube", "gmail", "google_search"}
-    if args.activity and args.activity not in valid_activities:
-        log.error("Invalid activity %r.  Choose from: %s",
-                  args.activity, ", ".join(sorted(valid_activities)))
+    accounts = load_accounts(args.pc)
+    if not accounts:
+        log.error("No enabled accounts found. Exiting.")
         sys.exit(1)
 
     # ── Single-account mode ────────────────────────────────────────────────
     if args.account:
-        acc = next((a for a in all_accounts if a["id"] == args.account), None)
+        acc = next((a for a in accounts if a["id"] == args.account), None)
         if not acc:
-            log.error("Account %r not found in geelark_accounts.yaml.", args.account)
+            log.error("Account %r not found.", args.account)
             sys.exit(1)
-        log.info("Single-account mode: %s", acc["id"])
-        if args.activity:
-            result = run_one_account_activity(acc, args.activity)
-            status = "OK" if result["success"] else "FAILED"
-            log.info("Result: %s | Activity: %s | Duration: %.0fs | IP: %s | Location: %s",
-                     status, result["activity"], result["duration_s"],
-                     result["ip"] or "?", result["location_label"])
-        else:
-            result = run_warmup_session(acc, SESSION_LOG, force_script=args.script)
-            status = "OK" if result.get("success") else "FAILED"
-            log.info("Result: %s | Script: %s | Steps: %s | Duration: %.0fs | IP: %s",
-                     status, result.get("script", "?"), result.get("steps_done", []),
-                     result.get("duration_s", 0), result.get("ip", "?"))
+        mode = args.script or _day_to_script(max(1, (datetime.now() - datetime(2025,1,1)).days + 1))
+        log.info("Single-account: %s | mode=%s | youtube=%s", acc["id"], mode, args.youtube)
+        r = run_one_subprocess(acc, mode, args.youtube)
+        log.info("Result: %s", "OK" if r["success"] else "FAILED")
         return
 
     # ── Once mode ──────────────────────────────────────────────────────────
     if args.once:
-        log.info("Once mode — running one batch cycle, then exiting.")
-        run_batch_cycle(all_accounts, activity=args.activity, force_script=args.script)
+        log.info("Once mode.")
+        run_batch_cycle(accounts, force_script=args.script, youtube_timing=args.youtube)
         return
 
-    # ── Daemon mode (default) ──────────────────────────────────────────────
-    if args.activity:
-        log.info("Daemon mode (testing) — forced activity: %s. Will run daily between %02d:00–%02d:00.",
-                 args.activity, ACTIVE_HOUR_START, ACTIVE_HOUR_END)
-    else:
-        log.info("Daemon mode (schedule) — following monthly _day_to_script(). Will run daily between %02d:00–%02d:00.",
-                 ACTIVE_HOUR_START, ACTIVE_HOUR_END)
+    # ── Daemon mode ────────────────────────────────────────────────────────
+    log.info("Daemon mode — daily between %02d:00–%02d:00.", ACTIVE_HOUR_START, ACTIVE_HOUR_END)
     signal.signal(signal.SIGINT, _on_shutdown)
     signal.signal(signal.SIGTERM, _on_shutdown)
 
     while not _shutdown_requested:
         log.info("══════════ Starting daily batch cycle ══════════")
-        run_batch_cycle(all_accounts, activity=args.activity, force_script=args.script)
-
+        run_batch_cycle(accounts, force_script=args.script, youtube_timing=args.youtube)
         if _shutdown_requested:
             break
-
-        next_run_ts = _compute_next_run()
-        friendly = datetime.fromtimestamp(next_run_ts).strftime("%Y-%m-%d %H:%M")
-        log.info("Next run: %s (%.1f hours from now).", friendly,
-                 (next_run_ts - time.time()) / 3600)
-        _sleep_until(next_run_ts)
+        next_ts = _compute_next_run()
+        log.info("Next run: %s", datetime.fromtimestamp(next_ts).strftime("%Y-%m-%d %H:%M"))
+        _sleep_until(next_ts)
 
     log.info("Daily batch runner exiting.")
 
