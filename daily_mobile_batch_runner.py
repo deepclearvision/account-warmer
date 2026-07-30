@@ -257,7 +257,11 @@ def run_one_account_activity(account: dict, activity: str) -> dict:
     # 2. Start phone
     log.info("[%s] Starting phone %s …", acc_id, phone_id)
     try:
-        client.start_phone(phone_id)
+        viewer_url = client.start_phone(phone_id) or ""
+        if viewer_url:
+            log.info("[%s] Opening viewer: %s", acc_id, viewer_url)
+            import webbrowser
+            webbrowser.open(viewer_url)
     except Exception as e:
         result["error"] = f"Failed to start phone: {e}"
         log.error("[%s] Phone start failed: %s", acc_id, e)
@@ -369,7 +373,8 @@ def _log_session(acc_id: str, ip: str, activity: str, duration_s: float,
 
 # ── Full batch cycle ──────────────────────────────────────────────────────────
 
-def run_batch_cycle(accounts: list[dict], activity: str | None = None) -> list[dict]:
+def run_batch_cycle(accounts: list[dict], activity: str | None = None,
+                    force_script: str | None = None) -> list[dict]:
     """
     Run one warm-up session for every enabled account, sequentially.
 
@@ -381,9 +386,12 @@ def run_batch_cycle(accounts: list[dict], activity: str | None = None) -> list[d
     force a single activity on every account.
 
     Args:
-        accounts: List of account dicts from geelark_accounts.yaml.
-        activity: Optional forced activity (testing only).  When None,
-                  the monthly schedule is followed.
+        accounts:     List of account dicts from geelark_accounts.yaml.
+        activity:     Optional forced activity (testing only).  When None,
+                      the monthly schedule is followed.
+        force_script: Optional forced script name for schedule mode
+                      (local_discovery, money_kw, brand_1km).  Bypasses
+                      _day_to_script().
 
     Returns:
         List of per-account result dicts.
@@ -438,7 +446,7 @@ def run_batch_cycle(accounts: list[dict], activity: str | None = None) -> list[d
                 r = run_one_account_activity(acc, activity)
             else:
                 # ── Schedule mode: delegate to monthly schedule ─────────────
-                session_result = run_warmup_session(acc, SESSION_LOG)
+                session_result = run_warmup_session(acc, SESSION_LOG, force_script=force_script)
                 r = {
                     "account_id": acc["id"],
                     "success":    session_result.get("success", False),
@@ -572,6 +580,10 @@ def main() -> None:
                              "(maps_browse, maps_directions, youtube, maps+youtube, "
                              "gmail, google_search). Without this flag, the monthly "
                              "schedule is followed.")
+    parser.add_argument("--script", type=str,
+                        choices=["local_discovery", "money_kw", "brand_1km"],
+                        help="Force a specific schedule script for testing "
+                             "(bypasses _day_to_script).")
     parser.add_argument("--status", action="store_true",
                         help="Print last session per account and exit.")
     parser.add_argument("--pc", type=str,
@@ -613,7 +625,7 @@ def main() -> None:
                      status, result["activity"], result["duration_s"],
                      result["ip"] or "?", result["location_label"])
         else:
-            result = run_warmup_session(acc, SESSION_LOG)
+            result = run_warmup_session(acc, SESSION_LOG, force_script=args.script)
             status = "OK" if result.get("success") else "FAILED"
             log.info("Result: %s | Script: %s | Steps: %s | Duration: %.0fs | IP: %s",
                      status, result.get("script", "?"), result.get("steps_done", []),
@@ -623,7 +635,7 @@ def main() -> None:
     # ── Once mode ──────────────────────────────────────────────────────────
     if args.once:
         log.info("Once mode — running one batch cycle, then exiting.")
-        run_batch_cycle(all_accounts, activity=args.activity)
+        run_batch_cycle(all_accounts, activity=args.activity, force_script=args.script)
         return
 
     # ── Daemon mode (default) ──────────────────────────────────────────────
@@ -638,7 +650,7 @@ def main() -> None:
 
     while not _shutdown_requested:
         log.info("══════════ Starting daily batch cycle ══════════")
-        run_batch_cycle(all_accounts, activity=args.activity)
+        run_batch_cycle(all_accounts, activity=args.activity, force_script=args.script)
 
         if _shutdown_requested:
             break

@@ -1801,11 +1801,14 @@ def _log_session(log_file: Path, acc_id: str, steps: list, duration_s: float,
 def run_mobile_schedule_session(account: dict, log_file: Path,
                                 progress_callback=None,
                                 schedule_state: dict | None = None,
-                                activity: str | None = None) -> dict:
+                                activity: str | None = None,
+                                force_script: str | None = None) -> dict:
     """
     Run ONE warm-up session for one GeelarK account.
 
     If ``activity`` is provided, runs exactly that activity.
+    If ``force_script`` is provided, runs that specific batch script
+    (bypassing _day_to_script()).
     Otherwise the script is determined by the account's schedule_day count
     using _day_to_script() (the legacy batch-mode system).
 
@@ -1819,7 +1822,11 @@ def run_mobile_schedule_session(account: dict, log_file: Path,
                          running standalone / manual warmup)
         activity:  Optional activity name ("maps_browse", "maps_directions",
                    "youtube", "maps+youtube", "gmail", "google_search").
-                   If None, uses the legacy schedule-driven batch selection.
+                   If None and force_script is None, uses the legacy
+                   schedule-driven batch selection.
+        force_script:  Optional script name ("local_discovery", "money_kw",
+                       "brand_1km") — forces a specific batch script,
+                       bypassing _day_to_script().
 
     Returns:
         dict with keys: success, script, steps_done, duration_s, ip, error
@@ -1896,6 +1903,9 @@ def run_mobile_schedule_session(account: dict, log_file: Path,
     try:
         viewer_url = client.start_phone(phone_id) or ""
         result["viewer_url"] = viewer_url
+        if viewer_url:
+            import webbrowser
+            webbrowser.open(viewer_url)
         if progress_callback:
             progress_callback({"phase": "running", "viewer_url": viewer_url})
     except Exception as e:
@@ -1929,11 +1939,15 @@ def run_mobile_schedule_session(account: dict, log_file: Path,
             result["steps_done"].append(label)
     else:
         # ── Legacy schedule-driven batch mode ──────────────────────────────
-        schedule_day = 1
-        if schedule_state and acc_id in schedule_state:
-            schedule_day = schedule_state[acc_id].get("schedule_day", 1)
-        script = _day_to_script(schedule_day)
-        log.info("[%s] Schedule day %d → script: %s", acc_id, schedule_day, script)
+        if force_script:
+            script = force_script
+            log.info("[%s] Forced script: %s", acc_id, script)
+        else:
+            schedule_day = 1
+            if schedule_state and acc_id in schedule_state:
+                schedule_day = schedule_state[acc_id].get("schedule_day", 1)
+            script = _day_to_script(schedule_day)
+            log.info("[%s] Schedule day %d → script: %s", acc_id, schedule_day, script)
 
         if script == "brand_1km":
             ok = _batch_brand_1km(phone_id, acc_id, account, log_acc_id)
