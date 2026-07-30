@@ -1771,7 +1771,8 @@ def run_warmup_activity(phone_id: str, account: dict,
 # ── Session logger ────────────────────────────────────────────────────────────
 
 def _log_session(log_file: Path, acc_id: str, steps: list, duration_s: float,
-                 ip: str) -> None:
+                 ip: str, activity: str = "", success: bool = False,
+                 location_label: str = "") -> None:
     """Append a session record to mobile_sessions.json."""
     log_file.parent.mkdir(parents=True, exist_ok=True)
     records: list = []
@@ -1781,11 +1782,14 @@ def _log_session(log_file: Path, acc_id: str, steps: list, duration_s: float,
         except Exception:
             records = []
     records.append({
-        "account_id":  acc_id,
-        "timestamp":   datetime.now(timezone.utc).isoformat(),
-        "ip":          ip,
-        "steps_done":  steps,
-        "duration_s":  round(duration_s, 1),
+        "account_id":     acc_id,
+        "timestamp":      datetime.now(timezone.utc).isoformat(),
+        "ip":             ip,
+        "activity":       activity,
+        "steps_done":     steps,
+        "duration_s":     round(duration_s, 1),
+        "success":        success,
+        "location_label": location_label,
     })
     log_file.write_text(json.dumps(records, indent=2), encoding="utf-8")
 
@@ -1999,7 +2003,12 @@ def run_mobile_schedule_session(account: dict, log_file: Path,
 
     # 8. Log session
     try:
-        _log_session(log_file, acc_id, result["steps_done"], result["duration_s"], ip)
+        _log_session(
+            log_file, acc_id, result["steps_done"], result["duration_s"], ip,
+            activity=result.get("script", ""),
+            success=result["success"],
+            location_label="",
+        )
     except Exception as e:
         log.warning("[%s] Session log write failed: %s", acc_id, e)
 
