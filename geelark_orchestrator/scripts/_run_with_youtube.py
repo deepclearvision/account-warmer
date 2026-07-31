@@ -299,7 +299,7 @@ def get_visible_texts(xml_str):
     return texts
 
 
-def has_webview(xml_str):
+def has_webview_check(xml_str):
     """Return True if any WebView node exists in the UI dump."""
     x = xml_str.find("<?xml") if xml_str else -1
     if x < 0:
@@ -321,7 +321,7 @@ def wait_for_no_webview(tag_prefix, timeout_s=20):
     while time.time() < deadline:
         attempt += 1
         xml = dump_ui("%s_%d" % (tag_prefix, attempt))
-        if not has_webview(xml):
+        if not has_webview_check(xml):
             print("  [webview cleared] after %d dump(s)" % attempt)
             return True
         time.sleep(2)
@@ -494,7 +494,7 @@ try:
     # ══════════════════════════════════════════════════════════════════════
     # GPS SETUP
     # ══════════════════════════════════════════════════════════════════════
-    print("\n=== GPS Setup ===")
+    print("\\n=== GPS Setup ===")
     for p in [MAPS_PKG, GPS_PKG, "com.android.vending", "com.google.android.gms", "com.android.chrome"]:
         sh("am force-stop %s" % p); time.sleep(0.2)
     time.sleep(1)
@@ -503,9 +503,10 @@ try:
     sh("input swipe 360 600 360 1200 300"); time.sleep(0.5)
     sh("input keyevent KEYCODE_HOME"); time.sleep(WAIT)
 
-    print("  pm clear: %s" % sh("pm clear %s" % GPS_PKG).strip())
-    time.sleep(1)
-    sh("am force-stop %s" % GPS_PKG); time.sleep(WAIT)
+    # Do NOT clear GPS storage every run  it forces the consent dialog to reappear.
+    # Only clear if mock location fails later.
+    # print("  pm clear: %s" % sh("pm clear %s" % GPS_PKG).strip())
+    # time.sleep(1)
 
     for perm in ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "ACCESS_BACKGROUND_LOCATION", "POST_NOTIFICATIONS"]:
         sh("pm grant %s android.permission.%s" % (GPS_PKG, perm))
@@ -519,7 +520,7 @@ try:
 
     sh("am force-stop %s" % GPS_PKG); time.sleep(2)
     sh("monkey -p %s -c android.intent.category.LAUNCHER 1" % GPS_PKG)
-    time.sleep(5)
+    time.sleep(8)
     focus = get_focus()
 
     if "PrivacyActivity" in focus:
@@ -534,6 +535,7 @@ try:
     if any(w in " ".join(pts).lower() for w in ["allow gps", "location permission", "access this device"]):
         find_and_tap(xml, ["Allow all the time", "While using the app", "Allow", "ALLOW"], "perm")
 
+    #  Setup wizard: get to main screen or consent dialog 
     setup_done = False
     for sp in range(1, 4):
         sh("input swipe %d %d %d %d 500" % (w//2, int(h*0.78), w//2, int(h*0.25)))
@@ -556,53 +558,77 @@ try:
         break
     time.sleep(WAIT)
 
-    # Handle update / download dialog
-    for attempt in range(3):
-        xml = dump_ui("update_%d" % attempt)
-        vis = get_visible_texts(xml)
-        is_update = any("CANCEL" in v or "DOWNLOAD" in v for v in vis)
-        is_webview = has_webview(xml)
-        if not is_update and not is_webview:
-            break
-        print("  [update dialog] texts:", vis[:20])
-        if is_update:
-            if not find_and_tap(xml, ["CANCEL", "Cancel"], "cancel"):
-                print("  [update fallback] tapping Cancel area")
-                tap(int(w * 0.30), int(h * 0.55))
-        else:
-            print("  [update webview] tapping Cancel area")
-            tap(int(w * 0.30), int(h * 0.55))
-        time.sleep(WAIT)
-        # Verify dialog is gone
-        xml2 = dump_ui("update_verify_%d" % attempt)
-        if not any("CANCEL" in v or "DOWNLOAD" in v for v in get_visible_texts(xml2)) and not has_webview(xml2):
-            print("  [update dialog] dismissed")
-            break
-        time.sleep(WAIT)
+    #  Robust dialog dismissal loop (update + consent WebViews) 
+    # On Android 14 the update and consent screens are WebViews/cards that
+    # uiautomator text search cannot read. We detect any WebView or the
+    # CANCEL/DOWNLOAD text and tap known button areas until the dialog is gone.
+    dialog_candidates = [
+        ("cancel_center", int(w * 0.30), int(h * 0.60)),
+        ("cancel_low",    int(w * 0.30), int(h * 0.55)),
+        ("cancel_high",   int(w * 0.30), int(h * 0.65)),
+        ("consent_70",    int(w * 0.50), int(h * 0.70)),
+        ("consent_73",    int(w * 0.50), int(h * 0.73)),
+        ("consent_75",    int(w * 0.50), int(h * 0.75)),
+        ("consent_68",    int(w * 0.50), int(h * 0.68)),
+    ]
 
-    # Handle consent WebView dialog
-    for attempt in range(5):
-        xml = dump_ui("consent_%d" % attempt)
-        if has_webview(xml):
-            print("  [consent webview] detected, tapping Consent (center, 70%% down)")
-            tap(int(w * 0.50), int(h * 0.70))
-            time.sleep(WAIT)
-        else:
-            print("  [consent] no WebView dialog, continuing")
+    def _dialogs_present(xml_str):
+        vis = get_visible_texts(xml_str)
+        has_cancel = any("CANCEL" in v or "DOWNLOAD" in v for v in vis)
+        has_webview = has_webview_check(xml_str)
+        return has_cancel or has_webview
+
+    dialog_deadline = time.time() + 60
+    attempt = 0
+    while time.time() < dialog_deadline:
+        xml = dump_ui("dialog_%d" % attempt)
+        if not _dialogs_present(xml):
+            print("  [dialogs] no update/consent dialog detected")
             break
 
-    # Restart GPS JoyStick so mock location provider registers
-    print("  Restarting GPS JoyStick after consent...")
+        print("  [dialogs] dialog still present (attempt %d)" % attempt)
+        label, x, y = dialog_candidates[attempt % len(dialog_candidates)]
+        print("  [dialogs] trying %s at (%d, %d)" % (label, x, y))
+        tap(x, y)
+        time.sleep(4)
+        attempt += 1
+
+        # Quick verify
+        xml2 = dump_ui("dialog_v_%d" % attempt)
+        if not _dialogs_present(xml2):
+            print("  [dialogs] dismissed")
+            break
+
+    # Final safety: if still present, try BACK key
+    xml = dump_ui("dialog_final")
+    if _dialogs_present(xml):
+        print("  [dialogs] still present, sending BACK key")
+        sh("input keyevent KEYCODE_BACK")
+        time.sleep(WAIT)
+
+    #  Restart GPS JoyStick so mock location provider registers 
+    print("  Restarting GPS JoyStick after dialog dismissal...")
     sh("am force-stop %s" % GPS_PKG)
     time.sleep(2)
     sh("monkey -p %s -c android.intent.category.LAUNCHER 1" % GPS_PKG)
-    time.sleep(5)
+    time.sleep(6)
     xml = dump_ui("restart")
-    if has_webview(xml):
-        print("  [consent] WebView still present after restart, tapping again")
+    if _dialogs_present(xml):
+        print("  [dialogs] reappeared after restart, tapping center")
         tap(int(w * 0.50), int(h * 0.70))
         time.sleep(WAIT)
 
+    # Wait until no dialog/WebView is present
+    for _ in range(10):
+        xml = dump_ui("settled")
+        if not _dialogs_present(xml):
+            print("  [dialogs] settled")
+            break
+        time.sleep(2)
+    else:
+        print("  [dialogs] warning: did not settle, continuing anyway")
+
+    #  Deep links
     # Deep links
     def send_links():
         url = "gpsjoystick://teleport?lat=%.6f&lng=%.6f" % (GPS_LAT, GPS_LNG)
