@@ -299,8 +299,8 @@ def get_visible_texts(xml_str):
     return texts
 
 
-def is_fullscreen_webview(xml_str, w, h):
-    """Return True if the screen is dominated by a single WebView node."""
+def has_webview(xml_str):
+    """Return True if any WebView node exists in the UI dump."""
     x = xml_str.find("<?xml") if xml_str else -1
     if x < 0:
         return False
@@ -309,17 +309,24 @@ def is_fullscreen_webview(xml_str, w, h):
     except Exception:
         return False
     for node in root.iter("node"):
-        cls = (node.get("class") or "").strip()
-        if cls == "android.webkit.WebView":
-            bounds = node.get("bounds", "")
-            try:
-                x1, y1, x2, y2 = map(int, bounds.replace("[", "").replace("]", ",").rstrip(",").split(","))
-                if x2 - x1 >= w * 0.85 and y2 - y1 >= h * 0.85:
-                    return True
-            except Exception:
-                pass
+        if (node.get("class") or "").strip() == "android.webkit.WebView":
+            return True
     return False
 
+
+def wait_for_no_webview(tag_prefix, timeout_s=20):
+    """Dump UI until no WebView is present, or timeout. Return True if cleared."""
+    deadline = time.time() + timeout_s
+    attempt = 0
+    while time.time() < deadline:
+        attempt += 1
+        xml = dump_ui("%s_%d" % (tag_prefix, attempt))
+        if not has_webview(xml):
+            print("  [webview cleared] after %d dump(s)" % attempt)
+            return True
+        time.sleep(2)
+    print("  [webview warning] still present after %.0fs" % timeout_s)
+    return False
 
 def find_and_tap(xml_str, queries, step_label):
     if isinstance(queries, str): queries = [queries]
@@ -554,22 +561,29 @@ try:
         xml = dump_ui("update_%d" % attempt)
         vis = get_visible_texts(xml)
         is_update = any("CANCEL" in v or "DOWNLOAD" in v for v in vis)
-        is_webview = is_fullscreen_webview(xml, w, h)
+        is_webview = has_webview(xml)
         if not is_update and not is_webview:
             break
         print("  [update dialog] texts:", vis[:20])
         if is_update:
             if not find_and_tap(xml, ["CANCEL", "Cancel"], "cancel"):
+                print("  [update fallback] tapping Cancel area")
                 tap(int(w * 0.30), int(h * 0.55))
         else:
             print("  [update webview] tapping Cancel area")
             tap(int(w * 0.30), int(h * 0.55))
         time.sleep(WAIT)
+        # Verify dialog is gone
+        xml2 = dump_ui("update_verify_%d" % attempt)
+        if not any("CANCEL" in v or "DOWNLOAD" in v for v in get_visible_texts(xml2)) and not has_webview(xml2):
+            print("  [update dialog] dismissed")
+            break
+        time.sleep(WAIT)
 
     # Handle consent WebView dialog
     for attempt in range(5):
         xml = dump_ui("consent_%d" % attempt)
-        if is_fullscreen_webview(xml, w, h):
+        if has_webview(xml):
             print("  [consent webview] detected, tapping Consent (center, 70%% down)")
             tap(int(w * 0.50), int(h * 0.70))
             time.sleep(WAIT)
@@ -584,7 +598,7 @@ try:
     sh("monkey -p %s -c android.intent.category.LAUNCHER 1" % GPS_PKG)
     time.sleep(5)
     xml = dump_ui("restart")
-    if is_fullscreen_webview(xml, w, h):
+    if has_webview(xml):
         print("  [consent] WebView still present after restart, tapping again")
         tap(int(w * 0.50), int(h * 0.70))
         time.sleep(WAIT)
