@@ -87,6 +87,16 @@ def _run_youtube_flow(phone_id, acc_id, video_count, keyword="", client=None):
         param_map["SearchKeyword"] = keyword
 
     print("  [YouTube] Starting flow - videos=%d keyword=%s" % (video_count, keyword or "(browse)"))
+
+    # Dismiss YouTube notification permission dialog if it appears
+    time.sleep(5)
+    xml = dump_ui("yt_notif")
+    vis = get_visible_texts(xml)
+    if any("notifications" in v.lower() or "allow" in v.lower() for v in vis):
+        print("  [YouTube] notification dialog detected, tapping Allow")
+        if not find_and_tap(xml, ["Allow", "ALLOW", "Got it", "OK"], "yt_notif"):
+            tap(int(w * 0.50), int(h * 0.60))
+        time.sleep(2)
     try:
         tid = client.run_custom_flow(
             flow_id=flow_id, phone_id=phone_id, param_map=param_map,
@@ -492,200 +502,18 @@ try:
         _current_lock_ip = None
 
     # ══════════════════════════════════════════════════════════════════════
-    # GPS SETUP
-    # ══════════════════════════════════════════════════════════════════════
-    print("\\n=== GPS Setup ===")
-    for p in [MAPS_PKG, GPS_PKG, "com.android.vending", "com.google.android.gms", "com.android.chrome"]:
-        sh("am force-stop %s" % p); time.sleep(0.2)
-    time.sleep(1)
-    sh("input keyevent KEYCODE_HOME"); time.sleep(0.5)
-    sh("input keyevent KEYCODE_APP_SWITCH"); time.sleep(0.5)
-    sh("input swipe 360 600 360 1200 300"); time.sleep(0.5)
-    sh("input keyevent KEYCODE_HOME"); time.sleep(WAIT)
-
-    # Do NOT clear GPS storage every run  it forces the consent dialog to reappear.
-    # Only clear if mock location fails later.
-    # print("  pm clear: %s" % sh("pm clear %s" % GPS_PKG).strip())
-    # time.sleep(1)
-
-    for perm in ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "ACCESS_BACKGROUND_LOCATION", "POST_NOTIFICATIONS"]:
-        sh("pm grant %s android.permission.%s" % (GPS_PKG, perm))
-        sh("pm grant %s android.permission.%s" % (MAPS_PKG, perm))
-    sh("appops set %s MOCK_LOCATION allow" % GPS_PKG)
-    sh("appops set %s SYSTEM_ALERT_WINDOW allow" % GPS_PKG)
-    sh("settings put secure mock_location_app %s" % GPS_PKG)
-    sh("settings put secure mock_location 1")
-    sh("settings put secure location_mode 3")
-    time.sleep(WAIT)
-
-    sh("am force-stop %s" % GPS_PKG); time.sleep(2)
-    sh("monkey -p %s -c android.intent.category.LAUNCHER 1" % GPS_PKG)
-    time.sleep(8)
-    focus = get_focus()
-
-    if "PrivacyActivity" in focus:
-        tap(int(w * 0.887), int(h * 0.910)); time.sleep(WAIT)
-        focus = get_focus()
-        if "PrivacyActivity" in focus:
-            xml = dump_ui("priv")
-            find_and_tap(xml, ["ACCEPT", "Accept", "Agree", "OK", "I AGREE"], "priv"); time.sleep(WAIT)
-
-    xml = dump_ui("perm")
-    pts = get_visible_texts(xml)
-    if any(w in " ".join(pts).lower() for w in ["allow gps", "location permission", "access this device"]):
-        find_and_tap(xml, ["Allow all the time", "While using the app", "Allow", "ALLOW"], "perm")
-
-    #  Setup wizard: get to main screen or consent dialog 
-    setup_done = False
-    for sp in range(1, 4):
-        sh("input swipe %d %d %d %d 500" % (w//2, int(h*0.78), w//2, int(h*0.25)))
-        time.sleep(2)
-        xml = dump_ui("wiz%d" % sp)
-        if find_and_tap(xml, ["Start Using GPS JoyStick", "START USING GPS", "Start", "Get Started", "BEGIN", "Continue", "Next"], "wiz"):
-            setup_done = True
-            break
-        if find_and_tap(xml, ["Done", "FINISH", "Got it", "OK", "Let's Go"], "wiz"):
-            setup_done = True
-            break
-        # Fallback: Android 14+ may not expose button text to uiautomator.
-        ref_start_x, ref_start_y = 360, 1280
-        start_x = int(w * ref_start_x / 720)
-        start_y = int(h * ref_start_y / 1440)
-        print("  [GPS wizard fallback] tapping bottom Start bar at (%d, %d)" % (start_x, start_y))
-        tap(start_x, start_y)
-        time.sleep(WAIT)
-        setup_done = True
-        break
-    time.sleep(WAIT)
-
-    # Give the update/consent dialog time to render after Start button tap
-    print("  [setup] waiting for update/consent dialog...")
-    time.sleep(6)
-
-    #  Robust dialog dismissal loop (update + consent WebViews) 
-    # On Android 14 the update and consent screens are WebViews/cards that
-    # uiautomator text search cannot read. We detect any WebView or the
-    # CANCEL/DOWNLOAD text and tap known button areas until the dialog is gone.
-    dialog_candidates = [
-        ("cancel_center", int(w * 0.30), int(h * 0.60)),
-        ("cancel_low",    int(w * 0.30), int(h * 0.55)),
-        ("cancel_high",   int(w * 0.30), int(h * 0.65)),
-        ("consent_70",    int(w * 0.50), int(h * 0.70)),
-        ("consent_73",    int(w * 0.50), int(h * 0.73)),
-        ("consent_75",    int(w * 0.50), int(h * 0.75)),
-        ("consent_68",    int(w * 0.50), int(h * 0.68)),
-    ]
-
-    def _dialogs_present(xml_str):
-        vis = get_visible_texts(xml_str)
-        has_cancel = any("CANCEL" in v or "DOWNLOAD" in v for v in vis)
-        has_webview = has_webview_check(xml_str)
-        return has_cancel or has_webview
-
-    dialog_deadline = time.time() + 60
-    attempt = 0
-    while time.time() < dialog_deadline:
-        xml = dump_ui("dialog_%d" % attempt)
-        if not _dialogs_present(xml):
-            print("  [dialogs] no update/consent dialog detected")
-            break
-
-        print("  [dialogs] dialog still present (attempt %d)" % attempt)
-        label, x, y = dialog_candidates[attempt % len(dialog_candidates)]
-        print("  [dialogs] trying %s at (%d, %d)" % (label, x, y))
-        tap(x, y)
-        time.sleep(4)
-        attempt += 1
-
-        # Quick verify
-        xml2 = dump_ui("dialog_v_%d" % attempt)
-        if not _dialogs_present(xml2):
-            print("  [dialogs] dismissed")
-            break
-
-    # Final safety: if still present, try BACK key
-    xml = dump_ui("dialog_final")
-    if _dialogs_present(xml):
-        print("  [dialogs] still present, sending BACK key")
-        sh("input keyevent KEYCODE_BACK")
-        time.sleep(WAIT)
-
-    #  Restart GPS JoyStick so mock location provider registers 
-    print("  Restarting GPS JoyStick after dialog dismissal...")
-    sh("am force-stop %s" % GPS_PKG)
-    time.sleep(2)
-    sh("monkey -p %s -c android.intent.category.LAUNCHER 1" % GPS_PKG)
-    time.sleep(6)
-    xml = dump_ui("restart")
-    if _dialogs_present(xml):
-        print("  [dialogs] reappeared after restart, tapping center")
-        tap(int(w * 0.50), int(h * 0.70))
-        time.sleep(WAIT)
-
-    # Keep trying to dismiss any dialog after restart
-    settled_attempts = 0
-    while settled_attempts < 8:
-        xml = dump_ui("settled_%d" % settled_attempts)
-        if not _dialogs_present(xml):
-            print("  [dialogs] settled")
-            break
-        print("  [dialogs] still present after restart (attempt %d)" % settled_attempts)
-        label, x, y = dialog_candidates[settled_attempts % len(dialog_candidates)]
-        print("  [dialogs] trying %s at (%d, %d)" % (label, x, y))
-        tap(x, y)
-        time.sleep(4)
-        settled_attempts += 1
-    else:
-        print("  [dialogs] warning: did not settle, continuing anyway")
-
-    #  Deep links
-    # Deep links
-    def send_links():
-        url = "gpsjoystick://teleport?lat=%.6f&lng=%.6f" % (GPS_LAT, GPS_LNG)
-        sh("am start -a android.intent.action.VIEW -d '%s' %s" % (url, GPS_PKG)); time.sleep(5)
-        sh("input keyevent KEYCODE_HOME"); time.sleep(3)
-        sh("am start -a android.intent.action.VIEW -d '%s' %s" % (url, GPS_PKG)); time.sleep(WAIT)
-        sh("input keyevent KEYCODE_HOME"); time.sleep(3)
-
-    send_links()
-
-    # Verify mock
-    def verify():
-        out = sh("dumpsys location")
-        active = "[mock]" in out.lower()
-        match = False
-        for line in out.splitlines():
-            if "last mock location" in line.lower():
-                m = re.search(r"(-?\d+\.\d+),(-?\d+\.\d+)", line)
-                if m:
-                    match = abs(float(m.group(1)) - GPS_LAT) <= 0.001 and abs(float(m.group(2)) - GPS_LNG) <= 0.001
-        return active, match
-
-    mock_ok, _ = verify()
-    if not mock_ok:
-        sh("am force-stop %s" % GPS_PKG); time.sleep(2)
-        send_links()
-        mock_ok, _ = verify()
-        if not mock_ok:
-            sh("am force-stop %s" % GPS_PKG); time.sleep(3)
-            sh("settings put secure mock_location 0"); time.sleep(1)
-            sh("settings put secure mock_location 1"); time.sleep(2)
-            send_links()
-            time.sleep(5)
-            mock_ok, _ = verify()
-
-    print("GPS: %s" % ("OK" if mock_ok else "FAIL"))
-    if MODE in ("brand-1km", "local-discovery"):
-        print("GPS location: %.6f, %.6f (%.2f km from business)" % (GPS_LAT, GPS_LNG, DISTANCE_KM))
-
-    # ══════════════════════════════════════════════════════════════════════
-    # YOUTUBE BEFORE MAPS (if timing is "before" or "both")
+    # \n    # GPS SETUP (native GeelarK API  no GPS JoyStick app)\n    # \n    print("\\n=== GPS Setup ===")\n\n    # Stop Maps so it picks up the new location on next launch\n    sh("am force-stop %s" % MAPS_PKG)\n    sh("am force-stop com.google.android.gms")\n    sh("input keyevent KEYCODE_HOME")\n    time.sleep(1)\n\n    # Ensure Maps has location permissions\n    for perm in ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "ACCESS_BACKGROUND_LOCATION", "POST_NOTIFICATIONS"]:\n        sh("pm grant %s android.permission.%s" % (MAPS_PKG, perm))\n    sh("settings put secure location_mode 3")\n    time.sleep(WAIT)\n\n    # Set GPS directly via GeelarK API\n    gps_payload = {"list": [{"id": PHONE, "latitude": GPS_LAT, "longitude": GPS_LNG}]}\n    try:\n        r = _post("/open/v1/phone/gps/set", gps_payload)\n        print("  Set GPS via API: %s" % r)\n        mock_ok = r.get("successAmount", 0) >= 1 or r.get("totalAmount", 0) >= 1\n    except Exception as e:\n        print("  WARNING: Set GPS API failed: %s" % e)\n        mock_ok = False\n\n    # Verify location was set\n    time.sleep(2)\n    try:\n        r = _post("/open/v1/phone/gps/get", {"ids": [PHONE]})\n        print("  Get GPS: %s" % r)\n    except Exception as e:\n        print("  WARNING: Get GPS API failed: %s" % e)\n\n    print("GPS: %s" % ("OK" if mock_ok else "FAIL"))\n    if MODE in ("brand-1km", "local-discovery"):\n        print("GPS location: %.6f, %.6f (%.2f km from business)" % (GPS_LAT, GPS_LNG, DISTANCE_KM))\n\n    time.sleep(2)\n\n    # YOUTUBE BEFORE MAPS (if timing is "before" or "both")
     # ══════════════════════════════════════════════════════════════════════
     if YOUTUBE_TIMING in ("before", "both"):
         print()
         print("=" * 70)
         print("[YouTube] running BEFORE Maps for %s" % LABEL)
         print("=" * 70)
+
+        # Grant YouTube notification permission up front (Android 13+)
+        sh("pm grant %s android.permission.POST_NOTIFICATIONS" % "com.google.android.youtube")
+        time.sleep(1)
+
         video_count = random.randint(3, 8)
         yt_keyword = random.choice(_YOUTUBE_KEYWORDS) if random.random() < 0.60 else ""
         _run_youtube_flow(PHONE, ACC_ID, video_count, keyword=yt_keyword, client=client)
@@ -985,6 +813,11 @@ try:
         print("=" * 70)
         print("[YouTube] running AFTER Maps for %s" % LABEL)
         print("=" * 70)
+
+        # Grant YouTube notification permission up front (Android 13+)
+        sh("pm grant %s android.permission.POST_NOTIFICATIONS" % "com.google.android.youtube")
+        time.sleep(1)
+
         video_count = random.randint(3, 8)
         yt_keyword = random.choice(_YOUTUBE_KEYWORDS) if random.random() < 0.60 else ""
         _run_youtube_flow(PHONE, ACC_ID, video_count, keyword=yt_keyword, client=client)
