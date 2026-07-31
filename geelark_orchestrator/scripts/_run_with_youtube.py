@@ -558,6 +558,10 @@ try:
         break
     time.sleep(WAIT)
 
+    # Give the update/consent dialog time to render after Start button tap
+    print("  [setup] waiting for update/consent dialog...")
+    time.sleep(6)
+
     #  Robust dialog dismissal loop (update + consent WebViews) 
     # On Android 14 the update and consent screens are WebViews/cards that
     # uiautomator text search cannot read. We detect any WebView or the
@@ -618,13 +622,19 @@ try:
         tap(int(w * 0.50), int(h * 0.70))
         time.sleep(WAIT)
 
-    # Wait until no dialog/WebView is present
-    for _ in range(10):
-        xml = dump_ui("settled")
+    # Keep trying to dismiss any dialog after restart
+    settled_attempts = 0
+    while settled_attempts < 8:
+        xml = dump_ui("settled_%d" % settled_attempts)
         if not _dialogs_present(xml):
             print("  [dialogs] settled")
             break
-        time.sleep(2)
+        print("  [dialogs] still present after restart (attempt %d)" % settled_attempts)
+        label, x, y = dialog_candidates[settled_attempts % len(dialog_candidates)]
+        print("  [dialogs] trying %s at (%d, %d)" % (label, x, y))
+        tap(x, y)
+        time.sleep(4)
+        settled_attempts += 1
     else:
         print("  [dialogs] warning: did not settle, continuing anyway")
 
