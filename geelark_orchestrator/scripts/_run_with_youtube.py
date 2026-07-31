@@ -504,11 +504,27 @@ try:
     if any(w in " ".join(pts).lower() for w in ["allow gps", "location permission", "access this device"]):
         find_and_tap(xml, ["Allow all the time", "While using the app", "Allow", "ALLOW"], "perm")
 
+    setup_done = False
     for sp in range(1, 4):
         sh("input swipe %d %d %d %d 500" % (w//2, int(h*0.78), w//2, int(h*0.25))); time.sleep(2)
         xml = dump_ui("wiz%d" % sp)
-        if find_and_tap(xml, ["Start Using GPS JoyStick", "START USING GPS", "Start", "Get Started", "BEGIN", "Continue", "Next"], "wiz"): break
-        if find_and_tap(xml, ["Done", "FINISH", "Got it", "OK", "Let's Go"], "wiz"): break
+        if find_and_tap(xml, ["Start Using GPS JoyStick", "START USING GPS", "Start", "Get Started", "BEGIN", "Continue", "Next"], "wiz"):
+            setup_done = True
+            break
+        if find_and_tap(xml, ["Done", "FINISH", "Got it", "OK", "Let's Go"], "wiz"):
+            setup_done = True
+            break
+
+        # Fallback: Android 14+ may not expose button text to uiautomator.
+        # The green "Start Using GPS JoyStick" bar is a full-width button near the bottom.
+        ref_start_x, ref_start_y = 360, 1280  # 720x1440 reference
+        start_x = int(w * ref_start_x / 720)
+        start_y = int(h * ref_start_y / 1440)
+        print("  [GPS wizard fallback] tapping bottom Start bar at (%d, %d)" % (start_x, start_y))
+        tap(start_x, start_y)
+        time.sleep(WAIT)
+        setup_done = True
+        break
     time.sleep(WAIT)
 
     xml = dump_ui("update")
