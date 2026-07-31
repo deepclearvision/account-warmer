@@ -130,19 +130,37 @@ if len(sys.argv) < 3:
 MODE = sys.argv[1]
 ACC_ID = sys.argv[2]
 
-# Auto-lookup from CSV
+# Load account from YAML (phone ID lives here)
+YAML_PATH = Path(r"C:\WarmingData\geelark_accounts.yaml")
+try:
+    import yaml
+    yaml_data = yaml.safe_load(YAML_PATH.read_text(encoding="utf-8")) or {}
+except Exception as e:
+    print("Failed to load geelark_accounts.yaml: %s" % e)
+    sys.exit(1)
+
+account = next((a for a in yaml_data.get("accounts", []) if a.get("id") == ACC_ID), None)
+if not account:
+    print("Account %s not found in geelark_accounts.yaml" % ACC_ID)
+    sys.exit(1)
+
+PHONE = account.get("geelark_phone_id")
+if not PHONE:
+    print("Account %s has no geelark_phone_id" % ACC_ID)
+    sys.exit(1)
+
+# Load business data from CSV
 CSV_PATH = r"C:\Users\Administrator\Desktop\AccountWarmer-Deploy-Enhanced\data\accounts_business_mapping.csv"
 with open(CSV_PATH) as f:
     for row in csv.DictReader(f):
         if row["account_id"] == ACC_ID:
-            PHONE = row["geelark_phone_id"]
             LAT = float(row["business_lat"])
             LNG = float(row["business_lng"])
-            LABEL = ACC_ID
             BUSINESS = row["business_name"]
+            LABEL = ACC_ID
             break
     else:
-        print("Account %s not found" % ACC_ID)
+        print("Account %s not found in business CSV" % ACC_ID)
         sys.exit(1)
 
 KEYWORD_ARG = None
@@ -233,6 +251,14 @@ sys.path.insert(0, str(Path(r"C:\Users\Administrator\Desktop\AccountWarmer-Deplo
 from core.geelark_client import GeelarKClient, _post
 
 client = GeelarKClient()
+
+# Optional safety: warn if phone is already running
+try:
+    st = client.get_phone_status([PHONE])
+    if st and st[0].get("status") == 2:
+        print("[WARNING] Phone %s is already running. Continuing anyway." % PHONE)
+except Exception:
+    pass
 
 # ── Shell helpers ──────────────────────────────────────────────────────────
 def sh(cmd):
