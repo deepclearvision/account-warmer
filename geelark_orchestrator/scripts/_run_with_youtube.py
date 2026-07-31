@@ -530,12 +530,33 @@ try:
     xml = dump_ui("update")
     vis = get_visible_texts(xml)
     if any("CANCEL" in v or "DOWNLOAD" in v for v in vis):
-        find_and_tap(xml, ["CANCEL"], "cancel"); time.sleep(WAIT)
+        print("  [update dialog] texts:", vis[:20])
+        tapped = find_and_tap(xml, ["CANCEL", "Cancel"], "cancel")
+        if not tapped:
+            # Android 14 fallback: centered dialog, left button
+            cancel_x = int(w * 0.30)
+            cancel_y = int(h * 0.50)
+            print("  [update dialog fallback] tapping Cancel at (%d, %d)" % (cancel_x, cancel_y))
+            tap(cancel_x, cancel_y)
+        time.sleep(WAIT)
+        # Verify dismissal
+        xml2 = dump_ui("update2")
+        vis2 = get_visible_texts(xml2)
+        if any("CANCEL" in v or "DOWNLOAD" in v for v in vis2):
+            print("  [update dialog] still present, sending BACK key")
+            sh("input keyevent KEYCODE_BACK")
+            time.sleep(WAIT)
 
     xml = dump_ui("whatsnew")
     vis = get_visible_texts(xml)
     if any("Done" in v or "DONE" in v for v in vis):
-        find_and_tap(xml, ["Done", "DONE"], "done"); time.sleep(WAIT)
+        if not find_and_tap(xml, ["Done", "DONE"], "done"):
+            # Android 14 fallback: Continue/Done is the bottom-right button
+            done_x = int(w * 0.85)
+            done_y = int(h * 0.83)
+            print("  [whatsnew fallback] tapping Done at (%d, %d)" % (done_x, done_y))
+            tap(done_x, done_y)
+        time.sleep(WAIT)
 
     # Deep links
     def send_links():
