@@ -235,7 +235,9 @@ if KEYWORD_ARG:
     KEYWORD = KEYWORD_ARG
 elif MODE == "brand-1km":
     kw = random.choice(BRAND_KEYWORDS)
-    KEYWORD = kw.replace("{biz}", BUSINESS)
+    words = BUSINESS.split()
+    short = " ".join(words[:3]) if len(words) >= 3 else BUSINESS
+    KEYWORD = kw.replace("{biz}", BUSINESS).replace("{short}", short)
 elif MODE == "local-discovery":
     KEYWORD = random.choice(LOCAL_TERMS)
 else:  # money-kw
