@@ -298,6 +298,29 @@ def get_visible_texts(xml_str):
     except: pass
     return texts
 
+
+def is_fullscreen_webview(xml_str, w, h):
+    """Return True if the screen is dominated by a single WebView node."""
+    x = xml_str.find("<?xml") if xml_str else -1
+    if x < 0:
+        return False
+    try:
+        root = ET.fromstring(xml_str[x:])
+    except Exception:
+        return False
+    for node in root.iter("node"):
+        cls = (node.get("class") or "").strip()
+        if cls == "android.webkit.WebView":
+            bounds = node.get("bounds", "")
+            try:
+                x1, y1, x2, y2 = map(int, bounds.replace("[", "").replace("]", ",").rstrip(",").split(","))
+                if x2 - x1 >= w * 0.85 and y2 - y1 >= h * 0.85:
+                    return True
+            except Exception:
+                pass
+    return False
+
+
 def find_and_tap(xml_str, queries, step_label):
     if isinstance(queries, str): queries = [queries]
     x = xml_str.find("<?xml") if xml_str else -1
@@ -506,7 +529,8 @@ try:
 
     setup_done = False
     for sp in range(1, 4):
-        sh("input swipe %d %d %d %d 500" % (w//2, int(h*0.78), w//2, int(h*0.25))); time.sleep(2)
+        sh("input swipe %d %d %d %d 500" % (w//2, int(h*0.78), w//2, int(h*0.25)))
+        time.sleep(2)
         xml = dump_ui("wiz%d" % sp)
         if find_and_tap(xml, ["Start Using GPS JoyStick", "START USING GPS", "Start", "Get Started", "BEGIN", "Continue", "Next"], "wiz"):
             setup_done = True
@@ -514,10 +538,8 @@ try:
         if find_and_tap(xml, ["Done", "FINISH", "Got it", "OK", "Let's Go"], "wiz"):
             setup_done = True
             break
-
         # Fallback: Android 14+ may not expose button text to uiautomator.
-        # The green "Start Using GPS JoyStick" bar is a full-width button near the bottom.
-        ref_start_x, ref_start_y = 360, 1280  # 720x1440 reference
+        ref_start_x, ref_start_y = 360, 1280
         start_x = int(w * ref_start_x / 720)
         start_y = int(h * ref_start_y / 1440)
         print("  [GPS wizard fallback] tapping bottom Start bar at (%d, %d)" % (start_x, start_y))
@@ -527,35 +549,44 @@ try:
         break
     time.sleep(WAIT)
 
-    xml = dump_ui("update")
-    vis = get_visible_texts(xml)
-    if any("CANCEL" in v or "DOWNLOAD" in v for v in vis):
+    # Handle update / download dialog
+    for attempt in range(3):
+        xml = dump_ui("update_%d" % attempt)
+        vis = get_visible_texts(xml)
+        is_update = any("CANCEL" in v or "DOWNLOAD" in v for v in vis)
+        is_webview = is_fullscreen_webview(xml, w, h)
+        if not is_update and not is_webview:
+            break
         print("  [update dialog] texts:", vis[:20])
-        tapped = find_and_tap(xml, ["CANCEL", "Cancel"], "cancel")
-        if not tapped:
-            # Android 14 fallback: centered dialog, left button
-            cancel_x = int(w * 0.30)
-            cancel_y = int(h * 0.50)
-            print("  [update dialog fallback] tapping Cancel at (%d, %d)" % (cancel_x, cancel_y))
-            tap(cancel_x, cancel_y)
+        if is_update:
+            if not find_and_tap(xml, ["CANCEL", "Cancel"], "cancel"):
+                tap(int(w * 0.30), int(h * 0.55))
+        else:
+            print("  [update webview] tapping Cancel area")
+            tap(int(w * 0.30), int(h * 0.55))
         time.sleep(WAIT)
-        # Verify dismissal
-        xml2 = dump_ui("update2")
-        vis2 = get_visible_texts(xml2)
-        if any("CANCEL" in v or "DOWNLOAD" in v for v in vis2):
-            print("  [update dialog] still present, sending BACK key")
-            sh("input keyevent KEYCODE_BACK")
-            time.sleep(WAIT)
 
-    xml = dump_ui("whatsnew")
-    vis = get_visible_texts(xml)
-    if any("Done" in v or "DONE" in v for v in vis):
-        if not find_and_tap(xml, ["Done", "DONE"], "done"):
-            # Android 14 fallback: Continue/Done is the bottom-right button
-            done_x = int(w * 0.85)
-            done_y = int(h * 0.83)
-            print("  [whatsnew fallback] tapping Done at (%d, %d)" % (done_x, done_y))
-            tap(done_x, done_y)
+    # Handle consent WebView dialog
+    for attempt in range(5):
+        xml = dump_ui("consent_%d" % attempt)
+        if is_fullscreen_webview(xml, w, h):
+            print("  [consent webview] detected, tapping Consent (center, 70%% down)")
+            tap(int(w * 0.50), int(h * 0.70))
+            time.sleep(WAIT)
+        else:
+            print("  [consent] no WebView dialog, continuing")
+            break
+
+    # Restart GPS JoyStick so mock location provider registers
+    print("  Restarting GPS JoyStick after consent...")
+    sh("am force-stop %s" % GPS_PKG)
+    time.sleep(2)
+    sh("monkey -p %s -c android.intent.category.LAUNCHER 1" % GPS_PKG)
+    time.sleep(5)
+    xml = dump_ui("restart")
+    if is_fullscreen_webview(xml, w, h):
+        print("  [consent] WebView still present after restart, tapping again")
+        tap(int(w * 0.50), int(h * 0.70))
         time.sleep(WAIT)
 
     # Deep links
@@ -626,6 +657,14 @@ try:
     if "maps" not in mc.lower():
         print("[ABORT] Google Maps is not installed. Provision the phone first.")
         sys.exit(1)
+
+    # Dismiss Google "Improve location accuracy" dialog if it appears
+    sh("monkey -p com.google.android.apps.maps -c android.intent.category.LAUNCHER 1")
+    time.sleep(5)
+    xml = dump_ui("maps_init")
+    if any("improve" in v.lower() or "accuracy" in v.lower() for v in get_visible_texts(xml)):
+        find_and_tap(xml, ["Yes", "Turn on", "Agree", "OK", "Got it"], "location_accuracy")
+        time.sleep(2)
 
     # For brand-1km and money-kw: use RPA workflow
     # For local-discovery: simplified shell-based browse
