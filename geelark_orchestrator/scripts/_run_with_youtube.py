@@ -1,30 +1,14 @@
 #!/usr/bin/env python3
 """
 Unified warmup runner with optional YouTube warmup on the same phone session.
-
-Usage:
-  python _run_with_youtube.py brand-1km acc_004
-  python _run_with_youtube.py money-kw acc_004
-  python _run_with_youtube.py local-discovery acc_004
-  python _run_with_youtube.py brand-1km acc_004 leave
-  python _run_with_youtube.py money-kw acc_004 "custom keyword"
-  python _run_with_youtube.py brand-1km acc_004 --youtube before
-  python _run_with_youtube.py local-discovery acc_004 --youtube random
-
-YouTube timing:
-  --youtube before    YouTube before Maps
-  --youtube after     YouTube after Maps
-  --youtube both      YouTube before AND after Maps
-  --youtube none      no YouTube
-  --youtube random    randomly choose (default if --youtube not provided)
 """
 import sys, time, re, subprocess, json, random, math, csv, os as _os, ctypes
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from datetime import datetime
 
-# ── Parse --youtube <timing> from sys.argv ────────────────────────────────────
-YOUTUBE_TIMING = None  # None = use random weights
+# Parse --youtube from sys.argv
+YOUTUBE_TIMING = None
 _i = 1
 while _i < len(sys.argv):
     if sys.argv[_i] == "--youtube" and _i + 1 < len(sys.argv):
@@ -32,20 +16,13 @@ while _i < len(sys.argv):
         if YOUTUBE_TIMING not in ("before", "after", "both", "none", "random"):
             print("Invalid --youtube value: %s. Use before|after|both|none|random." % YOUTUBE_TIMING)
             sys.exit(1)
-        # Remove --youtube and its value from argv
         sys.argv = sys.argv[:_i] + sys.argv[_i + 2:]
     else:
         _i += 1
 
-# Resolve random timing if not explicitly provided
 if YOUTUBE_TIMING is None:
-    YOUTUBE_TIMING = random.choices(
-        ["before", "after", "both", "none"],
-        weights=[0.25, 0.35, 0.10, 0.30],
-        k=1,
-    )[0]
+    YOUTUBE_TIMING = random.choices(["before", "after", "both", "none"], weights=[0.25, 0.35, 0.10, 0.30], k=1)[0]
 
-# ── YouTube keyword pool ──────────────────────────────────────────────────────
 _YOUTUBE_KEYWORDS = [
     "london street food", "premier league highlights", "uk news today",
     "how to make sourdough", "best restaurants london", "morning workout routine",
@@ -58,37 +35,16 @@ _YOUTUBE_KEYWORDS = [
     "uk weather forecast", "diy home improvement",
 ]
 
-# ── YouTube RPA flow helper ───────────────────────────────────────────────────
 
 def _run_youtube_flow(phone_id, acc_id, video_count, keyword="", client=None):
-    """
-    Run the YouTube warmup RPA flow on an already-running phone.
-
-    Uses GeelarK custom flow ID 629648416401522754.
-    Does NOT rotate proxy, start, or stop the phone.
-
-    Args:
-        phone_id:    GeelarK phone ID.
-        acc_id:      Account ID for logging.
-        video_count: Number of videos to watch (typically 3-8).
-        keyword:     Search keyword (empty = browse Shorts feed).
-        client:      Existing GeelarKClient instance (created if None).
-
-    Returns:
-        True if flow completed (status 3), False otherwise.
-    """
     if client is None:
         from core.geelark_client import GeelarKClient
         client = GeelarKClient()
-
     flow_id = "629648416401522754"
     param_map = {"ExpectedNumberOfVideosViewed": str(video_count)}
     if keyword:
         param_map["SearchKeyword"] = keyword
-
     print("  [YouTube] Starting flow - videos=%d keyword=%s" % (video_count, keyword or "(browse)"))
-
-    # Dismiss YouTube notification permission dialog if it appears
     time.sleep(5)
     xml = dump_ui("yt_notif")
     vis = get_visible_texts(xml)
@@ -98,16 +54,11 @@ def _run_youtube_flow(phone_id, acc_id, video_count, keyword="", client=None):
             tap(int(w * 0.50), int(h * 0.60))
         time.sleep(2)
     try:
-        tid = client.run_custom_flow(
-            flow_id=flow_id, phone_id=phone_id, param_map=param_map,
-            task_name="YouTube warmup - %s" % acc_id,
-        )
+        tid = client.run_custom_flow(flow_id=flow_id, phone_id=phone_id, param_map=param_map, task_name="YouTube warmup - %s" % acc_id)
         print("  [YouTube] Task: %s" % tid)
     except Exception as e:
         print("  [YouTube] Failed to start flow: %s" % e)
         return False
-
-    # Poll for up to 900s
     deadline = time.time() + 900
     while time.time() < deadline:
         time.sleep(8)
@@ -122,7 +73,6 @@ def _run_youtube_flow(phone_id, acc_id, video_count, keyword="", client=None):
                 break
         except Exception:
             pass
-
     if st == "Completed":
         print("  [YouTube] Flow completed successfully.")
         return True
@@ -130,17 +80,14 @@ def _run_youtube_flow(phone_id, acc_id, video_count, keyword="", client=None):
     return False
 
 
-# ── Parse args ──────────────────────────────────────────────────────────────
 if len(sys.argv) < 3:
     print("Usage: python _run_with_youtube.py <mode> <acc_id> [keyword|leave] [leave] [--youtube <timing>]")
     print("Modes: brand-1km, money-kw, local-discovery")
-    print("YouTube timing: before|after|both|none|random")
     sys.exit(1)
 
 MODE = sys.argv[1]
 ACC_ID = sys.argv[2]
 
-# Load account from YAML (phone ID lives here)
 YAML_PATH = Path(r"C:\WarmingData\geelark_accounts.yaml")
 try:
     import yaml
@@ -159,7 +106,6 @@ if not PHONE:
     print("Account %s has no geelark_phone_id" % ACC_ID)
     sys.exit(1)
 
-# Load business data from CSV
 CSV_PATH = r"C:\Users\Administrator\Desktop\AccountWarmer-Deploy-Enhanced\data\accounts_business_mapping.csv"
 with open(CSV_PATH) as f:
     for row in csv.DictReader(f):
@@ -184,15 +130,10 @@ for a in sys.argv[3:]:
     elif not a.startswith("acc_"):
         KEYWORD_ARG = a
 
-# ── Settings ────────────────────────────────────────────────────────────────
-GPS_PKG = "com.theappninjas.fakegpsjoystick"
 MAPS_PKG = "com.google.android.apps.maps"
 WAIT = 8
-
-# Shared phone lock — prevents ANY two phones from running simultaneously
 LOCK_FILE = Path(r"C:\WarmingData\logs\state\phone_lock.json")
 
-# ── Keyword selection by mode ───────────────────────────────────────────────
 MONEY_KEYWORDS = [
     "emergency plumber near me","leak repair near me","blocked drain near me",
     "burst pipe repair near me","water leak repair near me",
@@ -201,13 +142,6 @@ MONEY_KEYWORDS = [
     "urgent plumber near me","emergency pipe repair near me",
     "plumbing leak repair near me","sink repair near me",
     "emergency toilet repair near me","drain unblocking near me",
-]
-
-BRAND_KEYWORDS = [
-    "{biz} phone number","{biz} address","{biz} opening times",
-    "{biz} reviews","{biz} contact number","{biz} services",
-    "{biz} opening hours","{biz} customer reviews",
-    "{biz} emergency","{biz} location",
 ]
 
 LOCAL_TERMS = [
@@ -234,16 +168,12 @@ LOCAL_TERMS = [
 if KEYWORD_ARG:
     KEYWORD = KEYWORD_ARG
 elif MODE == "brand-1km":
-    kw = random.choice(BRAND_KEYWORDS)
-    words = BUSINESS.split()
-    short = " ".join(words[:3]) if len(words) >= 3 else BUSINESS
-    KEYWORD = kw.replace("{biz}", BUSINESS).replace("{short}", short)
+    KEYWORD = BUSINESS
 elif MODE == "local-discovery":
     KEYWORD = random.choice(LOCAL_TERMS)
-else:  # money-kw
+else:
     KEYWORD = random.choice(MONEY_KEYWORDS)
 
-# ── GPS offset for brand-1km and local-discovery ───────────────────────────
 if MODE in ("brand-1km", "local-discovery"):
     angle = random.uniform(0, 2 * math.pi)
     km = random.uniform(0.8, 1.2) if MODE == "brand-1km" else random.uniform(0.3, 1.0)
@@ -257,7 +187,6 @@ else:
     GPS_LNG = LNG
     DISTANCE_KM = 0.0
 
-# ── Imports that need PHONE defined ────────────────────────────────────────
 ORCH = Path(r"C:\Users\Administrator\Desktop\AccountWarmer-Deploy-Enhanced\geelark_orchestrator")
 sys.path.insert(0, str(Path(r"C:\Users\Administrator\Desktop\AccountWarmer-Deploy-Enhanced")))
 from core.geelark_client import GeelarKClient, _post
@@ -289,12 +218,27 @@ def get_screen():
     if m: return int(m.group(1)), int(m.group(2))
     return 720, 1440
 
+def read_remote_file(remote_path, chunk_size=1500):
+    """Read a remote file in chunks via dd to bypass GeelarK 2KB output limit."""
+    chunks = []
+    offset = 0
+    while True:
+        cmd = "dd if=%s bs=1 skip=%d count=%d 2>/dev/null" % (remote_path, offset, chunk_size)
+        r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": cmd})
+        chunk = (r.get("output", "") or "").replace("\r\n", "\n")
+        if not chunk:
+            break
+        chunks.append(chunk)
+        if len(chunk) < chunk_size:
+            break
+        offset += chunk_size
+    return "".join(chunks)
+
 def dump_ui(tag):
     path = "/sdcard/_run_%s.xml" % tag
     _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "uiautomator dump %s" % path})
     time.sleep(1.5)
-    r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "cat %s" % path})
-    return r.get("output", "")
+    return read_remote_file(path)
 
 def get_visible_texts(xml_str):
     texts = []
@@ -309,36 +253,6 @@ def get_visible_texts(xml_str):
             if cd and cd != t: texts.append(cd)
     except: pass
     return texts
-
-
-def has_webview_check(xml_str):
-    """Return True if any WebView node exists in the UI dump."""
-    x = xml_str.find("<?xml") if xml_str else -1
-    if x < 0:
-        return False
-    try:
-        root = ET.fromstring(xml_str[x:])
-    except Exception:
-        return False
-    for node in root.iter("node"):
-        if (node.get("class") or "").strip() == "android.webkit.WebView":
-            return True
-    return False
-
-
-def wait_for_no_webview(tag_prefix, timeout_s=20):
-    """Dump UI until no WebView is present, or timeout. Return True if cleared."""
-    deadline = time.time() + timeout_s
-    attempt = 0
-    while time.time() < deadline:
-        attempt += 1
-        xml = dump_ui("%s_%d" % (tag_prefix, attempt))
-        if not has_webview_check(xml):
-            print("  [webview cleared] after %d dump(s)" % attempt)
-            return True
-        time.sleep(2)
-    print("  [webview warning] still present after %.0fs" % timeout_s)
-    return False
 
 def find_and_tap(xml_str, queries, step_label):
     if isinstance(queries, str): queries = [queries]
@@ -371,6 +285,86 @@ def find_and_tap(xml_str, queries, step_label):
     else:
         print("  [%s] NOT FOUND: %s" % (step_label, queries[:3]))
         return False
+
+# ── Business-page helper used by both search verify and interactions ──────
+def ifind(xml_str, query):
+    xs = xml_str.find("<?xml") if xml_str else -1
+    if xs < 0: return None
+    try: root = ET.fromstring(xml_str[xs:])
+    except: return None
+    ql = query.lower(); best = None; best_score = 999
+    for node in root.iter("node"):
+        t = (node.get("text", "") or "").strip().lower()
+        cd = (node.get("content-desc", "") or "").strip().lower()
+        rid = (node.get("resource-id", "") or "").lower()
+        for field in [t, cd, rid]:
+            if not field: continue
+            if field == ql: score = 0
+            elif field.startswith(ql + " ") or field.startswith(ql + "_") or field.startswith(ql): score = 1
+            elif ql in field: score = 2
+            else: continue
+            if score < best_score:
+                best_score = score
+                bounds = node.get("bounds", "")
+                try:
+                    x1,y1,x2,y2 = map(int, bounds.replace("[","").replace("]",",").rstrip(",").split(","))
+                    best = ((x1+x2)//2, (y1+y2)//2)
+                except: pass
+    return best
+
+
+def list_buttons(xml_str):
+    xs = xml_str.find("<?xml") if xml_str else -1
+    if xs < 0: return
+    try: root = ET.fromstring(xml_str[xs:])
+    except: return
+    found = set()
+    for node in root.iter("node"):
+        for attr in ["text", "content-desc", "resource-id"]:
+            v = (node.get(attr, "") or "").strip()
+            if v and any(k.lower() in v.lower() for k in ["Directions", "Call", "Photos", "Reviews", "Website", "Save", "Overview", "Start", "Message"]):
+                found.add("%s=%s" % (attr, v))
+    print("  [buttons] %s" % " | ".join(sorted(found)[:12]))
+
+
+def ibiz():
+    _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "uiautomator dump /sdcard/_run_ibiz.xml"})
+    time.sleep(1.5)
+    x = read_remote_file("/sdcard/_run_ibiz.xml")
+    ts = re.findall(r'text="([^"]*)"', x)
+    cds = re.findall(r'content-desc="([^"]*)"', x)
+    j = " ".join(ts + cds)
+    biz_lower = BUSINESS.lower().replace("&", " ")
+    words = biz_lower.split()
+    biz_match = biz_lower in j
+    if not biz_match:
+        for n in [min(4, len(words)), min(3, len(words)), 2]:
+            if n >= 2 and n <= len(words):
+                frag = " ".join(words[:n])
+                if frag in j:
+                    biz_match = True
+                    break
+    if not biz_match and words:
+        biz_match = words[0] in j
+    mk = ["Directions","Call","Save","Overview","Reviews","Photos","Website","About","Address"]
+    fm = [m for m in mk if m.lower() in j.lower()]
+    print("  [ibiz] business match=%s  markers=%s" % (biz_match, fm))
+    return biz_match or len(fm) >= 1, x
+
+def irecover():
+    for _ in range(4):
+        ok, x = ibiz()
+        if ok: return True, x
+        focus = sh("dumpsys window | grep mCurrentFocus").strip()
+        if "dialer" in focus.lower() or "contacts" in focus.lower():
+            sh("input keyevent KEYCODE_BACK"); time.sleep(1.5)
+        elif "launcher" in focus.lower():
+            sh("monkey -p com.google.android.apps.maps -c android.intent.category.LAUNCHER 1"); time.sleep(3)
+        elif "maps" in focus.lower():
+            sh("input keyevent KEYCODE_BACK"); time.sleep(1.5)
+        else:
+            sh("input keyevent KEYCODE_BACK"); time.sleep(1)
+    return False, x
 
 # ========================================================================
 # MAIN
@@ -504,18 +498,48 @@ try:
         _current_lock_ip = None
 
     # ══════════════════════════════════════════════════════════════════════
-    # \n    # GPS SETUP (native GeelarK API  no GPS JoyStick app)\n    # \n    print("\\n=== GPS Setup ===")\n\n    # Stop Maps so it picks up the new location on next launch\n    sh("am force-stop %s" % MAPS_PKG)\n    sh("am force-stop com.google.android.gms")\n    sh("input keyevent KEYCODE_HOME")\n    time.sleep(1)\n\n    # Ensure Maps has location permissions\n    for perm in ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "ACCESS_BACKGROUND_LOCATION", "POST_NOTIFICATIONS"]:\n        sh("pm grant %s android.permission.%s" % (MAPS_PKG, perm))\n    sh("settings put secure location_mode 3")\n    time.sleep(WAIT)\n\n    # Set GPS directly via GeelarK API\n    gps_payload = {"list": [{"id": PHONE, "latitude": GPS_LAT, "longitude": GPS_LNG}]}\n    try:\n        r = _post("/open/v1/phone/gps/set", gps_payload)\n        print("  Set GPS via API: %s" % r)\n        mock_ok = r.get("successAmount", 0) >= 1 or r.get("totalAmount", 0) >= 1\n    except Exception as e:\n        print("  WARNING: Set GPS API failed: %s" % e)\n        mock_ok = False\n\n    # Verify location was set\n    time.sleep(2)\n    try:\n        r = _post("/open/v1/phone/gps/get", {"ids": [PHONE]})\n        print("  Get GPS: %s" % r)\n    except Exception as e:\n        print("  WARNING: Get GPS API failed: %s" % e)\n\n    print("GPS: %s" % ("OK" if mock_ok else "FAIL"))\n    if MODE in ("brand-1km", "local-discovery"):\n        print("GPS location: %.6f, %.6f (%.2f km from business)" % (GPS_LAT, GPS_LNG, DISTANCE_KM))\n\n    time.sleep(2)\n\n    # YOUTUBE BEFORE MAPS (if timing is "before" or "both")
+    # GPS SETUP — native GeelarK API
+    # ══════════════════════════════════════════════════════════════════════
+    print("\n=== GPS Setup (GeelarK API) ===")
+    sh("am force-stop %s" % MAPS_PKG); time.sleep(1)
+    sh("am force-stop com.google.android.gms"); time.sleep(0.5)
+    sh("settings put secure location_mode 3")
+    time.sleep(1)
+
+    # Grant Maps location permissions
+    for perm in ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "ACCESS_BACKGROUND_LOCATION"]:
+        sh("pm grant %s android.permission.%s" % (MAPS_PKG, perm))
+        sh("pm grant com.google.android.gms android.permission.%s" % perm)
+
+    # Set GPS via GeelarK native API
+    try:
+        r = _post("/open/v1/phone/gps/set", {
+            "list": [{"id": PHONE, "latitude": GPS_LAT, "longitude": GPS_LNG}]
+        })
+        print("  GPS set: successAmount=%s" % r.get("successAmount", 0))
+    except Exception as e:
+        print("  GPS set failed: %s" % e)
+
+    # Verify
+    try:
+        r = _post("/open/v1/phone/gps/get", {"ids": [PHONE]})
+        loc = r.get("list", [{}])[0] if r.get("list") else {}
+        print("  GPS verify: lat=%s lon=%s" % (loc.get("latitude", "?"), loc.get("longitude", "?")))
+    except Exception as e:
+        print("  GPS verify failed: %s" % e)
+
+    print("GPS: set via GeelarK API")
+    if MODE in ("brand-1km", "local-discovery"):
+        print("GPS location: %.6f, %.6f (%.2f km from business)" % (GPS_LAT, GPS_LNG, DISTANCE_KM))
+
+    # ══════════════════════════════════════════════════════════════════════
+    # YOUTUBE BEFORE MAPS
     # ══════════════════════════════════════════════════════════════════════
     if YOUTUBE_TIMING in ("before", "both"):
         print()
         print("=" * 70)
         print("[YouTube] running BEFORE Maps for %s" % LABEL)
         print("=" * 70)
-
-        # Grant YouTube notification permission up front (Android 13+)
-        sh("pm grant %s android.permission.POST_NOTIFICATIONS" % "com.google.android.youtube")
-        time.sleep(1)
-
         video_count = random.randint(3, 8)
         yt_keyword = random.choice(_YOUTUBE_KEYWORDS) if random.random() < 0.60 else ""
         _run_youtube_flow(PHONE, ACC_ID, video_count, keyword=yt_keyword, client=client)
@@ -546,211 +570,183 @@ try:
         find_and_tap(xml, ["Yes", "Turn on", "Agree", "OK", "Got it"], "location_accuracy")
         time.sleep(2)
 
-    # For brand-1km and money-kw: use RPA workflow
-    # For local-discovery: simplified shell-based browse
     if MODE in ("brand-1km", "money-kw"):
-        gal = client.export_rpa_flow("624431313889263826")
-        data = json.loads(gal)
-        for step in data["content"]["contents"]:
-            if step["type"] == "inputContent":
-                step["config"]["content"] = [KEYWORD]
-                print("Injected keyword: %s" % KEYWORD)
-            if step["type"] == "forTimes":
-                nc = []
-                for child in step["config"]["children"]:
-                    nc.append(child)
-                    if child["type"] == "click":
-                        for fc in child["config"].get("filterCollection", []):
-                            for f in fc:
-                                if f.get("type") == "text":
-                                    f["content"] = BUSINESS
-                                    print("Injected business: %s" % BUSINESS)
-                        nc.append({"type": "waitTime", "config": {"_a": "8", "_b": "10"}})
-                step["config"]["children"] = nc
-        fid = client.import_rpa_flow(json.dumps(data))
-        tid = client.run_custom_flow(flow_id=fid, phone_id=PHONE, param_map={}, task_name="%s - %s" % (RUN_NAME, LABEL))
-        print("Flow: %s / Task: %s" % (fid, tid))
+        # Dismiss notification banners before opening Maps
+        sh("input keyevent KEYCODE_HOME")
+        time.sleep(1)
+        sh("input statusbar collapse")
+        time.sleep(1)
 
-        dl = time.time() + 300
-        st = "Unknown"
-        while time.time() < dl:
-            time.sleep(5)
-            ts = client.query_tasks([tid])
-            s = ts[0].get("status", -1) if ts else -1
-            sm = {1: "Waiting", 2: "InProgress", 3: "Completed", 4: "Failed"}
-            st = sm.get(s, str(s))
-            print("  t+%ds: %s" % (int(time.time() - (dl - 300)), st))
-            if st in ("Completed", "Failed"): break
-        print("Flow ended: %s" % st)
+        # Open Maps fresh and search via geo intent
+        sh("am force-stop com.google.android.apps.maps"); time.sleep(1)
+        search_term = KEYWORD.replace(" ", "+").replace("&", "%26")
+        sh("am start -a android.intent.action.VIEW -d 'geo:0,0?q=%s' com.google.android.apps.maps" % search_term)
+        time.sleep(10)
+        print("  [search] dumping UI immediately after geo intent")
 
-        # Verify
-        time.sleep(2)
-        r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "uiautomator dump /sdcard/_run_final.xml"})
-        time.sleep(1.5)
-        r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "cat /sdcard/_run_final.xml"})
-        x = r.get("output", "") or ""
-        texts = re.findall(r'text="([^"]*)"', x)
-        joined = " ".join(texts)
-        markers = ["Directions", "Call", "Website", "Reviews", "Share", "Save", "Overview"]
-        fm = [m for m in markers if m.lower() in joined.lower()]
-        import html as _h
-        has_biz = BUSINESS.lower()[:20] in _h.unescape(joined).lower()
-        print("Business visible: %s | Markers: %s" % (has_biz, fm))
+        # Build progressively shorter business name queries
+        biz_queries = [BUSINESS]
+        words = BUSINESS.replace("&", " ").split()
+        for n in [min(4, len(words)), min(3, len(words)), 2]:
+            if n >= 2 and n <= len(words):
+                short = " ".join(words[:n])
+                if short not in biz_queries:
+                    biz_queries.append(short)
+        if words and words[0] not in biz_queries:
+            biz_queries.append(words[0])
+
+        def try_text_tap(stage_label):
+            xml = dump_ui("search_" + stage_label)
+            tapped = find_and_tap(xml, biz_queries, "search_biz")
+            if not tapped:
+                tapped = find_and_tap(xml, ["Open", "Closed", "Reviews", "Directions", "Website", "Call"], "search_markers")
+            return tapped
+
+        tapped = try_text_tap("1")
+        time.sleep(4)
+        ob, xml = ibiz()
+
+        if not ob and not tapped:
+            print("  [search] gently expanding peeking card")
+            sh("input swipe %d %d %d %d 200" % (w//2, int(h*0.66), w//2, int(h*0.62)))
+            time.sleep(2)
+            tapped = try_text_tap("2")
+            time.sleep(4)
+            ob, xml = ibiz()
+
+        if not ob:
+            fallbacks = [
+                (int(w * 0.50), int(h * 0.52), "title top"),
+                (int(w * 0.50), int(h * 0.56), "title center"),
+                (int(w * 0.25), int(h * 0.56), "title left"),
+                (int(w * 0.75), int(h * 0.56), "title right"),
+                (int(w * 0.50), int(h * 0.60), "card upper"),
+                (int(w * 0.50), int(h * 0.64), "card center"),
+            ]
+            for fx, fy, label in fallbacks:
+                print("  [search] not on business page, tapping %s (%d, %d)" % (label, fx, fy))
+                tap(fx, fy)
+                time.sleep(4)
+                ob, xml = ibiz()
+                if ob:
+                    print("  [search] ibiz() confirmed after %s tap" % label)
+                    break
+
+        if not ob:
+            print("[WARN] Not on business page after search, trying recovery")
+            ob, xml = irecover()
+        if ob:
+            print("[OK] Business page confirmed via ibiz()")
 
         # ══════════════════════════════════════════════════════════════════
-        # INTERACTIONS (brand-1km and money-kw)
+        # BUSINESS INTERACTIONS
         # ══════════════════════════════════════════════════════════════════
         print()
         print("=" * 70)
         print("BUSINESS INTERACTIONS: %s" % LABEL)
         print("=" * 70)
 
-        def ifind(xml_str, query):
-            xs = xml_str.find("<?xml") if xml_str else -1
-            if xs < 0: return None
-            try: root = ET.fromstring(xml_str[xs:])
-            except: return None
-            ql = query.lower(); best = None; best_score = 999
-            for node in root.iter("node"):
-                t = (node.get("text", "") or "").strip().lower()
-                cd = (node.get("content-desc", "") or "").strip().lower()
-                for field in [t, cd]:
-                    if not field: continue
-                    if field == ql: score = 0
-                    elif field.startswith(ql): score = 1
-                    elif ql in field: score = 2
-                    else: continue
-                    if score < best_score:
-                        best_score = score
-                        bounds = node.get("bounds", "")
-                        try:
-                            x1,y1,x2,y2 = map(int, bounds.replace("[","").replace("]",",").rstrip(",").split(","))
-                            best = ((x1+x2)//2, (y1+y2)//2)
-                        except: pass
-            return best
+        def do_scroll(dwell_seconds=10):
+            scroll_count = max(1, dwell_seconds // 3)
+            for _ in range(scroll_count):
+                sh("input swipe %d %d %d %d %d" % (w//2, int(h*0.65), w//2, int(h*0.35), random.randint(400, 700)))
+                time.sleep(random.uniform(2.0, 4.0))
 
-        def ibiz():
-            r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "uiautomator dump /sdcard/_run_ibiz.xml"})
-            time.sleep(1.5)
-            r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "cat /sdcard/_run_ibiz.xml"})
-            x = r.get("output","") or ""
-            ts = re.findall(r'text="([^"]*)"', x)
-            j = " ".join(ts)
-            bw = BUSINESS.split()
-            pb = " ".join(bw[:2]).lower() if len(bw) >= 2 else BUSINESS.lower()
-            hb = BUSINESS.lower()[:20] in j.lower() or pb in j.lower()
-            mk = ["Directions","Call","Save","Overview","Reviews","Photos"]
-            fm = [m for m in mk if m.lower() in j.lower()]
-            return hb or len(fm) >= 2, x
+        def recover_to_business():
+            """HOME → launch Maps → wait → irecover."""
+            sh("input keyevent KEYCODE_HOME"); time.sleep(1)
+            sh("monkey -p com.google.android.apps.maps -c android.intent.category.LAUNCHER 1"); time.sleep(5)
+            ok_r, xml_r = irecover()
+            if ok_r:
+                print("  [recover] back on business page")
+            else:
+                print("  [recover] WARNING: not on business page")
+            return ok_r, xml_r
 
-        def irecover():
-            for _ in range(4):
-                ok, x = ibiz()
-                if ok: return True, x
-                focus = sh("dumpsys window | grep mCurrentFocus").strip()
-                if "dialer" in focus.lower() or "contacts" in focus.lower():
-                    sh("input keyevent KEYCODE_BACK"); time.sleep(1.5)
-                elif "launcher" in focus.lower():
-                    sh("monkey -p com.google.android.apps.maps -c android.intent.category.LAUNCHER 1"); time.sleep(3)
-                elif "maps" in focus.lower():
-                    sh("input keyevent KEYCODE_BACK"); time.sleep(1.5)
-                else:
-                    sh("input keyevent KEYCODE_BACK"); time.sleep(1)
-            return False, x
-
-        ob, xml = ibiz()
         if not ob:
             print("[WARN] Not on business page, skipping interactions")
         else:
-            # 1. Directions first (major interaction)
-            print("\n--- Directions ---")
-            dc = ifind(xml, "Directions")
-            if dc:
-                tap(dc[0], dc[1]); time.sleep(3)
-                r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "uiautomator dump /sdcard/_run_dm.xml"})
-                time.sleep(1.5); r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "cat /sdcard/_run_dm.xml"})
-                dx = ifind(r.get("output","") or "", "Drive")
-                if dx: tap(dx[0], dx[1]); time.sleep(2)
-                else: tap(int(w*0.15), int(h*0.085)); time.sleep(2)
-                time.sleep(6)
-                sh("input keyevent KEYCODE_BACK"); time.sleep(2)
-                print("[OK] Directions")
+            # Reset page to top before interactions
+            sh("input keyevent KEYCODE_HOME"); time.sleep(1)
+            sh("monkey -p com.google.android.apps.maps -c android.intent.category.LAUNCHER 1"); time.sleep(4)
+            ob, xml = irecover()
 
-            # 2. Reviews
-            print("--- Reviews ---")
-            ob, xml = ibiz()
-            if not ob: ob, xml = irecover()
-            if ob:
-                rc = ifind(xml, "Reviews")
-                if not rc:
-                    for i in range(4):
-                        if rc: break
-                        sh("input swipe %d %d %d %d 400" % (w//2, int(h*0.58), w//2, int(h*0.22))); time.sleep(1.5)
-                        r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "uiautomator dump /sdcard/_run_rs%d.xml" % i})
-                        time.sleep(1.5); r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "cat /sdcard/_run_rs%d.xml" % i})
-                        rc = ifind(r.get("output","") or "", "Reviews")
-                if rc:
-                    tap(rc[0], rc[1]); time.sleep(3)
-                    for i in range(3):
-                        sh("input swipe %d %d %d %d 500" % (w//2, int(h*0.70), w//2, int(h*0.30))); time.sleep(3)
-                    r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "uiautomator dump /sdcard/_run_rev.xml"})
-                    time.sleep(1.5); r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "cat /sdcard/_run_rev.xml"})
-                    mc = ifind(r.get("output","") or "", "More")
+            # Initial slow scroll through the business listing
+            do_scroll(random.randint(8, 18))
+
+            # ── First interaction: Photos OR Reviews (random) ────────────
+            first_choice = random.choice(["photos", "reviews"])
+            print("First interaction: %s" % first_choice)
+
+            ok, xml = irecover()
+            if not ok:
+                print("[SKIP] %s — could not reach business page" % first_choice)
+            else:
+                btn = ifind(xml, first_choice.capitalize())
+                if not btn and first_choice == "photos":
+                    # Scroll down to reveal Photos section
+                    sh("input swipe %d %d %d %d 500" % (w//2, int(h*0.50), w//2, int(h*0.30)))
+                    time.sleep(2)
+                    xml = dump_ui("first_photos_2")
+                    btn = ifind(xml, "Photos")
+                if not btn:
+                    print("[SKIP] %s — button not found" % first_choice)
+                elif first_choice == "photos":
+                    tap(btn[0], btn[1]); time.sleep(3)
+                    for i in range(random.randint(4, 7)):
+                        sh("input swipe %d %d %d %d 300" % (int(w*0.75), h//2, int(w*0.25), h//2))
+                        time.sleep(random.uniform(1.5, 3.0))
+                    time.sleep(random.randint(5, 8))
+                    sh("input keyevent KEYCODE_BACK"); time.sleep(2)
+                    print("[OK] Photos")
+                else:  # reviews
+                    tap(btn[0], btn[1]); time.sleep(3)
+                    for i in range(random.randint(4, 6)):
+                        sh("input swipe %d %d %d %d 500" % (w//2, int(h*0.70), w//2, int(h*0.30)))
+                        time.sleep(random.uniform(2.0, 4.0))
+                    xml = read_remote_file("/sdcard/_run_rev.xml")
+                    mc = ifind(xml, "More")
                     if mc: tap(mc[0], mc[1]); time.sleep(2)
+                    time.sleep(random.randint(6, 10))
                     sh("input keyevent KEYCODE_BACK"); time.sleep(2)
                     print("[OK] Reviews")
 
-            # 3. Website
-            print("--- Website ---")
-            ob, xml = ibiz()
-            if not ob: ob, xml = irecover()
-            if ob:
-                wc = ifind(xml, "Website")
-                if not wc:
-                    sh("input swipe %d %d %d %d 200" % (w//2, int(h*0.45), w//2, int(h*0.30))); time.sleep(1.5)
-                    r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "uiautomator dump /sdcard/_run_ws.xml"})
-                    time.sleep(1.5); r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "cat /sdcard/_run_ws.xml"})
-                    wc = ifind(r.get("output","") or "", "Website")
-                if wc:
-                    tap(wc[0], wc[1]); time.sleep(5)
-                    sh("input keyevent KEYCODE_BACK"); time.sleep(2)
-                    focus = sh("dumpsys window | grep mCurrentFocus").strip()
-                    if "maps" not in focus.lower(): sh("input keyevent KEYCODE_BACK"); time.sleep(1)
-                    print("[OK] Website")
-                else:
-                    print("[SKIP] Website not available")
+            # Recover after first interaction
+            recover_to_business()
 
-            # 4. Photos
-            print("--- Photos ---")
-            ob, xml = ibiz()
-            if not ob: ob, xml = irecover()
-            if ob:
-                pc = ifind(xml, "Photos")
-                if not pc:
-                    sh("input swipe %d %d %d %d 300" % (w//2, int(h*0.50), w//2, int(h*0.25))); time.sleep(1.5)
-                    r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "uiautomator dump /sdcard/_run_ps.xml"})
-                    time.sleep(1.5); r = _post("/open/v1/shell/execute", {"id": PHONE, "cmd": "cat /sdcard/_run_ps.xml"})
-                    pc = ifind(r.get("output","") or "", "Photos")
-                if pc:
-                    tap(pc[0], pc[1]); time.sleep(3)
-                    for i in range(3):
-                        sh("input swipe %d %d %d %d 300" % (int(w*0.75), h//2, int(w*0.25), h//2)); time.sleep(2.5)
-                    sh("input keyevent KEYCODE_BACK"); time.sleep(2)
-                    print("[OK] Photos")
+            # ── Final interaction: Call OR Directions (50/50) ────────────
+            final_choice = random.choice(["call", "directions"])
+            print("Final interaction: %s" % final_choice)
 
-            # 5. Phone Call (last)
-            print("--- Phone Call ---")
-            ob, xml = ibiz()
-            if not ob: ob, xml = irecover()
-            if ob:
-                cc = ifind(xml, "Call")
-                if cc:
-                    tap(cc[0], cc[1]); time.sleep(3)
+            ok, xml = irecover()
+            if not ok:
+                print("[SKIP] %s — could not reach business page" % final_choice)
+            else:
+                btn_label = "Call" if final_choice == "call" else "Directions"
+                btn = ifind(xml, btn_label)
+                if not btn:
+                    # Top buttons sometimes hidden by a scroll; reset to top
+                    sh("input swipe %d %d %d %d 400" % (w//2, int(h*0.25), w//2, int(h*0.45)))
+                    time.sleep(2)
+                    xml = dump_ui("final_" + final_choice)
+                    btn = ifind(xml, btn_label)
+                if not btn:
+                    print("[SKIP] %s — button not found" % final_choice)
+                elif final_choice == "call":
+                    tap(btn[0], btn[1]); time.sleep(random.randint(4, 7))
                     sh("input keyevent KEYCODE_BACK"); time.sleep(1.5)
                     focus = sh("dumpsys window | grep mCurrentFocus").strip()
                     if "dialer" in focus.lower() or "contacts" in focus.lower():
                         sh("input keyevent KEYCODE_BACK"); time.sleep(1)
                     print("[OK] Phone Call")
+                else:  # directions
+                    tap(btn[0], btn[1]); time.sleep(random.randint(6, 10))
+                    sh("input keyevent KEYCODE_BACK"); time.sleep(1.5)
+                    sh("input keyevent KEYCODE_BACK"); time.sleep(1.5)
+                    print("[OK] Directions")
+
+            # Final recovery
+            recover_to_business()
 
     elif MODE == "local-discovery":
         # Local discovery — geo intent search, open a listing, interact with it
@@ -808,24 +804,18 @@ try:
         print("[OK] %s browsed" % KEYWORD)
 
     # ══════════════════════════════════════════════════════════════════════
-    # YOUTUBE AFTER MAPS (if timing is "after" or "both")
+    # YOUTUBE AFTER MAPS
     # ══════════════════════════════════════════════════════════════════════
     if YOUTUBE_TIMING in ("after", "both"):
         print()
         print("=" * 70)
         print("[YouTube] running AFTER Maps for %s" % LABEL)
         print("=" * 70)
-
-        # Grant YouTube notification permission up front (Android 13+)
-        sh("pm grant %s android.permission.POST_NOTIFICATIONS" % "com.google.android.youtube")
-        time.sleep(1)
-
         video_count = random.randint(3, 8)
         yt_keyword = random.choice(_YOUTUBE_KEYWORDS) if random.random() < 0.60 else ""
         _run_youtube_flow(PHONE, ACC_ID, video_count, keyword=yt_keyword, client=client)
         sh("input keyevent KEYCODE_HOME"); time.sleep(2)
     elif YOUTUBE_TIMING not in ("before", "both"):
-        # already logged "skipped" above, or was "none"
         pass
 
 except Exception as _run_err:
