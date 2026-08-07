@@ -58,7 +58,10 @@ def read_remote_file(remote_path, chunk_size=1800):
         chunk = sh(cmd)
         if not chunk:
             break
-        chunks.append(chunk.replace("\r\n", "\n"))
+        # Strip trailing newline added by shell, then normalize line endings
+        chunk = chunk.rstrip("\r\n").replace("\r\n", "\n")
+        if chunk:
+            chunks.append(chunk)
         if len(chunk) < chunk_size:
             break
         offset += chunk_size
@@ -82,8 +85,11 @@ def find_and_tap(xml, queries, label):
         return False
     try:
         import xml.etree.ElementTree as ET
-        root = ET.fromstring(xml[x:])
-    except Exception:
+        # Sanitize malformed XML: fix unescaped & not part of valid entities
+        sanitized = re.sub(r'&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)', '&amp;', xml[x:])
+        root = ET.fromstring(sanitized)
+    except Exception as e:
+        print("  [%s] XML parse error: %s" % (label, str(e)[:100]))
         return False
     best = None
     best_score = 999
@@ -225,13 +231,151 @@ def main():
             save_report("install", False, "App did not install", "Package not found after 5 min", "Check Play Store availability or use APK")
             return
 
+    # ── STEP 0: Clear stale dialogs and launch cleanly ────────────────────
     sh("am force-stop %s" % pkg)
     time.sleep(1)
+    # Dismiss any stale Google/perm dialogs from previous runs
+    for _ in range(3):
+        back()
+        time.sleep(0.5)
+    time.sleep(1)
+
     sh("monkey -p %s -c android.intent.category.LAUNCHER 1" % pkg)
     time.sleep(8)
 
+    # Handle any system dialogs that might appear on top
     xml = dump_ui("app_opened")
-    save_report("open_app", True, "App opened", None, "Implement signup flow")
+    for attempt in range(5):
+        if "permissioncontroller" in xml:
+            print("Permission dialog attempt %d - pressing ENTER" % (attempt+1))
+            sh("input keyevent KEYCODE_ENTER")
+            time.sleep(4)
+            xml = dump_ui("perm_%d" % (attempt+1))
+        elif "com.twitter.android" in xml:
+            print("Twitter app visible after attempt %d" % (attempt+1))
+            break
+        elif "com.google.android.gms" in xml:
+            print("Stale Google dialog on attempt %d - pressing BACK" % (attempt+1))
+            back()
+            time.sleep(2)
+            xml = dump_ui("stale_google_%d" % (attempt+1))
+        else:
+            print("Unknown screen attempt %d - pressing BACK and relaunching" % (attempt+1))
+            back()
+            time.sleep(2)
+            sh("monkey -p %s -c android.intent.category.LAUNCHER 1" % pkg)
+            time.sleep(8)
+            xml = dump_ui("retry_%d" % (attempt+1))
+
+    save_report("open_app", True, "App opened", None, "Begin Google sign-in")
+
+    # ── STEP 1: Tap "Continue with Google" ───────────────────────────────
+    if "com.twitter.android" not in xml:
+        print("ERROR: Twitter not visible, cannot proceed")
+        save_report("fatal", False, "Twitter app not visible after 5 attempts", xml[:300], "Manual intervention needed")
+        return
+
+    print("Tapping Continue with Google (left icon ~585, 1884)...")
+    tap(585, 1884)
+    time.sleep(8)
+    xml = dump_ui("after_google_tap")
+
+    # ── STEP 2: Select Google account ─────────────────────────────────────
+    if "Choose an account" in xml or "crystalwiggins9533" in xml:
+        print("Google account chooser visible - selecting Crystal Wiggins")
+        tap(720, 1675)  # Account container center
+        time.sleep(10)
+        xml = dump_ui("after_account_select")
+    else:
+        print("Unexpected screen after Google tap")
+        save_report("google_fail", False, "Google account chooser not found", xml[:500], "Check dump")
+        return
+
+    # ── STEP 3: Handle Google consent / terms screen ─────────────────────
+    google_consent_keywords = [
+        "Agree and share", "AGREE", "ALLOW",
+        "NEXT", "CONTINUE", "ACCEPT", "I AGREE", "YES", "OK"
+    ]
+    for consent_attempt in range(5):
+        if "com.twitter.android" in xml:
+            print("Back in Twitter app - consent done!")
+            break
+        if "com.google.android.gms" in xml:
+            print("Google consent screen attempt %d" % (consent_attempt+1))
+            if find_and_tap(xml, google_consent_keywords, "consent"):
+                time.sleep(6)
+                xml = dump_ui("consent_%d" % (consent_attempt+1))
+            else:
+                print("  No consent button found, trying fallback taps")
+                # Try known button positions
+                for tap_x, tap_y, tap_label in [
+                    (1013, 2139, "Agree_share"),  # "Agree and share" button
+                    (1200, 2805, "NEXT_full"),    # NEXT in full-screen consent
+                    (720, 2229, "bottom_center"), # generic bottom center
+                ]:
+                    print("  Tapping fallback: %s at (%d, %d)" % (tap_label, tap_x, tap_y))
+                    tap(tap_x, tap_y)
+                    time.sleep(5)
+                xml = dump_ui("consent_fallback_%d" % (consent_attempt+1))
+        else:
+            print("Unknown screen after account select - dumping")
+            xml = dump_ui("unknown_post_consent_%d" % (consent_attempt+1))
+            break
+
+    save_report("google_signin", True, "Google sign-in flow completed", None, "Handle account verification")
+
+    # ── STEP 4: Handle post-signup screens ───────────────────────────────
+    locked_keywords = ["Verify your email", "Verify email", "locked", "Confirm"]
+
+    for post_attempt in range(8):
+        if "Your account has been locked" in xml:
+            print("Account locked screen - need to verify email")
+            if find_and_tap(xml, ["Verify your email address", "Verify your email", "Verify email"], "verify_email"):
+                time.sleep(8)
+                xml = dump_ui("after_verify_tap_%d" % (post_attempt+1))
+                save_report("verify_email", True, "Tapped email verification", None, "Check verification result")
+            else:
+                save_report("verify_email", False, "Could not find verify button", xml[:500], "Manual check")
+                break
+        elif "Enter your password" in xml or "password" in xml.lower():
+            print("Password setup screen detected")
+            save_report("password_screen", True, "Password setup screen", None, "Need to set password")
+            break
+        elif "Set up your profile" in xml or "Add a photo" in xml or "Pick a profile" in xml:
+            print("Profile setup screen")
+            # Skip for now, tap NEXT or SKIP
+            if find_and_tap(xml, ["SKIP", "NEXT", "Continue"], "profile_skip"):
+                time.sleep(5)
+                xml = dump_ui("after_profile_%d" % (post_attempt+1))
+            else:
+                tap(1200, 2805)  # generic next
+                time.sleep(5)
+                xml = dump_ui("profile_fallback_%d" % (post_attempt+1))
+        elif "What are you interested in" in xml or "Follow" in xml or "Interests" in xml:
+            print("Interests/topics screen")
+            if find_and_tap(xml, ["SKIP", "NEXT", "Continue", "Follow"], "interests_skip"):
+                time.sleep(5)
+                xml = dump_ui("after_interests_%d" % (post_attempt+1))
+            else:
+                tap(1200, 2805)
+                time.sleep(5)
+                xml = dump_ui("interests_fallback_%d" % (post_attempt+1))
+        elif "See what's happening" in xml:
+            print("Back at initial screen - Google sign-in may have failed")
+            save_report("signin_fail", False, "Returned to initial screen after Google sign-in", xml[:500], "Try phone signup instead")
+            break
+        elif "com.twitter.android" in xml:
+            # Unknown Twitter screen - take screenshot and move on
+            print("Unknown Twitter screen - dumping for analysis")
+            save_report("unknown_twitter", True, "Unknown Twitter screen", xml[:500], "Analyze screenshot")
+            # Try tapping common positions for NEXT/SKIP
+            tap(1200, 2805)
+            time.sleep(5)
+            xml = dump_ui("unknown_twitter_%d" % (post_attempt+1))
+        else:
+            print("Non-Twitter screen - might be in external flow")
+            save_report("external_screen", True, "External screen", xml[:300], "Handle external flow")
+            break
 
 if __name__ == "__main__":
     try:
