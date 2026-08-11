@@ -1010,7 +1010,7 @@ async def trigger_warmup_bulk_by_accounts(body: dict):
 async def trigger_batch_run(body: BatchRunRequest):
     """Run _run.py for each selected account sequentially. Returns job_id for polling."""
     global _active_batch_job_id
-    if body.mode not in ("brand-1km", "money-kw", "local-discovery"):
+    if body.mode not in ("brand-1km", "money-kw", "local-discovery", "maps-kp"):
         raise HTTPException(400, f"Invalid mode: {body.mode}")
     if not body.account_ids:
         raise HTTPException(400, "No account IDs provided")
@@ -1035,7 +1035,10 @@ async def trigger_batch_run(body: BatchRunRequest):
         }
 
     loop = asyncio.get_event_loop()
-    loop.run_in_executor(None, _run_batch_sync, job_id, body.account_ids, body.mode)
+    if body.mode == "maps-kp":
+        loop.run_in_executor(None, _run_maps_kp_batch, job_id, body.account_ids)
+    else:
+        loop.run_in_executor(None, _run_batch_sync, job_id, body.account_ids, body.mode)
     return {"job_id": job_id, "status": "running"}
 
 
@@ -1134,6 +1137,207 @@ def _run_batch_sync(job_id: str, account_ids: list[str], mode: str) -> None:
         job["result_detail"] = detail
 
     _batch_run_semaphore.release()
+
+
+# ── Maps KP Batch Runner ────────────────────────────────────────────────────
+
+def _stop_phone_hard(client, phone_id: str) -> bool:
+    """Stop a GeelarK phone and verify it's stopped. Retries 3x with status polling.
+
+    HARDWIRED: absolutely no proceeding until phone is confirmed stopped (status 2 or 3).
+    """
+    for attempt in range(3):
+        try:
+            client.stop_phone(phone_id)
+            time.sleep(5)
+            statuses = client.get_phone_status([phone_id])
+            st = statuses[0].get("status") if statuses else -1
+            if st in (2, 3):  # 2=stopped, 3=stopping/expired
+                return True
+        except Exception:
+            pass
+        if attempt < 2:
+            time.sleep(3)
+    return False
+
+
+def _run_maps_kp_batch(job_id: str, account_ids: list[str]) -> None:
+    """Run Maps KP shell script for each selected account sequentially.
+
+    HARDWIRED SAFETY RULES — NO EXCEPTIONS:
+      1. Stop previous phone before starting next (verified via status polling).
+      2. Rotate proxy IP for each new phone (fresh IP guaranteed via polling).
+      3. Absolutely no two phones running simultaneously (semaphore + verify).
+      4. Stop the last phone when the batch completes.
+    """
+    job = _jobs.get(job_id)
+    if job:
+        job["phase"] = "queued"
+    _batch_run_semaphore.acquire()
+    job = _jobs.get(job_id)
+    if job:
+        job["phase"] = "running"
+
+    # Initialise early so finally-block is safe even on early return
+    previous_phone_id = None
+    client = None
+
+    CSV_PATH = Path(r"C:\Users\Administrator\Desktop\AccountWarmer-Deploy-Enhanced\data\accounts_business_mapping.csv")
+    gl_accounts = _load_gl_accounts()
+    gl_by_id = {a["id"]: a for a in gl_accounts}
+
+    # Build email → business info map from CSV
+    email_to_biz = {}
+    try:
+        with open(CSV_PATH) as f:
+            for row in csv.DictReader(f):
+                email = (row.get("account_email") or "").lower().strip()
+                if email and row.get("business_name", "").strip():
+                    email_to_biz[email] = {
+                        "business_name": row["business_name"].strip(),
+                        "business_area": (row.get("business_area") or "").strip(),
+                        "business_lat": float(row.get("business_lat", 0) or 0),
+                        "business_lng": float(row.get("business_lng", 0) or 0),
+                    }
+    except Exception as e:
+        if job:
+            job["status"] = "error"
+            job["summary"] = f"CSV read error: {e}"
+        _batch_run_semaphore.release()
+        return
+
+    # Lazy imports — only when Maps KP mode is used
+    from core.geelark_client import GeelarKClient
+    from geelark_orchestrator.scripts.moving_gps import ensure_phone_running, set_gps
+    from activities.google_login_mobile import _rotate_proxy_ip
+    from warming_runner import run_maps_kp_shell
+
+    client = GeelarKClient()
+    total = len(account_ids)
+    results = []
+    detail = []
+
+    try:
+        for idx, gl_id in enumerate(account_ids):
+            gl_acc = gl_by_id.get(gl_id)
+            if not gl_acc:
+                detail.append({"account": gl_id, "status": "error", "info": "not found"})
+                results.append({"account_id": gl_id, "success": False, "error": "not found"})
+                continue
+
+            email = (gl_acc.get("email") or "").lower().strip()
+            biz = email_to_biz.get(email)
+            if not biz:
+                detail.append({"account": gl_id, "status": "error",
+                               "info": f"no business mapping for {email}"})
+                results.append({"account_id": gl_id, "success": False, "error": "no business mapping"})
+                continue
+
+            phone_id = gl_acc.get("geelark_phone_id")
+            if not phone_id:
+                detail.append({"account": gl_id, "status": "error", "info": "not provisioned"})
+                results.append({"account_id": gl_id, "success": False, "error": "not provisioned"})
+                continue
+
+            progress = f"{idx + 1}/{total}"
+            if job:
+                job["current_account"] = gl_id
+                job["progress"] = progress
+
+            # ── RULE 1: Stop previous phone ──────────────────────────────────
+            if previous_phone_id and previous_phone_id != phone_id:
+                detail.append({"account": gl_id, "status": "running",
+                               "info": f"stopping previous phone {previous_phone_id}..."})
+                if job:
+                    job["result_detail"] = list(detail)
+                _stop_phone_hard(client, previous_phone_id)
+                previous_phone_id = None
+
+            # ── RULE 2: Rotate proxy IP — fresh IP guaranteed ────────────────
+            detail.append({"account": gl_id, "status": "running", "info": "rotating proxy IP..."})
+            if job:
+                job["result_detail"] = list(detail)
+            new_ip = _rotate_proxy_ip(gl_id)
+            if not new_ip:
+                detail[-1] = {"account": gl_id, "status": "error",
+                              "info": "proxy rotation failed — SKIPPING"}
+                results.append({"account_id": gl_id, "success": False, "error": "proxy rotation failed"})
+                continue
+            detail[-1] = {"account": gl_id, "status": "running", "info": f"fresh IP: {new_ip}"}
+            if job:
+                job["result_detail"] = list(detail)
+
+            # ── RULE 3: Start phone — guaranteed no other phone running ──────
+            # Stop this phone first for a clean slate
+            _stop_phone_hard(client, phone_id)
+
+            detail[-1] = {"account": gl_id, "status": "running", "info": "starting phone..."}
+            if job:
+                job["result_detail"] = list(detail)
+            start_ok, _ = ensure_phone_running(client, phone_id)
+            if not start_ok:
+                detail[-1] = {"account": gl_id, "status": "error", "info": "phone start failed"}
+                results.append({"account_id": gl_id, "success": False, "error": "phone start failed"})
+                continue
+
+            # Set GPS to business location
+            if biz["business_lat"] and biz["business_lng"]:
+                set_gps(phone_id, biz["business_lat"], biz["business_lng"])
+                time.sleep(2)
+
+            # ── Run Maps KP script ───────────────────────────────────────────
+            detail[-1] = {"account": gl_id, "status": "running",
+                          "info": f"Maps KP: '{biz['business_name']}'..."}
+            if job:
+                job["result_detail"] = list(detail)
+
+            try:
+                kp_result = run_maps_kp_shell(
+                    client, phone_id,
+                    business_name=biz["business_name"],
+                    business_area=biz.get("business_area", ""),
+                    task_timeout=600,
+                )
+                ok = kp_result.get("success", False)
+                duration = kp_result.get("duration_s", 0)
+                error = kp_result.get("error", "")
+                markers = kp_result.get("markers", {})
+                info = f"{'OK' if ok else 'FAIL'} in {duration:.0f}s"
+                if error:
+                    info += f" — {error[:150]}"
+                detail[-1] = {"account": gl_id, "status": "done" if ok else "error",
+                              "info": info, "markers": markers}
+                results.append({"account_id": gl_id, "success": ok,
+                                "duration_s": duration, "markers": markers})
+            except Exception as e:
+                detail[-1] = {"account": gl_id, "status": "error", "info": str(e)[:200]}
+                results.append({"account_id": gl_id, "success": False, "error": str(e)})
+
+            # Track for next iteration
+            previous_phone_id = phone_id
+
+            if job:
+                job["result_detail"] = list(detail)
+
+    finally:
+        # ── RULE 4: Stop last phone when batch completes ─────────────────────
+        if previous_phone_id and client:
+            try:
+                _stop_phone_hard(client, previous_phone_id)
+            except Exception:
+                pass
+
+        ok_count = sum(1 for r in results if r.get("success"))
+        fail_count = len(results) - ok_count
+        if job:
+            job["result"] = results
+            job["summary"] = f"{ok_count}/{total} OK" + (f", {fail_count} failed" if fail_count else "")
+            job["status"] = "completed"
+            job["phase"] = "complete"
+            job["current_account"] = ""
+            job["result_detail"] = detail
+
+        _batch_run_semaphore.release()
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
