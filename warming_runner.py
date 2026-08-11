@@ -751,20 +751,130 @@ def run_maps_kp_shell(client: GeelarKClient, phone_id: str,
             dy = (int(fb.group(2)) + int(fb.group(4))) // 2
     log.info("    Directions button at (%d, %d)", dx, dy)
     shell(phone_id, f"input tap {dx} {dy}")
-    time.sleep(5)
+    time.sleep(8)  # wait for route to calculate + load
     ss("s11_directions_screen")
 
-    d_after = _xml_count("Directions")
-    c_after = _xml_count("Call")
-    log.info("    Post-tap: Directions=%d, Call=%d", d_after, c_after)
+    # ── 3a-continued: Start Navigation ──────────────────────────────────
+    # Find the Start button — full-width clickable bar at bottom of directions
+    # screen. On Android Maps this has empty content-desc (icon-only).
+    log.info("  [Interaction] Start Navigation")
+    _xml_dump(phone_id); time.sleep(0.3)
+    xml_nav = ""
+    for i in range(35):
+        offset = i * 2000
+        ok, chunk = shell(phone_id,
+            f"head -c $(({offset} + 2000)) /sdcard/ui.xml | tail -c 2000")
+        if ok and chunk: xml_nav += chunk
+        if not ok or len(chunk) < 2000: break
 
+    # Find the bottom-most wide clickable element (the Start button)
+    start_x, start_y = 540, 1856  # fallback from probe
+    best_y = 0
+    for m in re.finditer(
+        r'<node[^>]*clickable="true"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"[^>]*/?>',
+        xml_nav):
+        x1, y1, x2, y2 = int(m.group(1)), int(m.group(2)), int(m.group(3)), int(m.group(4))
+        w = x2 - x1
+        if w > 800 and y1 > best_y:  # wide bar at bottom
+            best_y = y1
+            start_x = (x1 + x2) // 2
+            start_y = (y1 + y2) // 2
+    log.info("    Start button at (%d, %d)", start_x, start_y)
+    shell(phone_id, f"input tap {start_x} {start_y}")
+    time.sleep(4)
+    ss("s11b_navigation_started")
+
+    # Handle first-time popups — Maps shows dialogs the first time you navigate.
+    # Use a single XML read + fast keyword scan (avoid ~60s per _find_button_center).
+    time.sleep(2)
+    _xml_dump(phone_id); time.sleep(0.3)
+    xml_popup = ""
+    for i in range(25):
+        offset = i * 2000
+        ok, chunk = shell(phone_id,
+            f"head -c $(({offset} + 2000)) /sdcard/ui.xml | tail -c 2000")
+        if ok and chunk: xml_popup += chunk
+        if not ok or len(chunk) < 2000: break
+
+    popup_labels = ["GOT IT", "OK", "Dismiss", "No thanks", "Continue", "Accept",
+                     "SKIP", "Close", "Not now", "Later"]
+    for label in popup_labels:
+        fb_popup = re.search(
+            rf'content-desc="[^"]*{re.escape(label)}[^"]*"[^>]*'
+            r'bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', xml_popup, re.I)
+        if fb_popup:
+            pp_x = (int(fb_popup.group(1)) + int(fb_popup.group(3))) // 2
+            pp_y = (int(fb_popup.group(2)) + int(fb_popup.group(4))) // 2
+            log.info("    Dismissing popup: '%s' at (%d, %d)", label, pp_x, pp_y)
+            shell(phone_id, f"input tap {pp_x} {pp_y}")
+            time.sleep(1.5)
+            break  # one popup at a time — return loop if more appear
+
+    # Generic dismiss taps at common dialog positions (fallback for non-standard popups)
+    for tap_y in [1600, 1400, 1800, 1200]:
+        shell(phone_id, f"input tap 540 {tap_y}")
+        time.sleep(0.8)
+    ss("s11c_popups_cleared")
+
+    # Let navigation run briefly — since GPS is at the business location,
+    # Maps will quickly register "You have arrived" or similar
+    log.info("    Navigation running (GPS at business — quick arrival)...")
+    time.sleep(10)
+    ss("s11d_navigating")
+
+    # End navigation — use back button, then confirm exit if prompted
+    shell(phone_id, "input keyevent 4")
+    time.sleep(2)
+    # If "Exit navigation" dialog appears, tap to confirm
+    ex, ey = _find_button_center("Exit")
+    if ex > 0:
+        shell(phone_id, f"input tap {ex} {ey}")
+        time.sleep(1.5)
+    ss("s11e_navigation_ended")
+
+    # Handle "How was your journey?" feedback card
+    # Google Maps shows a post-navigation feedback prompt with thumbs up/down
+    log.info("    Looking for post-navigation feedback...")
+    time.sleep(3)
+    _xml_dump(phone_id); time.sleep(0.3)
+    xml_fb = ""
+    for i in range(30):
+        offset = i * 2000
+        ok, chunk = shell(phone_id,
+            f"head -c $(({offset} + 2000)) /sdcard/ui.xml | tail -c 2000")
+        if ok and chunk: xml_fb += chunk
+        if not ok or len(chunk) < 2000: break
+
+    # Find thumbs-up / good-feedback button
+    for fb_kw in ["Thumbs up", "Good", "Like", "Satisfied", "Great", "Yes",
+                   "Happy", "Positive"]:
+        fx, fy = 0, 0
+        fb_match = re.search(
+            rf'content-desc="[^"]*{fb_kw}[^"]*"[^>]*'
+            r'bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', xml_fb, re.I)
+        if fb_match:
+            fx = (int(fb_match.group(1)) + int(fb_match.group(3))) // 2
+            fy = (int(fb_match.group(2)) + int(fb_match.group(4))) // 2
+        if fx > 0:
+            log.info("    Providing positive feedback via '%s' at (%d, %d)",
+                     fb_kw, fx, fy)
+            shell(phone_id, f"input tap {fx} {fy}")
+            time.sleep(2)
+            break
+    else:
+        # No explicit feedback button found — tap center for any implicit dismiss
+        log.info("    No feedback widget found, dismissing any overlay")
+        shell(phone_id, "input tap 540 1200")
+        time.sleep(1)
+
+    # Dismiss feedback card / return to Maps
     shell(phone_id, "input keyevent 4")
     time.sleep(3)
     ss("s12_back_to_panel")
 
     d2 = _xml_count("Directions")
     c2 = _xml_count("Call")
-    log.info("    After back: Directions=%d, Call=%d", d2, c2)
+    log.info("    After navigation: Directions=%d, Call=%d", d2, c2)
 
     # 3b. Call — find button dynamically from XML
     log.info("  [Interaction] Call")
@@ -837,7 +947,62 @@ def run_maps_kp_shell(client: GeelarKClient, phone_id: str,
         shell(phone_id, "input keyevent 4")
         time.sleep(2)
 
-    # Final screenshot (before force-stop so we see actual state)
+    # ── Phase 4: YouTube section ─────────────────────────────────────────
+    log.info("  [Interaction] YouTube")
+    try:
+        # Use business name + area as search term for YouTube
+        yt_search = business_name.split("&")[0].strip()
+        if business_area:
+            yt_search = f"{yt_search} {business_area}"
+        yt_search_safe = yt_search.replace("&", "and").replace("'", "")[:60]
+
+        # Open YouTube
+        shell(phone_id, "am force-stop com.google.android.youtube")
+        time.sleep(1)
+        shell(phone_id, "am start -n com.google.android.youtube/.HomeActivity")
+        time.sleep(5)
+        ss("s20_youtube_home")
+
+        # Tap search icon — magnifying glass, usually top-right
+        shell(phone_id, "input tap 980 160")
+        time.sleep(2)
+
+        # Type search term
+        shell(phone_id, f'input text "{yt_search_safe}"')
+        time.sleep(3)
+        ss("s21_youtube_search")
+
+        # Submit search (ENTER)
+        shell(phone_id, "input keyevent 66")
+        time.sleep(5)
+        ss("s22_youtube_results")
+
+        # Tap first video result — usually near top of screen
+        shell(phone_id, "input tap 540 600")
+        time.sleep(15)  # watch video for ~15s
+        ss("s23_youtube_watching")
+
+        # Like the video if possible (optional engagement signal)
+        # Like button is usually on the right side of video controls
+        shell(phone_id, "input tap 540 1900")  # tap video area to show controls
+        time.sleep(1)
+        shell(phone_id, "input tap 540 1000")  # tap center to dismiss
+        time.sleep(3)
+        ss("s24_youtube_watched")
+
+        # Back to YouTube home
+        shell(phone_id, "input keyevent 4")
+        time.sleep(2)
+        shell(phone_id, "input keyevent 4")
+        time.sleep(1)
+
+        # Close YouTube
+        shell(phone_id, "am force-stop com.google.android.youtube")
+        log.info("    YouTube: watched video for '%s'", yt_search_safe)
+    except Exception as e:
+        log.warning("    YouTube section error (non-fatal): %s", e)
+
+    # Final screenshot
     ss("s17_final_state")
 
     # Stop Maps cleanly
