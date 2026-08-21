@@ -92,7 +92,7 @@ def save_geelark_accounts(data: dict) -> None:
 # Import
 # ------------------------------------------------------------------
 
-def import_from_csv(csv_path: Path) -> None:
+def import_from_csv(csv_path: Path, tag: str = "") -> None:
     if not csv_path.exists():
         print(f"ERROR: File not found: {csv_path}")
         print(f"       Create a CSV using the template: accounts_template.csv")
@@ -107,7 +107,9 @@ def import_from_csv(csv_path: Path) -> None:
 
     added   = []
     skipped = []
+    already = []   # emails already in the system (unchanged)
     errors  = []
+    tag     = (tag or "").strip()
 
     with open(csv_path, encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
@@ -136,6 +138,7 @@ def import_from_csv(csv_path: Path) -> None:
             # --- Skip duplicates ---
             if row["email"] in existing:
                 skipped.append(f"Row {row_num}: {row['email']} — already exists, skipped")
+                already.append(row["email"])
                 continue
 
             # --- Apply defaults ---
@@ -209,6 +212,10 @@ def import_from_csv(csv_path: Path) -> None:
                     b.strip() for b in biz_raw.split(",") if b.strip()
                 ]
 
+            # Batch tag/group — desktop exposes it via the `tags` list
+            if tag:
+                account["tags"] = [tag]
+
             config["accounts"].append(account)
             existing.add(row["email"])
             added.append(account_id)
@@ -241,6 +248,8 @@ def import_from_csv(csv_path: Path) -> None:
                     gl_entry["neighbourhood"] = row["neighbourhood"]
                 if row.get("category"):
                     gl_entry["category"] = row["category"]
+                if tag and not gl_entry.get("category"):
+                    gl_entry["category"] = tag
                 # Shared strategy + target_businesses
                 strategy_raw = row.get("strategy", "").strip()
                 if strategy_raw and strategy_raw in VALID_STRATEGIES:
@@ -261,6 +270,9 @@ def import_from_csv(csv_path: Path) -> None:
     print()
     print(f"  Import complete")
     print(f"  -----------------------------")
+    print(f"  New: {len(added)}   Already in system: {len(already)}   Errors: {len(errors)}")
+    if tag:
+        print(f"  Tag applied to new accounts: {tag}")
     if added:
         print(f"  Added ({len(added)}):")
         for a in added:
@@ -335,6 +347,8 @@ def remove_account(account_id: str) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Account Importer")
     parser.add_argument("--csv",    type=str,  default=str(TEMPLATE_FILE), help="Path to CSV file")
+    parser.add_argument("--tag",    type=str,  default="", help="Tag/group to apply to newly imported accounts")
+    parser.add_argument("--group",  type=str,  default="", help="Alias for --tag")
     parser.add_argument("--list",   action="store_true", help="List all configured accounts")
     parser.add_argument("--remove", type=str,  help="Remove an account by ID")
     args = parser.parse_args()
@@ -344,4 +358,4 @@ if __name__ == "__main__":
     elif args.remove:
         remove_account(args.remove)
     else:
-        import_from_csv(Path(args.csv))
+        import_from_csv(Path(args.csv), tag=(args.tag or args.group))

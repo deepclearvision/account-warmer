@@ -1103,9 +1103,12 @@ tr.row-selected td { background: rgba(88,166,255,.06); }
       </select>
       <select id="filter-login" onchange="filterAccounts()">
         <option value="">All login states</option>
-        <option value="logged_in">✓ Logged in</option>
-        <option value="not_logged_in">✗ Not logged in</option>
-        <option value="unchecked">? Not checked</option>
+        <option value="d_signed_in">🖥 Desktop: signed in</option>
+        <option value="d_needs_action">🖥 Desktop: needs action</option>
+        <option value="d_not_attempted">🖥 Desktop: not attempted</option>
+        <option value="m_signed_in">📱 Mobile: signed in</option>
+        <option value="m_needs_action">📱 Mobile: needs action</option>
+        <option value="m_not_attempted">📱 Mobile: not attempted</option>
       </select>
       <select id="filter-business" onchange="filterAccounts()">
         <option value="">All businesses</option>
@@ -1811,6 +1814,13 @@ tr.row-selected td { background: rgba(88,166,255,.06); }
       </label>
     </div>
 
+    <!-- Batch tag/group for quick visibility of newly uploaded accounts -->
+    <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+      <label style="font-size:13px;color:var(--muted);white-space:nowrap">🏷 Tag / group:</label>
+      <input type="text" id="csv-import-tag" placeholder="e.g. batch_3, pc_2"
+        style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 10px;font-size:13px">
+    </div>
+
     <!-- Result area -->
     <div id="csv-import-result" style="display:none;margin-top:12px;padding:10px 14px;border-radius:6px;font-size:13px"></div>
 
@@ -2111,11 +2121,14 @@ function filterAccounts() {
                         (status === 'new'       && !schedSt && !a.last_ran);
     const matchML       = !ml || a.ml_status === ml;
     const matchCategory = !category || (a.category || '') === category;
-    const loginStatus   = a.desktop_login_status;
+    const st            = loginStageOf(a);
     const matchLogin    = !loginF ||
-                          (loginF === 'logged_in'     && loginStatus === 'logged_in') ||
-                          (loginF === 'not_logged_in' && loginStatus === 'login_failed') ||
-                          (loginF === 'unchecked'     && !loginStatus);
+                          (loginF === 'd_signed_in'     && st.desktop === 'logged_in') ||
+                          (loginF === 'd_needs_action'  && st.desktop === 'needs_action') ||
+                          (loginF === 'd_not_attempted' && st.desktop === 'not_attempted') ||
+                          (loginF === 'm_signed_in'     && st.mobile === 'logged_in') ||
+                          (loginF === 'm_needs_action'  && (st.mobile === 'needs_action' || st.mobile === 'needs_relogin')) ||
+                          (loginF === 'm_not_attempted' && st.mobile === 'not_attempted');
     const matchBiz      = !bizF || (a.target_businesses || []).includes(bizF);
     return matchSearch && matchGoal && matchStatus && matchML && matchCategory && matchLogin && matchBiz;
   });
@@ -2605,6 +2618,8 @@ async function submitCsvImport() {
 
   const provisionPhones = document.getElementById('csv-provision-phones').checked;
   const createMl        = document.getElementById('csv-create-ml').checked;
+  const tagInput        = document.getElementById('csv-import-tag');
+  const tag             = tagInput ? tagInput.value.trim() : '';
   const btn = document.getElementById('csv-import-btn');
   const resultDiv = document.getElementById('csv-import-result');
   btn.disabled = true;
@@ -2614,17 +2629,19 @@ async function submitCsvImport() {
   try {
     const res = await apiFetch('/api/accounts/import-csv', {
       method: 'POST',
-      body: { csv_text: csvText, provision_phones: provisionPhones, create_ml_profiles: createMl },
+      body: { csv_text: csvText, provision_phones: provisionPhones, create_ml_profiles: createMl, tag },
     });
 
     const lines = [];
-    if (res.imported > 0)        lines.push(`✓ Imported ${res.imported} new account${res.imported !== 1 ? 's' : ''}: ${res.account_ids.join(', ')}`);
-    if (res.updated > 0)         lines.push(`✎ Updated ${res.updated} existing account${res.updated !== 1 ? 's' : ''}: ${res.updated_ids.join(', ')}`);
+    if (res.imported > 0)          lines.push(`✓ Imported ${res.imported} new account${res.imported !== 1 ? 's' : ''}: ${res.account_ids.join(', ')}`);
+    if (res.already_exists > 0)    lines.push(`ℹ Already in system: ${res.already_exists} (${res.already_exists_ids.join(', ')})`);
+    if (res.updated > 0)           lines.push(`✎ Updated ${res.updated} existing account${res.updated !== 1 ? 's' : ''}: ${res.updated_ids.join(', ')}`);
+    if (res.tag)                   lines.push(`🏷 Tag applied: ${res.tag}`);
     if (res.ml_created?.length)     lines.push(`🖥 Multilogin profiles created: ${res.ml_created.length}`);
     if (res.ml_failed?.length)      lines.push(`⚠ ML profile creation failed for: ${res.ml_failed.map(p => `${p.acc_id} (${p.error})`).join('; ')}`);
     if (res.phones_created?.length) lines.push(`📱 Phones created: ${res.phones_created.map(p => p.gl_id).join(', ')}`);
     if (res.phones_failed?.length)  lines.push(`⚠ Phone creation failed for: ${res.phones_failed.map(p => `${p.acc_id} (${p.error})`).join('; ')}`);
-    if (res.errors?.length)      lines.push(...res.errors.map(e => `✗ ${e}`));
+    if (res.errors?.length)        lines.push(...res.errors.map(e => `✗ ${e}`));
 
     const hasSuccess = res.imported > 0 || res.updated > 0;
     resultDiv.style.background = hasSuccess ? 'rgba(63,185,80,.1)' : 'rgba(248,81,73,.1)';
@@ -2634,7 +2651,7 @@ async function submitCsvImport() {
 
     if (hasSuccess) {
       await loadAccounts();
-      const msg = [res.imported > 0 && `Imported ${res.imported}`, res.updated > 0 && `Updated ${res.updated}`].filter(Boolean).join(', ');
+      const msg = [res.imported > 0 && `Imported ${res.imported}`, res.already_exists > 0 && `${res.already_exists} already in system`, res.updated > 0 && `Updated ${res.updated}`].filter(Boolean).join(', ');
       showToast(msg + ' account(s)', 'ok');
     }
   } catch (e) {
@@ -5390,6 +5407,70 @@ async function loadLoginStatus() {
   } catch (e) { /* best-effort */ }
 }
 
+function loginStageOf(a) {
+  // Prefer the derived `login` object from _enrich; fall back to flat fields
+  // so this still works if an older API shape is served.
+  const lg = a.login || {};
+  const d  = lg.desktop || {};
+  const m  = lg.mobile  || {};
+  return {
+    desktop: d.stage || (a.desktop_login_status === 'logged_in' ? 'logged_in'
+             : a.desktop_login_status === 'login_failed' ? 'needs_action' : 'not_attempted'),
+    mobile:  m.stage || (a.needs_relogin ? 'needs_relogin'
+             : a.mobile_login_verified === true ? 'logged_in'
+             : a.mobile_login_verified === false ? 'needs_action' : 'not_attempted'),
+    dIssue:   d.issue   != null ? d.issue   : a.desktop_login_issue,
+    dNote:    d.note    != null ? d.note    : a.desktop_login_note,
+    dChecked: d.checked_at || a.desktop_login_checked_at,
+    mIssue:   m.issue   != null ? m.issue   : (a.mobile_login_issue || a.login_issue),
+    mNote:    m.note    != null ? m.note    : a.mobile_login_note,
+    mChecked: m.checked_at || a.mobile_login_checked_at,
+  };
+}
+
+const _STAGE_ICON  = { logged_in:'✓', needs_action:'✗', needs_relogin:'✗', not_attempted:'—' };
+const _STAGE_COLOR = { logged_in:'var(--green)', needs_action:'var(--red)', needs_relogin:'var(--red)', not_attempted:'var(--muted)' };
+
+function _stageBadge(accountId, platform, icon, label, stage, issue, note, checkedAt) {
+  const color      = _STAGE_COLOR[stage] || 'var(--muted)';
+  const mark       = _STAGE_ICON[stage]  || '—';
+  const issueLabel = issue ? issue.replace(/_/g, ' ') : '';
+  const needsAction = stage === 'needs_action' || stage === 'needs_relogin';
+
+  const titleParts = [];
+  if (stage === 'logged_in')      titleParts.push(`${label}: signed in`);
+  else if (stage === 'needs_action') titleParts.push(`${label}: needs action`);
+  else if (stage === 'needs_relogin') titleParts.push(`${label}: needs re-login`);
+  else                            titleParts.push(`${label}: not attempted`);
+  if (issueLabel) titleParts.push(issueLabel);
+  if (note)       titleParts.push('note: ' + note);
+  if (checkedAt)  titleParts.push(new Date(checkedAt).toLocaleString());
+
+  const sub = needsAction
+    ? `<div style="font-size:9px;color:var(--muted);line-height:1.2;white-space:nowrap;max-width:96px;overflow:hidden;text-overflow:ellipsis">${escHtml(issueLabel || note || '')}</div>`
+    : '';
+
+  return `<div style="display:flex;flex-direction:column;align-items:center;line-height:1.15;gap:1px" title="${escHtml(titleParts.join(' · '))}">
+    <span style="color:${color};font-size:13px;white-space:nowrap">${icon}${mark}</span>${sub}
+  </div>`;
+}
+
+async function editLoginNote(accountId, platform) {
+  const note = prompt(`Note / issue for ${platform} login (${accountId}):\n` +
+                      `(free-text line — what do you think the issue is?)`);
+  if (note === null) return; // cancelled
+  try {
+    await apiFetch(`/api/accounts/${accountId}/login-note`, {
+      method: 'PUT',
+      body: { platform, note: note.trim() },
+    });
+    showToast(`${platform} login note updated`, 'ok');
+    await loadAccounts();
+  } catch (e) {
+    showToast(`Failed to update note: ${e.message}`, 'error');
+  }
+}
+
 function fmtLoginStatus(a) {
   // Show "checking" if a login check job is active
   const job = _loginJobs[a.id];
@@ -5398,25 +5479,18 @@ function fmtLoginStatus(a) {
   if (job?.status === 'queued')
     return `<span style="color:var(--muted);font-size:11px" title="Queued — pos ${job.queue_position||'?'}">⏳</span>`;
 
-  // Unified login status from AccountStore (enriched in API response)
-  const ds = a.desktop_login_status;
-  const dt = a.desktop_login_checked_at;
-  const mv = a.mobile_login_verified;
-  const mt = a.mobile_login_checked_at;
+  const st = loginStageOf(a);
+  const dHtml = _stageBadge(a.id, 'desktop', '🖥', 'Desktop', st.desktop, st.dIssue, st.dNote, st.dChecked);
+  const mHtml = _stageBadge(a.id, 'mobile',  '📱', 'Mobile',  st.mobile,  st.mIssue, st.mNote, st.mChecked);
 
-  const dIcon = ds === 'logged_in'
-    ? `<span style="color:var(--green);font-size:13px" title="Desktop: logged in${dt ? ' · ' + new Date(dt).toLocaleString() : ''}">🖥✓</span>`
-    : ds === 'login_failed'
-    ? `<span style="color:var(--red);font-size:13px" title="Desktop: login failed${dt ? ' · ' + new Date(dt).toLocaleString() : ''}">🖥✗</span>`
-    : `<span style="color:var(--muted);font-size:11px" title="Desktop: not yet logged in">🖥—</span>`;
+  // Click the badge to edit the note/reason when it needs action.
+  const edit = (st.desktop === 'needs_action' || st.mobile === 'needs_action' || st.mobile === 'needs_relogin')
+    ? `<span style="cursor:pointer;color:var(--muted);font-size:10px;align-self:center"
+         onclick="editLoginNote('${a.id}','${st.desktop === 'needs_action' ? 'desktop' : 'mobile'}')"
+         title="Edit note / reason">✎</span>`
+    : '';
 
-  const mIcon = mv === true
-    ? `<span style="color:var(--green);font-size:13px" title="Mobile: verified${mt ? ' · ' + new Date(mt).toLocaleString() : ''}">📱✓</span>`
-    : mv === false
-    ? `<span style="color:var(--red);font-size:13px" title="Mobile: login failed${mt ? ' · ' + new Date(mt).toLocaleString() : ''}">📱✗</span>`
-    : `<span style="color:var(--muted);font-size:11px" title="Mobile: not yet checked">📱—</span>`;
-
-  return `<span style="display:inline-flex;gap:3px">${dIcon}${mIcon}</span>`;
+  return `<span style="display:inline-flex;gap:6px;align-items:center">${dHtml}${mHtml}${edit}</span>`;
 }
 
 function phaseBadgeClass(label) {
@@ -5719,14 +5793,22 @@ async function loadMobilePhones() {
 
       // Login status badge
       let loginBadge;
+      const _mIssue = p.mobile_login_issue || p.login_issue;
+      const _mNote  = p.mobile_login_note;
+      const _mSub = [ _mIssue, _mNote ].filter(Boolean).join(' — ');
       if (!p.provisioned) {
         loginBadge = `<span style="color:var(--muted);font-size:12px">—</span>`;
+      } else if (p.needs_relogin) {
+        const ts = p.login_checked_at ? p.login_checked_at.slice(0,10) : '';
+        loginBadge = `<span style="color:var(--red);font-weight:600" title="Checked ${ts}">⚠ Needs re-login</span>`
+          + (_mSub ? `<br><span style="color:var(--muted);font-size:11px" title="${escHtml(_mSub)}">${escHtml(_mSub)}</span>` : '');
       } else if (p.login_verified === true) {
         const ts = p.login_checked_at ? p.login_checked_at.slice(0,10) : '';
         loginBadge = `<span style="color:var(--green);font-weight:600" title="Verified ${ts}">✓ Logged In</span>`;
       } else if (p.login_verified === false) {
         const ts = p.login_checked_at ? p.login_checked_at.slice(0,10) : '';
-        loginBadge = `<span style="color:var(--red);font-weight:600" title="Checked ${ts}">✗ Not logged in</span>`;
+        loginBadge = `<span style="color:var(--red);font-weight:600" title="Checked ${ts}">✗ Not logged in</span>`
+          + (_mSub ? `<br><span style="color:var(--muted);font-size:11px" title="${escHtml(_mSub)}">${escHtml(_mSub)}</span>` : '');
       } else {
         loginBadge = `<span style="color:var(--amber);font-size:12px" title="No check run yet">? Unknown</span>`;
       }

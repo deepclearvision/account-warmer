@@ -90,6 +90,38 @@ async def _dismiss_post_login_prompts(page, log) -> None:
             break
 
 
+async def _classify_desktop_failure(page, log) -> str:
+    """Inspect the current page and return a LOGIN_ISSUES reason string.
+
+    Order matters — most specific signatures first.  Falls back to "unknown"
+    when the page doesn't match any known failure.
+    """
+    try:
+        text = ""
+        try:
+            text = await page.inner_text("body", timeout=2500)
+        except Exception:
+            pass
+        t = (text or "").lower()
+
+        if "wrong password" in t or "couldn't find your google account" in t:
+            return "wrong_password"
+        if ("verify it's you" in t or "verify it’s you" in t
+                or "recover your account" in t or "phone verification" in t):
+            return "phone_verification"
+        if ("appeal" in t or "suspended" in t
+                or "your account has been disabled" in t):
+            return "appeal_required"
+        if "wrong code" in t or "incorrect code" in t:
+            return "totp_failed"
+        if "captcha" in t or "unusual traffic" in t:
+            return "captcha"
+        return "unknown"
+    except Exception as e:
+        log.warning(f"[login] failure classification failed: {e}")
+        return "unknown"
+
+
 async def login_account(account: dict) -> bool:
     """Open the Multilogin profile and log into Google. Returns True on success."""
     from core.profile_manager import ProfileSession
@@ -113,7 +145,8 @@ async def login_account(account: dict) -> bool:
         return False
 
     log.info(f"[login] Starting desktop login for {acc_id} ({email})")
-    success = False
+    success       = False
+    failure_issue = None
 
     try:
         async with ProfileSession(
@@ -358,6 +391,8 @@ async def login_account(account: dict) -> bool:
                 success = True
             else:
                 log.error(f"[login] FAILED — ended at {page.url[:80]}")
+                failure_issue = await _classify_desktop_failure(page, log)
+                log.info(f"[login] Failure classified as: {failure_issue}")
 
     except Exception as e:
         log.error(f"[login] Session error: {e}")
@@ -378,10 +413,18 @@ async def login_account(account: dict) -> bool:
         mobile_accounts.append(target)
         log.warning(f"[login] {acc_id} not found in geelark_accounts.yaml — created minimal entry for login status")
 
-    target["desktop_login_status"]     = "logged_in" if success else "login_failed"
+    if success:
+        target["desktop_login_status"] = "logged_in"
+        target.pop("desktop_login_issue", None)
+        target.pop("desktop_login_note", None)
+    else:
+        target["desktop_login_status"] = "login_failed"
+        target["desktop_login_issue"]  = failure_issue or "unknown"
     target["desktop_login_checked_at"] = datetime.now().isoformat()
     store.save_mobile_accounts(mobile_accounts)
-    log.info(f"[login] Desktop login status saved: {target['desktop_login_status']}")
+    log.info(f"[login] Desktop login status saved: {target['desktop_login_status']}"
+             + (f" (issue: {target.get('desktop_login_issue')})"
+                if target.get("desktop_login_status") == "login_failed" else ""))
     return success
 
 

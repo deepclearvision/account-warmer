@@ -46,6 +46,12 @@ class AccountUpdate(BaseModel):
     work_geo_area:      Optional[str]       = None
 
 
+class LoginNoteUpdate(BaseModel):
+    platform: str                       # "desktop" | "mobile"
+    issue:    Optional[str] = None      # LOGIN_ISSUES value (or null/"" to clear)
+    note:     Optional[str] = None      # free-text operator note (or null/"" to clear)
+
+
 # ── Schedule helpers ──────────────────────────────────────────────────────────
 
 def _week_band(weeks_elapsed: int) -> str:
@@ -152,6 +158,21 @@ def _enrich(account: dict, strategies: dict, cache: dict | None = None,
     desktop_login_checked_at  = mobile.get("desktop_login_checked_at") if mobile else None
     mobile_login_verified     = mobile.get("login_verified") if mobile else None
     mobile_login_checked_at   = mobile.get("login_checked_at") if mobile else None
+    desktop_login_issue       = mobile.get("desktop_login_issue") if mobile else None
+    desktop_login_note        = mobile.get("desktop_login_note") if mobile else None
+    mobile_login_issue        = (mobile.get("mobile_login_issue") or mobile.get("login_issue")) if mobile else None
+    mobile_login_note         = mobile.get("mobile_login_note") if mobile else None
+    needs_relogin             = bool(mobile.get("needs_relogin")) if mobile else False
+
+    # Derived per-platform sign-in stage (single source of truth in AccountStore)
+    _stage_src = dict(account)
+    if mobile:
+        _stage_src.update({k: v for k, v in mobile.items()
+                           if k in ("login_verified", "login_checked_at", "needs_relogin",
+                                    "desktop_login_status", "desktop_login_checked_at",
+                                    "desktop_login_issue", "desktop_login_note",
+                                    "mobile_login_issue", "mobile_login_note", "login_issue")})
+    login = store.login_stage(_stage_src)
 
     return {
         **account,
@@ -187,6 +208,13 @@ def _enrich(account: dict, strategies: dict, cache: dict | None = None,
         "desktop_login_checked_at": desktop_login_checked_at,
         "mobile_login_verified":    mobile_login_verified,
         "mobile_login_checked_at":  mobile_login_checked_at,
+        # Login reason + note (per platform) and the derived stage object
+        "desktop_login_issue":      desktop_login_issue,
+        "desktop_login_note":       desktop_login_note,
+        "mobile_login_issue":       mobile_login_issue,
+        "mobile_login_note":        mobile_login_note,
+        "needs_relogin":            needs_relogin,
+        "login":                    login,
     }
 
 
@@ -293,6 +321,46 @@ async def update_account(account_id: str, body: AccountUpdate):
     from api.deps import load_trust_checks
     trust = load_trust_checks()
     return _enrich(target, strategies, cache, trust)
+
+
+@router.put("/{account_id}/login-note")
+async def update_login_note(account_id: str, body: LoginNoteUpdate):
+    """Set the failure reason / operator note for an account's login stage.
+
+    Writes through AccountStore to geelark_accounts.yaml (the unified login
+    store).  ``platform`` selects desktop vs mobile; ``issue`` must be a known
+    LOGIN_ISSUES value; ``note`` is free text.  Pass an empty string / null to
+    clear a field.
+    """
+    from core.account_store import get_account_store, LOGIN_ISSUES
+    store = get_account_store()
+
+    platform = (body.platform or "").lower()
+    if platform not in ("desktop", "mobile"):
+        raise HTTPException(400, "platform must be 'desktop' or 'mobile'")
+
+    if body.issue is not None and body.issue not in LOGIN_ISSUES:
+        raise HTTPException(
+            400, f"Invalid issue {body.issue!r}. Valid: {sorted(LOGIN_ISSUES)}"
+        )
+
+    fields = {}
+    prefix = "desktop" if platform == "desktop" else "mobile"
+    if body.issue is not None:
+        fields[f"{prefix}_login_issue"] = body.issue or None
+    if body.note is not None:
+        fields[f"{prefix}_login_note"] = body.note or None
+
+    if not fields:
+        raise HTTPException(400, "Nothing to update — pass issue and/or note")
+
+    ok = store.update_login_fields(account_id, fields)
+    if not ok:
+        raise HTTPException(
+            404, f"Account {account_id!r} not found in the mobile/login store"
+        )
+
+    return {"account_id": account_id, "platform": platform, **fields}
 
 
 # ── Deletion helpers (platform cleanup) ───────────────────────────────────────
@@ -615,6 +683,8 @@ class CsvImportRequest(BaseModel):
     csv_text: str          # raw CSV content pasted or uploaded
     provision_phones: bool = True  # auto-create GeelarK phones
     create_ml_profiles: bool = True  # auto-create Multilogin browser profiles
+    tag: Optional[str] = None   # optional batch tag/group applied to new accounts
+    group: Optional[str] = None # alias for tag
 
 
 @router.post("/import-csv")
@@ -659,7 +729,7 @@ async def import_from_csv(body: CsvImportRequest):
         rows.append((i, row))
 
     if not rows and not errors:
-        return {"imported": 0, "skipped": 0, "errors": [], "phones_created": [], "phones_failed": []}
+        return {"imported": 0, "already_exists": 0, "updated": 0, "errors": [], "phones_created": [], "phones_failed": []}
 
     # ── Load existing data ─────────────────────────────────────────────────────
     accounts = await load_accounts()
@@ -675,10 +745,14 @@ async def import_from_csv(body: CsvImportRequest):
 
     added          = []
     updated        = []
+    already_exists = []
     phones_created = []
     phones_failed  = []
     ml_created     = []
     ml_failed      = []
+
+    # Batch tag/group applied to every newly-created account for quick visibility
+    tag = (body.tag or body.group or "").strip()
 
     # Multilogin folder to create profiles in — fetched once, reused for all rows.
     ml_folder_id = None
@@ -702,6 +776,7 @@ async def import_from_csv(body: CsvImportRequest):
 
         # ── UPDATE existing account ───────────────────────────────────────────
         if email.lower() in existing_emails:
+            already_exists.append(email)
             acc = next((a for a in accounts if a.get("email", "").lower() == email.lower()), None)
             if acc:
                 changed = False
@@ -768,6 +843,9 @@ async def import_from_csv(body: CsvImportRequest):
             ],
             "strategy":              row.get("strategy", "standard") or "standard",
         }
+        # Batch tag/group — desktop exposes it via the `tags` list
+        if tag:
+            acc_entry["tags"] = [tag]
         # Optional shared fields
         for field in ("password", "totp_secret", "category", "geo_area", "geo_city",
                        "neighbourhood", "home_address", "work_address"):
@@ -828,6 +906,10 @@ async def import_from_csv(body: CsvImportRequest):
                 "strategy":               row.get("strategy", "maps_heavy") or "maps_heavy",
                 "login_verified":         None,
             }
+            # Batch tag/group — mobile exposes it via `category` (only if the
+            # CSV didn't already supply a category).
+            if tag and not gl_entry.get("category"):
+                gl_entry["category"] = tag
             for field in ("geo_area", "neighbourhood", "category", "home_address",
                            "work_address", "home_lat", "home_lng", "work_lat", "work_lng"):
                 if row.get(field):
@@ -865,15 +947,18 @@ async def import_from_csv(body: CsvImportRequest):
     store.save_mobile_accounts(gl_accounts)
 
     return {
-        "imported":       len(added),
-        "updated":        len(updated),
-        "account_ids":    added,
-        "updated_ids":    updated,
-        "errors":         errors,
-        "phones_created": phones_created,
-        "phones_failed":  phones_failed,
-        "ml_created":     ml_created,
-        "ml_failed":      ml_failed,
+        "imported":           len(added),
+        "already_exists":     len(already_exists),
+        "updated":            len(updated),
+        "account_ids":        added,
+        "already_exists_ids": already_exists,
+        "updated_ids":        updated,
+        "tag":                tag or None,
+        "errors":             errors,
+        "phones_created":     phones_created,
+        "phones_failed":      phones_failed,
+        "ml_created":         ml_created,
+        "ml_failed":          ml_failed,
     }
 
 

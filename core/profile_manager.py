@@ -432,6 +432,26 @@ class ProfileSession:
             # If not logged in, write an ERROR line so the analyser picks it up
             if not logged_in:
                 self.log.error(f"login_status: not_logged_in — account needs manual re-login")
+                # Record the reason in the unified login store so the desktop
+                # stage shows "needs_action" with the reason underneath.
+                try:
+                    from core.account_store import get_account_store
+                    get_account_store().update_login_fields(
+                        self.account_id, {"desktop_login_issue": "needs_relogin"}
+                    )
+                except Exception:
+                    pass
+            else:
+                # Clear any stale desktop login issue now that we're signed in.
+                try:
+                    from core.account_store import get_account_store
+                    get_account_store().update_login_fields(
+                        self.account_id,
+                        {"desktop_login_status": "logged_in",
+                         "desktop_login_issue": None, "desktop_login_note": None},
+                    )
+                except Exception:
+                    pass
 
         except Exception as e:
             self.log.warning(f"Login check skipped: {e}")

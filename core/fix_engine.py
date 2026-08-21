@@ -113,6 +113,15 @@ def _flag_relogin(action: dict) -> tuple[bool, str]:
     target["needs_relogin"] = True
     target["paused"]        = True
     _save_accounts(accounts)
+    # Also record the reason in the unified login store (geelark_accounts.yaml)
+    # so the desktop stage shows "needs_action" with the reason underneath.
+    try:
+        from core.account_store import get_account_store
+        get_account_store().update_login_fields(
+            acc_id, {"desktop_login_issue": "needs_relogin"}
+        )
+    except Exception:
+        pass
     return True, f"{acc_id} flagged as needs_relogin and paused"
 
 

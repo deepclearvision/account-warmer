@@ -24,7 +24,7 @@ Shared         — both files; mobile authoritative on merge
 import json
 import logging
 import threading
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -67,9 +67,14 @@ _MOBILE_ONLY_FIELDS = frozenset({
     "login_checked_at",            # mobile login
     "login_status",                # mobile login (legacy)
     "login_done",                  # mobile login (legacy)
-    "login_issue",                 # mobile login
+    "login_issue",                 # mobile login (legacy)
+    "needs_relogin",               # mobile login — paused pending manual re-login
     "desktop_login_status",        # desktop login — "logged_in" | "login_failed" | null
     "desktop_login_checked_at",    # desktop login — ISO timestamp
+    "desktop_login_issue",         # desktop login — reason enum (why it failed)
+    "desktop_login_note",          # desktop login — free-text operator note
+    "mobile_login_issue",          # mobile login — reason enum (why it failed)
+    "mobile_login_note",           # mobile login — free-text operator note
     "apps_installed",
     "device_brand",
     "device_model",
@@ -95,6 +100,30 @@ _SHARED_FIELDS = frozenset({
     "work_lng",
     "work_geo_area",
     "neighbourhood",
+})
+
+# Reasons a Google sign-in can fail / require action.  Persisted per platform
+# in geelark_accounts.yaml and shown underneath each account's stage in the UI.
+LOGIN_ISSUES = frozenset({
+    "wrong_password",
+    "phone_verification",
+    "appeal_required",
+    "totp_failed",
+    "captcha",
+    "needs_relogin",
+    "needs_user_input",
+    "unknown",
+})
+
+# Login-state fields (legacy + new) that ``update_login_fields`` is allowed to
+# write.  Anything outside this set is rejected so callers can't pollute state.
+_LOGIN_FIELDS = frozenset({
+    "login_verified", "login_checked_at",
+    "login_status", "login_done", "login_issue",
+    "needs_relogin",
+    "desktop_login_status", "desktop_login_checked_at",
+    "desktop_login_issue", "desktop_login_note",
+    "mobile_login_issue", "mobile_login_note",
 })
 
 
@@ -292,6 +321,103 @@ class AccountStore:
             if (a.get("email") or "").lower() == email_lower:
                 return a
         return None
+
+    # ── Login state ─────────────────────────────────────────────────────────
+
+    def login_stage(self, account: dict | None) -> dict:
+        """Derive the per-platform Google sign-in stage for a merged account.
+
+        Returns a dict with one entry per platform, each carrying the stage,
+        the failure reason (if any), the operator note, and when it was last
+        checked::
+
+            {
+                "desktop": {"stage", "issue", "note", "checked_at"},
+                "mobile":  {"stage", "issue", "note", "checked_at"},
+            }
+
+        Stages: "logged_in" | "needs_action" | "needs_relogin" (mobile only) |
+                "not_attempted".
+        """
+        account = account or {}
+
+        d_status = account.get("desktop_login_status")
+        if d_status == "logged_in":
+            d_stage = "logged_in"
+        elif d_status == "login_failed":
+            d_stage = "needs_action"
+        else:
+            d_stage = "not_attempted"
+
+        if account.get("needs_relogin"):
+            m_stage = "needs_relogin"
+        elif account.get("login_verified") is True:
+            m_stage = "logged_in"
+        elif account.get("login_verified") is False:
+            m_stage = "needs_action"
+        else:
+            m_stage = "not_attempted"
+
+        return {
+            "desktop": {
+                "stage":      d_stage,
+                "issue":      account.get("desktop_login_issue"),
+                "note":       account.get("desktop_login_note"),
+                "checked_at": account.get("desktop_login_checked_at"),
+            },
+            "mobile": {
+                "stage":      m_stage,
+                "issue":      account.get("mobile_login_issue")
+                              or account.get("login_issue"),
+                "note":       account.get("mobile_login_note"),
+                "checked_at": account.get("login_checked_at"),
+            },
+        }
+
+    def update_login_fields(self, account_id: str, fields: dict) -> bool:
+        """Persist login-state fields for one account to geelark_accounts.yaml.
+
+        ``fields`` keys are restricted to ``_LOGIN_FIELDS``; anything else is
+        dropped.  A None / empty value clears the field.  Matches the mobile
+        account whose ``id`` equals ``account_id``.  Returns True if found.
+        """
+        if not account_id:
+            return False
+        clean = {k: v for k, v in (fields or {}).items() if k in _LOGIN_FIELDS}
+        if not clean:
+            return False
+        accounts = self.get_mobile_accounts()
+        target = next((a for a in accounts if a.get("id") == account_id), None)
+        if not target:
+            return False
+        for k, v in clean.items():
+            if v is None or v == "":
+                target.pop(k, None)
+            else:
+                target[k] = v
+        self.save_mobile_accounts(accounts)
+        return True
+
+    def flag_mobile_relogin(self, mobile_id: str) -> bool:
+        """Mark a mobile account as needing re-login and pause warming.
+
+        Sets ``needs_relogin=True``, ``mobile_warming_enabled=False``,
+        ``login_verified=False`` + ``login_checked_at`` and records
+        ``mobile_login_issue="needs_relogin"`` so the dashboard shows the
+        account as not-logged-in and why.  Returns True if the account exists.
+        """
+        accounts = self.get_mobile_accounts()
+        target = next((a for a in accounts if a.get("id") == mobile_id), None)
+        if not target:
+            return False
+        target["needs_relogin"]          = True
+        target["mobile_warming_enabled"] = False
+        target["login_verified"]         = False
+        target["login_checked_at"]       = datetime.now(timezone.utc).isoformat()
+        target["mobile_login_issue"]     = "needs_relogin"
+        self.save_mobile_accounts(accounts)
+        log.info("[%s] flagged needs_relogin + paused warming", mobile_id)
+        return True
 
     # ── Deletion cleanup ────────────────────────────────────────────────────
 

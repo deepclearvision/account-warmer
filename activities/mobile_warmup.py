@@ -1409,6 +1409,15 @@ def run_mobile_schedule_session(account: dict, log_file: Path,
         result["error"] = "warming disabled"
         return result
 
+    # Hard-gate: don't warm a phone we KNOW is signed out of Google.  Only an
+    # explicit ``login_verified is False`` or ``needs_relogin`` counts as "not
+    # signed in"; unknown/None state is left alone (legacy mid-campaign accounts).
+    if account.get("needs_relogin") or account.get("login_verified") is False:
+        log.warning("[%s] Not signed in to Google (login_verified=%s) — skipping mobile warmup",
+                    acc_id, account.get("login_verified"))
+        result["error"] = "not_logged_in"
+        return result
+
     t_start = time.time()
     client  = GeelarKClient()
 

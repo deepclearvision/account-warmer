@@ -143,6 +143,26 @@ async def run_login_check(account: dict) -> None:
     LOGIN_FILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
     log.info(f"Login status saved: {account['id']} → {status}")
 
+    # ── Mirror to the unified login store so the dashboard desktop stage ─────
+    # reflects this result (reason included on failure).
+    try:
+        from core.account_store import get_account_store
+        store = get_account_store()
+        if status == "logged_in":
+            store.update_login_fields(account["id"], {
+                "desktop_login_status": "logged_in",
+                "desktop_login_issue": None,
+                "desktop_login_note": None,
+            })
+        elif status == "not_logged_in":
+            store.update_login_fields(account["id"], {
+                "desktop_login_status": "login_failed",
+                "desktop_login_issue": "needs_relogin",
+            })
+        # status == "error" → leave the existing state untouched
+    except Exception as e:
+        log.warning(f"Failed to mirror login status to unified store: {e}")
+
 
 def main():
     parser = argparse.ArgumentParser(description="Check Google login status for an account")

@@ -35,6 +35,12 @@ MIN_SESSION_GAP_MINS = 180  # 3 hours — absolute floor between sessions for th
 MAX_CONCURRENT       = 4    # max accounts running simultaneously (raised from 2)
 CHECK_INTERVAL_SECS  = 60   # how often the scheduler loop wakes up
 
+# Hard-gate warming on Google sign-in state.  When True, accounts that are
+# KNOWN to be not signed into Google (desktop_login_status == "login_failed")
+# are skipped.  Accounts with unknown/never-checked status are left alone so
+# legacy mid-campaign accounts are unaffected.
+REQUIRE_DESKTOP_LOGIN = True
+
 # ── Anti-clustering measures ──────────────────────────────────────────────────
 # Accounts don't launch the instant they become eligible.  A random jitter
 # spreads them out so they don't all start (and therefore finish) together.
@@ -319,6 +325,27 @@ class SchedulerService:
         except Exception:
             pass
 
+    def _desktop_not_logged_in(self, account_id: str) -> bool:
+        """True if the account is KNOWN to be signed out of Google on desktop.
+
+        Only an explicit ``desktop_login_status == "login_failed"`` counts as
+        "not signed in"; unknown/never-checked accounts return False so legacy
+        mid-campaign accounts are not blocked.
+        """
+        try:
+            from core.account_store import get_account_store
+            store = get_account_store()
+            mobile = next((a for a in store.get_mobile_accounts()
+                           if a.get("id") == account_id), None)
+            if mobile is None:
+                desktop = next((a for a in store.get_desktop_accounts()
+                                if a.get("id") == account_id), None)
+                if desktop:
+                    mobile = store.find_mobile_by_email(desktop.get("email", ""))
+            return bool(mobile and mobile.get("desktop_login_status") == "login_failed")
+        except Exception:
+            return False
+
     def _tick(self) -> None:
         """One scheduler tick: reap finished processes then start the next eligible account."""
         self._reap()
@@ -371,11 +398,17 @@ class SchedulerService:
         candidates = []
         skipped_stagger = 0
         skipped_gap = 0
+        skipped_not_logged_in = 0
         for acc_id, entry in self._state.items():
             if acc_id in self._procs:
                 continue                          # already running
             if entry.get("status") in ("running", "error"):
                 continue                          # skip errored accounts
+
+            # Hard-gate: skip accounts KNOWN to be signed out of Google.
+            if REQUIRE_DESKTOP_LOGIN and self._desktop_not_logged_in(acc_id):
+                skipped_not_logged_in += 1
+                continue
 
             # Check next_eligible_after (per-account stagger)
             next_eligible = entry.get("next_eligible_after")
@@ -396,11 +429,12 @@ class SchedulerService:
             candidates.append((acc_id, entry.get("last_run_at") or ""))
 
         if not candidates:
-            if skipped_stagger or skipped_gap:
+            if skipped_stagger or skipped_gap or skipped_not_logged_in:
                 self._log.debug(
                     f"No eligible accounts — "
                     f"{skipped_stagger} still staggered, "
                     f"{skipped_gap} too soon, "
+                    f"{skipped_not_logged_in} not signed in, "
                     f"{total_running}/{self._max_concurrent} running"
                 )
             return

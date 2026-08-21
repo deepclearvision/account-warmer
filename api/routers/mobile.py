@@ -106,6 +106,12 @@ def _get_account(account_id: str) -> dict:
     return acc
 
 
+def _login_stage(account: dict) -> dict:
+    """Derived per-platform sign-in stage for a mobile account dict."""
+    from core.account_store import get_account_store
+    return get_account_store().login_stage(account)
+
+
 def _mobile_job_running(account_id: str) -> bool:
     """True if a login/setup/warmup job is currently running for this account."""
     for store in (_jobs, _login_jobs):
@@ -208,6 +214,13 @@ def list_phones():
             "geo_city":                acc.get("geo_city", ""),
             "login_verified":          acc.get("login_verified"),        # True/False/None
             "login_checked_at":        acc.get("login_checked_at", ""),
+            "needs_relogin":           bool(acc.get("needs_relogin")),
+            "mobile_login_issue":      acc.get("mobile_login_issue") or acc.get("login_issue"),
+            "mobile_login_note":       acc.get("mobile_login_note"),
+            "desktop_login_status":    acc.get("desktop_login_status"),
+            "desktop_login_issue":     acc.get("desktop_login_issue"),
+            "desktop_login_note":      acc.get("desktop_login_note"),
+            "login":                   _login_stage(acc),
             "time_warmed_s":           time_warmed_total.get(acc["id"], 0.0),
             "time_warmed_today_s":     time_warmed_today.get(acc["id"], 0.0),
             "last_session":            last_session_map.get(acc["id"]),
@@ -552,9 +565,12 @@ def _run_login_sync(job_id: str, account: dict) -> None:
         )
         _login_jobs[job_id]["phase"] = "complete" if result["success"] else "failed"
 
-        # Persist login_verified to YAML so the dashboard can show status without re-checking
+        # Persist login state (verified + reason) so the dashboard can show status without re-checking
         if result["success"]:
             _persist_login_status(account["id"], verified=True)
+        else:
+            _persist_login_status(account["id"], verified=False,
+                                  issue=_classify_mobile_issue(result))
     except Exception as e:
         _login_jobs[job_id]["status"] = "error"
         _login_jobs[job_id]["phase"] = "error"
@@ -563,16 +579,50 @@ def _run_login_sync(job_id: str, account: dict) -> None:
         _login_semaphore.release()
 
 
-def _persist_login_status(account_id: str, verified: bool) -> None:
-    """Write login_verified + login_checked_at into geelark_accounts.yaml."""
+def _classify_mobile_issue(result: dict) -> str:
+    """Map a run_google_login / run_login_check result to a LOGIN_ISSUES reason."""
+    if result.get("needs_user_input"):
+        return "needs_user_input"
+    text = " ".join(str(result.get(k) or "") for k in ("diagnosis", "error", "detail")).lower()
+    if "wrong password" in text or "incorrect password" in text:
+        return "wrong_password"
+    if "phone" in text or "verification" in text or "sms" in text or "verify it" in text:
+        return "phone_verification"
+    if "appeal" in text or "suspend" in text or "disable" in text:
+        return "appeal_required"
+    if "totp" in text or "2fa" in text or "authenticator" in text or "code" in text:
+        return "totp_failed"
+    if "captcha" in text or "robot" in text:
+        return "captcha"
+    return "unknown"
+
+
+def _persist_login_status(account_id: str, verified: bool, issue: str = None,
+                          note: str = None) -> None:
+    """Write mobile login state (verified + failure reason) into geelark_accounts.yaml.
+
+    On success, clears any prior ``needs_relogin`` flag and mobile issue/note.
+    On failure, records the classified reason so the dashboard shows why.
+    """
     try:
-        accounts = _load_gl_accounts()
-        for acc in accounts:
-            if acc["id"] == account_id:
-                acc["login_verified"]   = verified
-                acc["login_checked_at"] = datetime.now(timezone.utc).isoformat()
-                break
-        _save_gl_accounts(accounts)
+        from core.account_store import get_account_store
+        store = get_account_store()
+        now = datetime.now(timezone.utc).isoformat()
+        if verified:
+            store.update_login_fields(account_id, {
+                "login_verified":     True,
+                "login_checked_at":   now,
+                "needs_relogin":      None,
+                "mobile_login_issue": None,
+                "mobile_login_note":  None,
+            })
+        else:
+            store.update_login_fields(account_id, {
+                "login_verified":     False,
+                "login_checked_at":   now,
+                "mobile_login_issue": issue or "unknown",
+                "mobile_login_note":  note,
+            })
     except Exception as e:
         import logging as _log
         _log.getLogger("mobile").warning("Failed to persist login status for %s: %s", account_id, e)
@@ -706,7 +756,8 @@ def _run_check_login_sync(job_id: str, account: dict) -> None:
         _jobs[job_id]["result"] = result
         _jobs[job_id]["status"] = "completed"
         # Persist result so the dashboard badge stays up to date
-        _persist_login_status(account["id"], verified=result["verified"])
+        _persist_login_status(account["id"], verified=result["verified"],
+                              issue=_classify_mobile_issue(result) if not result["verified"] else None)
     except Exception as e:
         _jobs[job_id]["status"] = "error"
         _jobs[job_id]["result"] = {"error": str(e)}
