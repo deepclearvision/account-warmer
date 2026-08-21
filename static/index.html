@@ -1790,35 +1790,50 @@ tr.row-selected td { background: rgba(88,166,255,.06); }
       </table>
     </div>
 
-    <!-- File input or paste -->
-    <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
-      <label class="btn" style="cursor:pointer;margin:0">
-        📂 Choose file
-        <input type="file" id="csv-file-input" accept=".csv,.txt" style="display:none" onchange="csvFileSelected(this)">
-      </label>
-      <a class="btn" href="/api/accounts/csv-template" download="accounts_template.csv" style="text-decoration:none">⬇ Template</a>
-      <span style="color:var(--muted);font-size:12px">or paste CSV below</span>
-    </div>
-    <textarea id="csv-paste-area" rows="8"
-      style="width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-family:monospace;font-size:12px;resize:vertical"
-      placeholder="email,password,totp_secret,location,proxy,geo_area&#10;john.smith@gmail.com,Pass123!,BASE32SECRET,London UK,,greenwich"></textarea>
+    <!-- STEP 1 — paste / upload then analyse -->
+    <div id="csv-step-1">
+      <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+        <label class="btn" style="cursor:pointer;margin:0">
+          📂 Choose file
+          <input type="file" id="csv-file-input" accept=".csv,.txt" style="display:none" onchange="csvFileSelected(this)">
+        </label>
+        <a class="btn" href="/api/accounts/csv-template" download="accounts_template.csv" style="text-decoration:none">⬇ Template</a>
+        <span style="color:var(--muted);font-size:12px">or paste CSV below</span>
+      </div>
+      <textarea id="csv-paste-area" rows="8"
+        style="width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-family:monospace;font-size:12px;resize:vertical"
+        placeholder="email,password,totp_secret,location,proxy,geo_area&#10;john.smith@gmail.com,Pass123!,BASE32SECRET,London UK,,greenwich"></textarea>
 
-    <div style="display:flex;align-items:center;gap:16px;margin-top:10px;margin-bottom:4px;flex-wrap:wrap">
-      <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
-        <input type="checkbox" id="csv-provision-phones" checked>
-        Auto-provision GeelarK phone for each account
-      </label>
-      <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
-        <input type="checkbox" id="csv-create-ml" checked>
-        Create Multilogin profile for each account
-      </label>
+      <div style="display:flex;align-items:center;gap:16px;margin-top:10px;margin-bottom:4px;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+          <input type="checkbox" id="csv-provision-phones" checked>
+          Auto-provision GeelarK phone for each account
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+          <input type="checkbox" id="csv-create-ml" checked>
+          Create Multilogin profile for each account
+        </label>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px">
+        Click <strong>Analyze</strong> to see how many are new vs already in the system — nothing is written yet.
+      </div>
     </div>
 
-    <!-- Batch tag/group for quick visibility of newly uploaded accounts -->
-    <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
-      <label style="font-size:13px;color:var(--muted);white-space:nowrap">🏷 Tag / group:</label>
-      <input type="text" id="csv-import-tag" placeholder="e.g. batch_3, pc_2"
-        style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 10px;font-size:13px">
+    <!-- STEP 2 — tag + confirm import -->
+    <div id="csv-step-2" style="display:none">
+      <div id="csv-analyze-summary" style="padding:10px 14px;border-radius:6px;font-size:13px;margin-bottom:12px"></div>
+
+      <div id="csv-new-list-wrap" style="display:none;margin-bottom:12px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:4px">New accounts that will be added:</div>
+        <div id="csv-new-list" style="max-height:120px;overflow-y:auto;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-family:monospace;font-size:12px;white-space:pre-wrap"></div>
+      </div>
+
+      <div id="csv-tag-wrap" style="display:none;align-items:center;gap:8px;margin-bottom:4px">
+        <label style="font-size:13px;color:var(--muted);white-space:nowrap">🏷 Tag / group for these new accounts:</label>
+        <input type="text" id="csv-import-tag" placeholder="optional — e.g. batch_3, pc_2"
+          style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 10px;font-size:13px">
+      </div>
+      <div style="font-size:12px;color:var(--muted)">Accounts already in the system will be skipped automatically.</div>
     </div>
 
     <!-- Result area -->
@@ -1826,7 +1841,9 @@ tr.row-selected td { background: rgba(88,166,255,.06); }
 
     <div class="modal-footer" style="margin-top:16px">
       <button class="btn" onclick="closeCsvImportModal()">Cancel</button>
-      <button class="btn active" id="csv-import-btn" onclick="submitCsvImport()">Import Accounts</button>
+      <button class="btn" id="csv-back-btn" onclick="csvShowStep(1)" style="display:none">← Back</button>
+      <button class="btn" id="csv-analyze-btn" onclick="analyzeCsvImport()">Analyze</button>
+      <button class="btn active" id="csv-import-btn" onclick="submitCsvImport()" style="display:none">Import Accounts</button>
     </div>
   </div>
 </div>
@@ -2589,11 +2606,23 @@ async function refreshActivityLog(accountId) {
 
 // ── CSV Account Import ─────────────────────────────────────────────────────────
 
+function csvShowStep(step) {
+  document.getElementById('csv-step-1').style.display = step === 1 ? '' : 'none';
+  document.getElementById('csv-step-2').style.display = step === 2 ? '' : 'none';
+  document.getElementById('csv-analyze-btn').style.display = step === 1 ? '' : 'none';
+  document.getElementById('csv-back-btn').style.display    = step === 2 ? '' : 'none';
+  document.getElementById('csv-import-btn').style.display  = step === 2 ? '' : 'none';
+}
+
 function openCsvImportModal() {
   document.getElementById('csv-import-result').style.display = 'none';
   document.getElementById('csv-paste-area').value = '';
   document.getElementById('csv-provision-phones').checked = true;
+  document.getElementById('csv-create-ml').checked = true;
+  document.getElementById('csv-import-tag').value = '';
   document.getElementById('csv-import-btn').disabled = false;
+  document.getElementById('csv-import-btn').textContent = 'Import Accounts';
+  csvShowStep(1);
   document.getElementById('csv-import-overlay').style.display = 'flex';
 }
 
@@ -2612,6 +2641,71 @@ function csvFileSelected(input) {
   reader.readAsText(file);
 }
 
+// Step 1 → dry-run: report how many are new vs already in the system,
+// and list the new accounts, without writing anything.
+async function analyzeCsvImport() {
+  const csvText = document.getElementById('csv-paste-area').value.trim();
+  if (!csvText) { showToast('Paste or upload a CSV first', 'info'); return; }
+
+  const provisionPhones = document.getElementById('csv-provision-phones').checked;
+  const createMl        = document.getElementById('csv-create-ml').checked;
+  const btn = document.getElementById('csv-analyze-btn');
+  const resultDiv  = document.getElementById('csv-import-result');
+  const summaryDiv = document.getElementById('csv-analyze-summary');
+  btn.disabled = true;
+  btn.textContent = 'Analyzing…';
+  resultDiv.style.display = 'none';
+
+  try {
+    const res = await apiFetch('/api/accounts/import-csv', {
+      method: 'POST',
+      body: { csv_text: csvText, provision_phones: provisionPhones, create_ml_profiles: createMl, dry_run: true },
+    });
+
+    const newN  = res.imported || 0;
+    const exist = res.already_exists || 0;
+    const errs  = (res.errors || []).length;
+
+    const parts = [`<strong>✓ New:</strong> ${newN}`, `<strong>↩ Already in system:</strong> ${exist}`];
+    if (errs) parts.push(`<strong>✗ Errors:</strong> ${errs}`);
+    summaryDiv.style.background = newN > 0 ? 'rgba(63,185,80,.1)' : 'rgba(248,81,73,.1)';
+    summaryDiv.style.border     = `1px solid ${newN > 0 ? 'rgba(63,185,80,.3)' : 'rgba(248,81,73,.3)'}`;
+    summaryDiv.innerHTML = parts.join(' &nbsp;·&nbsp; ');
+
+    const newListDiv = document.getElementById('csv-new-list-wrap');
+    const tagWrap    = document.getElementById('csv-tag-wrap');
+    const importBtn  = document.getElementById('csv-import-btn');
+    const newEmails  = res.new_emails || [];
+    if (newN > 0) {
+      document.getElementById('csv-new-list').textContent = newEmails.join('\n');
+      newListDiv.style.display = '';
+      tagWrap.style.display = 'flex';
+      importBtn.textContent = `Import ${newN} Account${newN !== 1 ? 's' : ''}`;
+      importBtn.disabled = false;
+    } else {
+      newListDiv.style.display = 'none';
+      tagWrap.style.display = 'none';
+      importBtn.disabled = true;
+    }
+
+    // Show row-level errors (missing email, placeholder IDs, etc.) below the summary.
+    if ((res.errors || []).length) {
+      resultDiv.style.background = 'rgba(248,81,73,.1)';
+      resultDiv.style.border     = '1px solid rgba(248,81,73,.3)';
+      resultDiv.innerHTML = res.errors.map(e => `<div>${escHtml(e)}</div>`).join('');
+      resultDiv.style.display = 'block';
+    }
+
+    csvShowStep(2);
+  } catch (e) {
+    showToast(`Analyze failed: ${e.message}`, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Analyze';
+  }
+}
+
+// Step 2 → real import (with the tag, if any).
 async function submitCsvImport() {
   const csvText = document.getElementById('csv-paste-area').value.trim();
   if (!csvText) { showToast('Paste or upload a CSV first', 'info'); return; }
@@ -2653,6 +2747,7 @@ async function submitCsvImport() {
       await loadAccounts();
       const msg = [res.imported > 0 && `Imported ${res.imported}`, res.already_exists > 0 && `${res.already_exists} already in system`, res.updated > 0 && `Updated ${res.updated}`].filter(Boolean).join(', ');
       showToast(msg + ' account(s)', 'ok');
+      csvShowStep(1);  // reset for the next batch
     }
   } catch (e) {
     resultDiv.style.background = 'rgba(248,81,73,.1)';

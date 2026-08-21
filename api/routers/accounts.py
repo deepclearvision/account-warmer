@@ -685,6 +685,7 @@ class CsvImportRequest(BaseModel):
     create_ml_profiles: bool = True  # auto-create Multilogin browser profiles
     tag: Optional[str] = None   # optional batch tag/group applied to new accounts
     group: Optional[str] = None # alias for tag
+    dry_run: bool = False   # analyse only — report new vs existing, write nothing
 
 
 @router.post("/import-csv")
@@ -729,7 +730,9 @@ async def import_from_csv(body: CsvImportRequest):
         rows.append((i, row))
 
     if not rows and not errors:
-        return {"imported": 0, "already_exists": 0, "updated": 0, "errors": [], "phones_created": [], "phones_failed": []}
+        return {"imported": 0, "already_exists": 0, "updated": 0, "new_emails": [],
+                "errors": [], "phones_created": [], "phones_failed": [],
+                "ml_created": [], "ml_failed": []}
 
     # ── Load existing data ─────────────────────────────────────────────────────
     accounts = await load_accounts()
@@ -746,17 +749,19 @@ async def import_from_csv(body: CsvImportRequest):
     added          = []
     updated        = []
     already_exists = []
+    new_emails     = []
     phones_created = []
     phones_failed  = []
     ml_created     = []
     ml_failed      = []
 
     # Batch tag/group applied to every newly-created account for quick visibility
-    tag = (body.tag or body.group or "").strip()
+    tag     = (body.tag or body.group or "").strip()
+    dry_run = bool(body.dry_run)
 
     # Multilogin folder to create profiles in — fetched once, reused for all rows.
     ml_folder_id = None
-    if body.create_ml_profiles:
+    if body.create_ml_profiles and not dry_run:
         from core.profile_manager import get_default_folder_id
         ml_folder_id = get_default_folder_id()
 
@@ -777,6 +782,8 @@ async def import_from_csv(body: CsvImportRequest):
         # ── UPDATE existing account ───────────────────────────────────────────
         if email.lower() in existing_emails:
             already_exists.append(email)
+            if dry_run:
+                continue
             acc = next((a for a in accounts if a.get("email", "").lower() == email.lower()), None)
             if acc:
                 changed = False
@@ -867,11 +874,12 @@ async def import_from_csv(body: CsvImportRequest):
         accounts.append(acc_entry)
         existing_emails.add(email.lower())
         added.append(account_id)
+        new_emails.append(email)
 
         # ── Create a Multilogin browser profile (best-effort) ─────────────────
         # Only when requested, the account has no profile id already, and we
         # resolved a target folder. The proxy (if any) is applied at launch.
-        if body.create_ml_profiles and not acc_entry["multilogin_profile_id"] and ml_folder_id:
+        if not dry_run and body.create_ml_profiles and not acc_entry["multilogin_profile_id"] and ml_folder_id:
             from core.profile_manager import create_profile
             res = create_profile(email, ml_folder_id, proxy_url=acc_entry.get("proxy") or None)
             if res.get("success"):
@@ -923,7 +931,7 @@ async def import_from_csv(body: CsvImportRequest):
                 ]
 
             # Auto-provision phone if requested
-            if body.provision_phones:
+            if not dry_run and body.provision_phones:
                 mobile_proxy = os.environ.get("GEELARK_PROXY", row.get("proxy", "") or "")
                 try:
                     from core.geelark_client import GeelarKClient
@@ -943,8 +951,9 @@ async def import_from_csv(body: CsvImportRequest):
             gl_emails.add(email.lower())
 
     # ── Save ──────────────────────────────────────────────────────────────────
-    await save_accounts(accounts)
-    store.save_mobile_accounts(gl_accounts)
+    if not dry_run:
+        await save_accounts(accounts)
+        store.save_mobile_accounts(gl_accounts)
 
     return {
         "imported":           len(added),
@@ -953,7 +962,9 @@ async def import_from_csv(body: CsvImportRequest):
         "account_ids":        added,
         "already_exists_ids": already_exists,
         "updated_ids":        updated,
+        "new_emails":         new_emails,
         "tag":                tag or None,
+        "dry_run":            dry_run,
         "errors":             errors,
         "phones_created":     phones_created,
         "phones_failed":      phones_failed,
